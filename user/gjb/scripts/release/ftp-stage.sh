@@ -32,6 +32,7 @@ setup_stageenv() {
 	path=
 	C=
 	isoarch=
+	skip=0
 	releaseimages="memstick.img disc1.iso bootonly.iso"
 	vmimages="qcow2 vmdk"
 
@@ -45,8 +46,7 @@ setup_stageenv() {
 	if [ ! -d ${C}/usr/src/release ]; then
 		echo "=== Cannot find release directory for ${rev}-${arch}-${type}"
 		echo "=== Unable to determine OSRELEASE value."
-		echo "=== Skipping..."
-		return 0
+		skip=1
 	fi
 
 	# Overrides for paths, image files, etc.
@@ -88,6 +88,9 @@ setup_stageenv() {
 
 stage_builds() {
 	setup_stageenv
+	if [ "${skip}" -eq 1 ]; then
+		return 0
+	fi
 	echo "=== Creating ${ftpdir}/${path}/${OSRELEASE}..."
 	mkdir -p ${ftpdir}/${path}/${OSRELEASE}/
 	if [ ! -z ${backpath} ]; then
@@ -166,6 +169,9 @@ stage_builds() {
 
 stage_vmimages() {
 	setup_stageenv
+	if [ "${skip}" -eq 1 ]; then
+		return 0
+	fi
 	FTPPATH="${ftpdir}/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
 	LATESTPATH="${ftpdir}/VM-IMAGES/${OSRELEASE}/${arch}/Latest"
 	if [ -d ${C}/vmimage ]; then
