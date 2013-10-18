@@ -1,0 +1,22 @@
+Index: ../release/release.sh
+===================================================================
+--- ../release/release.sh	(revision 255620)
++++ ../release/release.sh	(working copy)
+@@ -124,9 +124,14 @@
+ else
+ 	ARCH_FLAGS=
+ fi
+-CHROOT_WMAKEFLAGS="${MAKE_FLAGS} ${WORLD_FLAGS} ${CONF_FILES}"
+-CHROOT_IMAKEFLAGS="${CONF_FILES}"
+-CHROOT_DMAKEFLAGS="${CONF_FILES}"
++if [ "$(sysctl -n hw.machine)" = "amd64" ] && [ "${TARGET}" = "i386" ] && [ "${TARGET_ARCH}" = "i386" ]; then
++	CHROOT_EXTRAFLAGS="${ARCH_FLAGS}"
++else
++	CHROOT_EXTRAFLAGS="TARGET=amd64 TARGET_ARCH=amd64"
++fi
++CHROOT_WMAKEFLAGS="${MAKE_FLAGS} ${WORLD_FLAGS} ${CONF_FILES} ${CHROOT_EXTRAFLAGS}"
++CHROOT_IMAKEFLAGS="${CONF_FILES} ${CHROOT_EXTRAFLAGS}"
++CHROOT_DMAKEFLAGS="${CONF_FILES} ${CHROOT_EXTRAFLAGS}"
+ RELEASE_WMAKEFLAGS="${MAKE_FLAGS} ${WORLD_FLAGS} ${ARCH_FLAGS} ${CONF_FILES}"
+ RELEASE_KMAKEFLAGS="${MAKE_FLAGS} ${KERNEL_FLAGS} KERNCONF=\"${KERNEL}\" ${ARCH_FLAGS} ${CONF_FILES}"
+ RELEASE_RMAKEFLAGS="${ARCH_FLAGS} KERNCONF=\"${KERNEL}\" ${CONF_FILES} \

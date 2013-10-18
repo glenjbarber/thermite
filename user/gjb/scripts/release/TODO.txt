@@ -1,0 +1,9 @@
+#
+# $relengid$
+#
+- Experiment with ways to reduce build times:
+  o One possible solution is to spawn child make(1) processes
+    for N jobs, where N is an evenly distributable number of
+    CPUs matching number of total builds, or a subset of total
+    builds.  This may require more independent zpools, as disk
+    IO on a single vdev will likely be contentious.

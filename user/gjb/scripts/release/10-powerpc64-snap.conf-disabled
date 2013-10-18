@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# $FreeBSD: scripts/10-powerpc64-snap.conf-disabled 338 2013-10-17 21:30:22Z gjb $
+# $relengid$
+#
+. ./releng.subr
+__CONFIG_NAME="10-powerpc64-snap"
+TARGET="powerpc"
+TARGET_ARCH="powerpc64"
+KERNEL="GENERIC64"
+CHROOTDIR="${__WRKDIR_PREFIX}/${__CONFIG_NAME}"
+SRCBRANCH="base/stable/10@${_SVNREV}"

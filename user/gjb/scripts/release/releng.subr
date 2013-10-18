@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# $FreeBSD: scripts/releng.subr 337 2013-10-17 21:26:02Z gjb $
+# $relengid$
+#
+
+__SCRIPTDIR="$(dirname $(realpath ${0}))"
+
+__WRKDIR_PREFIX=
+
+case `hostname -s` in
+    snap|nucleus)
+	__WRKDIR_PREFIX="/snap/releng"
+	;;
+    bake | cook)
+	__WRKDIR_PREFIX="/releng"
+	;;
+    *)
+	echo "__WRKDIR_PREFIX (top level work directory) not set for"
+	echo "this build machine."
+	exit 1
+	;;
+esac
+
+SVNROOT="svn://svn.FreeBSD.org"
+DOCBRANCH="doc/head@rHEAD"
+PORTBRANCH="ports/head@rHEAD"
+WORLD_FLAGS="-j18"
+KERNEL_FLAGS="-j12"
+
+# Skip doc/ and ports/ for now, this is only an -ALPHA.
+NODOC=yes
+NOPORTS=yes
+
+# Can't source files for these values, because we run with restricted
+# environment.
+_SVNREV="r256707"
+DATE="20131017"

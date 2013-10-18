@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# $FreeBSD: scripts/10-i386-snap.conf-disabled 338 2013-10-17 21:30:22Z gjb $
+# $relengid$
+#
+. ./releng.subr
+__CONFIG_NAME="10-i386-snap"
+TARGET="i386"
+TARGET_ARCH="i386"
+CHROOTDIR="${__WRKDIR_PREFIX}/${__CONFIG_NAME}"
+SRCBRANCH="base/stable/10@${_SVNREV}"
