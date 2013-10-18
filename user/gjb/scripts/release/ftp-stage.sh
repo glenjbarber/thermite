@@ -47,6 +47,7 @@ setup_stageenv() {
 		echo "=== Cannot find release directory for ${rev}-${arch}-${type}"
 		echo "=== Unable to determine OSRELEASE value."
 		skip=1
+		return 0
 	fi
 
 	# Overrides for paths, image files, etc.
