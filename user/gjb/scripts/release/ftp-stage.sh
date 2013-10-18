@@ -32,6 +32,7 @@ setup_stageenv() {
 	path=
 	C=
 	isoarch=
+	backpath=
 	skip=0
 	releaseimages="memstick.img disc1.iso bootonly.iso"
 	vmimages="qcow2 vmdk"
