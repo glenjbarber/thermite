@@ -89,6 +89,7 @@ setup_stageenv() {
 stage_builds() {
 	setup_stageenv
 	if [ "${skip}" -eq 1 ]; then
+		echo "=== Skipping ${rev}-${arch}-${type} staging"
 		return 0
 	fi
 	echo "=== Creating ${ftpdir}/${path}/${OSRELEASE}..."
@@ -170,6 +171,7 @@ stage_builds() {
 stage_vmimages() {
 	setup_stageenv
 	if [ "${skip}" -eq 1 ]; then
+		echo "=== Skipping ${rev}-${arch}-${type} staging"
 		return 0
 	fi
 	FTPPATH="${ftpdir}/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
