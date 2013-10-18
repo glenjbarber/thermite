@@ -149,7 +149,7 @@ stage_builds() {
 	for hash in MD5 SHA256; do
 		if [ -e "${C}/R/CHECKSUM.${hash}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash} \
-				${ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${isoarch}
+				${ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}
 		elif [ -e "${C}/R/CHECKSUM.${hash}-${__DATE}-${__SVNREV}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${__DATE}-${__SVNREV} \
 				${ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}-${__DATE}-${__SVNREV}
