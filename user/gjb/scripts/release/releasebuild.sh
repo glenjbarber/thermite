@@ -92,6 +92,9 @@ build_head_chroots() {
 		done
 		for type in ${types}; do
 			if [ ${build_head_amd64} -eq 1 ]; then
+				if [ ! -e "${scriptdir}/${head}-amd64-${type}.conf" ]; 
+					continue
+				fi
 				mkdir -p "${chroots}/${head}/amd64"
 				. "${scriptdir}/${head}-amd64-${type}.conf"
 				echo "== Checking out src tree..." \
@@ -107,6 +110,9 @@ build_head_chroots() {
 					2>&1 >> ${logdir}/${head}-amd64-${type}.world.log
 			fi
 			if [ ${build_head_i386} -eq 1 ]; then
+				if [ ! -e "${scriptdir}/${head}-i386-${type}.conf" ]; 
+					continue
+				fi
 				mkdir -p "${chroots}/${head}/i386"
 				. "${scriptdir}/${head}-i386-${type}.conf"
 				echo "== Checking out src tree..." \
@@ -173,6 +179,9 @@ build_stable_chroots() {
 		done
 		for type in ${types}; do
 			if [ ${build_stable_amd64} -eq 1 ]; then
+				if [ ! -e "${scriptdir}/${stable}-amd64-${type}.conf" ]; 
+					continue
+				fi
 				mkdir -p "${chroots}/${stable}/amd64"
 				. "${scriptdir}/${stable}-amd64-${type}.conf"
 				echo "== Checking out src tree..." >/dev/stdout
@@ -186,6 +195,9 @@ build_stable_chroots() {
 					2>&1 >> ${logdir}/${stable}-amd64-${type}.world.log
 			fi
 			if [ ${build_stable_i386} -eq 1 ]; then
+				if [ ! -e "${scriptdir}/${stable}-i386-${type}.conf" ]; 
+					continue
+				fi
 				mkdir -p "${chroots}/${stable}/i386"
 				. "${scriptdir}/${stable}-i386-${type}.conf"
 				echo "== Checking out src tree..." >/dev/stdout
