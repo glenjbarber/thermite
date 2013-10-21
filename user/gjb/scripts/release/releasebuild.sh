@@ -92,7 +92,8 @@ build_head_chroots() {
 		done
 		for type in ${types}; do
 			if [ ${build_head_amd64} -eq 1 ]; then
-				if [ ! -e "${scriptdir}/${head}-amd64-${type}.conf" ]; 
+				if [ ! -e "${scriptdir}/${head}-amd64-${type}.conf" ];
+				then
 					continue
 				fi
 				mkdir -p "${chroots}/${head}/amd64"
@@ -110,7 +111,8 @@ build_head_chroots() {
 					2>&1 >> ${logdir}/${head}-amd64-${type}.world.log
 			fi
 			if [ ${build_head_i386} -eq 1 ]; then
-				if [ ! -e "${scriptdir}/${head}-i386-${type}.conf" ]; 
+				if [ ! -e "${scriptdir}/${head}-i386-${type}.conf" ];
+				then
 					continue
 				fi
 				mkdir -p "${chroots}/${head}/i386"
@@ -180,6 +182,7 @@ build_stable_chroots() {
 		for type in ${types}; do
 			if [ ${build_stable_amd64} -eq 1 ]; then
 				if [ ! -e "${scriptdir}/${stable}-amd64-${type}.conf" ]; 
+				then
 					continue
 				fi
 				mkdir -p "${chroots}/${stable}/amd64"
@@ -196,6 +199,7 @@ build_stable_chroots() {
 			fi
 			if [ ${build_stable_i386} -eq 1 ]; then
 				if [ ! -e "${scriptdir}/${stable}-i386-${type}.conf" ]; 
+				then
 					continue
 				fi
 				mkdir -p "${chroots}/${stable}/i386"
