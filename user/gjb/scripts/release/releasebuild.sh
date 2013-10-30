@@ -48,6 +48,17 @@ truncate_logs() {
 	done
 }
 
+# Email log output when a stage has completed
+send_logmail() {
+	local _logfile
+	local _build
+	_logfile="${1}"
+	_build="${2}"
+	tail -n 10 "${_logfile}" | \
+		mail -s "${_build} done" ${emailgoesto}
+	return 0
+}
+
 # Run the release builds.
 build_release() {
 	echo "=== Building release: ${rev}-${arch}-${type}" > /dev/stdout
@@ -55,8 +66,7 @@ build_release() {
 	env -i /bin/sh ${srcdir}/release.sh -c ${scriptdir}/${rev}-${arch}-${type}.conf \
 		>> ${logdir}/${rev}-${arch}-${type}.log 2>&1
 
-	tail -n 10 ${logdir}/${rev}-${arch}-${type}.log | \
-		mail -s "${rev}-${arch}-${type} done" ${emailgoesto}
+	send_logmail ${logdir}/${rev}-${arch}-${type}.log ${rev}-${arch}-${type}
 
 	# Short circuit to skip vm image creation for non-x86 architectures.
 	case ${arch} in
@@ -71,8 +81,7 @@ build_release() {
 	env -i /bin/sh ${scriptdir}/mk-vmimage.sh -c ${scriptdir}/${rev}-${arch}-${type}.conf \
 		>> ${logdir}/${rev}-${arch}-${type}.vm.log 2>&1
 
-	tail -n 10 ${logdir}/${rev}-${arch}-${type}.vm.log | \
-		mail -s "${rev}-${arch}-${type} vm done" ${emailgoesto}
+	send_logmail ${logdir}/${rev}-${arch}-${type}.vm.log ${rev}-${arch}-${type}
 }
 
 # Build amd64/i386 "seed" chroots for head/.
