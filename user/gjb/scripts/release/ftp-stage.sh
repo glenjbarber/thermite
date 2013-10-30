@@ -37,6 +37,11 @@ setup_stageenv() {
 	skip=0
 	releaseimages="memstick.img disc1.iso bootonly.iso"
 	vmimages="qcow2 vmdk"
+	REVISION=
+	BRANCH=
+	OSRELEASE=
+	__DATE=
+	__SVNREV=
 
 	C="${relengdir}/${rev}-${arch}-${type}"
 
