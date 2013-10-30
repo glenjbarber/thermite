@@ -119,6 +119,11 @@ stage_builds() {
 		echo "=== Skipping ${rev}-${arch}-${type} staging"
 		return 0
 	fi
+	if [ ! -d ${C}/R ]; then
+		echo "=== Skipping ${rev}-${arch}-${type} staging"
+		echo "==== ${C}/R directory does not exist"
+		return 0
+	fi
 	echo "=== Creating ${_ftpdir}/${path}/${OSRELEASE}..."
 	mkdir -p ${_ftpdir}/${path}/${OSRELEASE}/
 	if [ ! -z ${backpath} ]; then
@@ -197,13 +202,12 @@ stage_builds() {
 
 stage_vmimages() {
 	setup_stageenv
-	if [ "${skip}" -eq 1 ]; then
+	if [ "${skip}" -eq 1 ] || [ ! -d ${C}/vmimage ]; then
 		echo "=== Skipping ${rev}-${arch}-${type} staging"
 		return 0
 	fi
 	FTPPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
 	LATESTPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/Latest"
-	if [ -d ${C}/vmimage ]; then
 		mkdir -p ${FTPPATH}
 		if [ -e "${C}/vmimage/${__DISCNAME}.disk" ]; then
 			# Hide the raw '.disk' file by renaming to a dot-file.
@@ -230,7 +234,6 @@ stage_vmimages() {
 		done
 		unlink ${LATESTPATH}
 		ln -sf ${__DATE} ${LATESTPATH}
-	fi
 	return 0
 }
 
