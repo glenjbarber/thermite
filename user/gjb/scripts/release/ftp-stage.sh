@@ -94,6 +94,10 @@ setup_stageenv() {
 	__DATE="$(cat ${scriptdir}/builddate)"
 	__SVNREV="r$(cat ${scriptdir}/svnrev.txt)"
 
+	if [ "X${OSRELEASE}" = "X" ]; then
+		skip=1
+	fi
+
 	. "${scriptdir}/${rev}-${arch}-${type}.conf"
 	if [ "X${TARGET}" = "X" ] && [ "X${TARGET_ARCH}" = "X" ]; then
 		TARGET=$(uname -m)
