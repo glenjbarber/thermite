@@ -7,13 +7,14 @@
 scriptdir="$(dirname $(realpath ${0}))"
 
 heads="11"
-stables="9"
+stables="10 9"
 
 revs="${heads} ${stables}"
 archs="amd64 i386 ia64 powerpc powerpc64 sparc64"
-types="snap"
+types="snap release"
 
-ftpdir="/relengftp/releases"
+ftpdir="/relengftp"
+ftpsubdir=""
 
 case `hostname -s` in
 	snap)
@@ -74,6 +75,19 @@ setup_stageenv() {
 			;;
 	esac
 
+	# Set the ftp subdir to releases/ or snapshots/:
+	case ${type} in
+		snap)
+			ftpsubdir="snapshots"
+			;;
+		release)
+			ftpsubdir="releases"
+			;;
+		*)
+			ftpsubdir=""
+			;;
+	esac
+
 	REVISION=$(make -C ${C}/usr/src/release -V REVISION)
 	BRANCH=$(make -C ${C}/usr/src/release -V BRANCH)
 	OSRELEASE="${REVISION}-${BRANCH}"
@@ -90,24 +104,26 @@ setup_stageenv() {
 
 stage_builds() {
 	setup_stageenv
+	local _ftpdir
+	_ftpdir="${ftpdir}/${ftpsubdir}"
 	if [ "${skip}" -eq 1 ]; then
 		echo "=== Skipping ${rev}-${arch}-${type} staging"
 		return 0
 	fi
-	echo "=== Creating ${ftpdir}/${path}/${OSRELEASE}..."
-	mkdir -p ${ftpdir}/${path}/${OSRELEASE}/
+	echo "=== Creating ${_ftpdir}/${path}/${OSRELEASE}..."
+	mkdir -p ${_ftpdir}/${path}/${OSRELEASE}/
 	if [ ! -z ${backpath} ]; then
 		echo "=== Creating backwards-compatible symlink:"
 		echo "==== ${backpath}/${OSRELEASE} -> ${path}/${OSRELEASE}"
-		ln -sf ${backpath}/${OSRELEASE} ${ftpdir}/${backpath}/${OSRELEASE}
+		ln -sf ${backpath}/${OSRELEASE} ${_ftpdir}/${backpath}/${OSRELEASE}
 	fi
-	echo "=== Rsync ${C}/R/ftp to ${ftpdir}/${path}/${OSRELEASE}..."
+	echo "=== Rsync ${C}/R/ftp to ${_ftpdir}/${path}/${OSRELEASE}..."
 	rsync -a --delete ${C}/R/ftp/* \
-		${ftpdir}/${path}/${OSRELEASE}/
+		${_ftpdir}/${path}/${OSRELEASE}/
 
 	# Copy ISO images to FTP snapshots directory.
-	echo "=== Creating ${ftpdir}/${path}/ISO-IMAGES/${REVISION}..."
-	mkdir -p ${ftpdir}/${path}/ISO-IMAGES/${REVISION}/
+	echo "=== Creating ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}..."
+	mkdir -p ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
 	case ${type} in
 		snap)
 			(
@@ -130,30 +146,30 @@ stage_builds() {
 		*)
 			;;
 	esac
-	echo "=== Copying checksums and images to ${ftpdir}/${path}/ISO-IMAGES/${REVISION}..."
-	cp -p ${C}/R/*CHECKSUM* ${ftpdir}/${path}/ISO-IMAGES/${REVISION}/
-	cp -p ${C}/R/${__DISCNAME}* ${ftpdir}/${path}/ISO-IMAGES/${REVISION}/
+	echo "=== Copying checksums and images to ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}..."
+	cp -p ${C}/R/*CHECKSUM* ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
+	cp -p ${C}/R/${__DISCNAME}* ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
 
-	echo "=== Creating ${ftpdir}/ISO-IMAGES/${REVISION}..."
-	mkdir -p ${ftpdir}/ISO-IMAGES/${REVISION}
+	echo "=== Creating ${_ftpdir}/ISO-IMAGES/${REVISION}..."
+	mkdir -p ${_ftpdir}/ISO-IMAGES/${REVISION}
 	echo "=== Creating symlinks for ISO-IMAGES..."
 	for image in ${releaseimages}; do
 		if [ -e "${C}/R/FreeBSD-${OSRELEASE}-${isoarch}-${image}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/FreeBSD-${OSRELEASE}-${isoarch}-${image} \
-				${ftpdir}/ISO-IMAGES/${REVISION}/FreeBSD-${OSRELEASE}-${isoarch}-${image}
+				${_ftpdir}/ISO-IMAGES/${REVISION}/FreeBSD-${OSRELEASE}-${isoarch}-${image}
 		elif [ -e "${C}/R/${__DISCNAME}-${__DATE}-${__SVNREV}-${image}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/${__DISCNAME}-${__DATE}-${__SVNREV}-${image} \
-				${ftpdir}/ISO-IMAGES/${REVISION}/${__DISCNAME}-${__DATE}-${__SVNREV}-${image}
+				${_ftpdir}/ISO-IMAGES/${REVISION}/${__DISCNAME}-${__DATE}-${__SVNREV}-${image}
 		fi
 	done
 	echo "=== Creating symlinks for CHECKSUM files..."
 	for hash in MD5 SHA256; do
 		if [ -e "${C}/R/CHECKSUM.${hash}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash} \
-				${ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}
+				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}
 		elif [ -e "${C}/R/CHECKSUM.${hash}-${__DATE}-${__SVNREV}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${__DATE}-${__SVNREV} \
-				${ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}-${__DATE}-${__SVNREV}
+				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}-${__DATE}-${__SVNREV}
 		fi
 	done
 	case ${BRANCH} in
@@ -161,7 +177,7 @@ stage_builds() {
 			echo "=== This is a RELEASE or RC."
 			echo "=== Creating packages symlink for sysinstall(8)..."
 			ln -sf ../../../../ports/${isoarch}/packages-${REVISION}-release \
-				${ftpdir}/${path}/${OSRELEASE}/packages
+				${_ftpdir}/${path}/${OSRELEASE}/packages
 			;;
 		*)
 			# FALLTHROUGH
@@ -176,8 +192,8 @@ stage_vmimages() {
 		echo "=== Skipping ${rev}-${arch}-${type} staging"
 		return 0
 	fi
-	FTPPATH="${ftpdir}/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
-	LATESTPATH="${ftpdir}/VM-IMAGES/${OSRELEASE}/${arch}/Latest"
+	FTPPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
+	LATESTPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/Latest"
 	if [ -d ${C}/vmimage ]; then
 		mkdir -p ${FTPPATH}
 		if [ -e "${C}/vmimage/${__DISCNAME}.disk" ]; then
@@ -236,9 +252,9 @@ main() {
 		done
 	done
 	dirperm_fixup
-	echo "== For snapshots, run: rsync -av --links ${ftpdir}/ /snap/ftp/snapshots"
-	echo -n "== For releases, run 'rsync -av --delete --links "
-	echo "${ftpdir}/ ftp-master.freebsd.org:/archive/tmp/releases'"
+	#echo "== For snapshots, run: rsync -av --links ${ftpdir}/ /snap/ftp/snapshots"
+	#echo -n "== For releases, run 'rsync -av --delete --links "
+	#echo "${ftpdir}/ ftp-master.freebsd.org:/archive/tmp/releases'"
 }
 
 main
