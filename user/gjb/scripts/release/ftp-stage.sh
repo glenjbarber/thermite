@@ -208,32 +208,32 @@ stage_vmimages() {
 	fi
 	FTPPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
 	LATESTPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/Latest"
-		mkdir -p ${FTPPATH}
-		if [ -e "${C}/vmimage/${__DISCNAME}.disk" ]; then
-			# Hide the raw '.disk' file by renaming to a dot-file.
-			mv "${C}/vmimage/${__DISCNAME}.disk" "${C}/vmimage/.${__DISCNAME}.disk"
-		fi
-		for image in ${vmimages}; do
-			mv ${C}/vmimage/${__DISCNAME}*.${image}.xz \
-				${C}/vmimage/${__DISCNAME}-${__DATE}-${__SVNREV}.${image}.xz
-		done
-		# Remove old checksums.
-		rm -f ${C}/vmimage/CHECKSUM.*
-		(cd ${C}/vmimage &&
-			sha256 ${__DISCNAME}* \
-				> CHECKSUM.SHA256-${__DATE}-${__SVNREV}
-			md5 ${__DISCNAME}* \
-				> CHECKSUM.MD5-${__DATE}-${__SVNREV}
-		)
-		cp -p ${C}/vmimage/CHECKSUM* \
-			${FTPPATH}
+	mkdir -p ${FTPPATH}
+	if [ -e "${C}/vmimage/${__DISCNAME}.disk" ]; then
+		# Hide the raw '.disk' file by renaming to a dot-file.
+		mv "${C}/vmimage/${__DISCNAME}.disk" "${C}/vmimage/.${__DISCNAME}.disk"
+	fi
+	for image in ${vmimages}; do
+		mv ${C}/vmimage/${__DISCNAME}*.${image}.xz \
+			${C}/vmimage/${__DISCNAME}-${__DATE}-${__SVNREV}.${image}.xz
+	done
+	# Remove old checksums.
+	rm -f ${C}/vmimage/CHECKSUM.*
+	(cd ${C}/vmimage &&
+		sha256 ${__DISCNAME}* \
+			> CHECKSUM.SHA256-${__DATE}-${__SVNREV}
+		md5 ${__DISCNAME}* \
+			> CHECKSUM.MD5-${__DATE}-${__SVNREV}
+	)
+	cp -p ${C}/vmimage/CHECKSUM* \
+		${FTPPATH}
 
-		for image in ${vmimages}; do
-			cp -p ${C}/vmimage/${__DISCNAME}*.${image}.xz \
-				${FTPPATH}
-		done
-		unlink ${LATESTPATH}
-		ln -sf ${__DATE} ${LATESTPATH}
+	for image in ${vmimages}; do
+		cp -p ${C}/vmimage/${__DISCNAME}*.${image}.xz \
+			${FTPPATH}
+	done
+	unlink ${LATESTPATH}
+	ln -sf ${__DATE} ${LATESTPATH}
 	return 0
 }
 
