@@ -4,18 +4,16 @@
 # $relengid$
 #
 
-emailgoesto="gjb@FreeBSD.org"
-scriptdir="$(dirname $(realpath ${0}))"
-srcdir="${scriptdir}/../release"
-logdir="${scriptdir}/../logs"
-chroots="${scriptdir}/../chroots"
+quick_usage() {
+	echo "$(basename ${0}) /path/to/configuration/file"
+	exit 1
+}
 
-heads="11"
-stables="10 9"
+if [ "$#" -ne 1 ]; then
+	quick_usage
+fi
 
-revs="${heads} ${stables}"
-archs="amd64 i386 ia64 powerpc powerpc64 sparc64"
-types="snap release"
+. $(dirname $(basename ${0}))/${1}
 
 prebuild_setup() {
 	sh ${scriptdir}/getrev.sh || exit 1

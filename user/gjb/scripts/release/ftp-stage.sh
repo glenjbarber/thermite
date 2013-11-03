@@ -4,17 +4,16 @@
 # $relengid$
 #
 
-scriptdir="$(dirname $(realpath ${0}))"
+quick_usage() {
+	echo "$(basename ${0}) /path/to/configuration/file"
+	exit 1
+}
 
-heads="11"
-stables="10 9"
+if [ "$#" -ne 1 ]; then
+	quick_usage
+fi
 
-revs="${heads} ${stables}"
-archs="amd64 i386 ia64 powerpc powerpc64 sparc64"
-types="snap release"
-
-ftpdir="/relengftp"
-ftpsubdir=""
+. $(dirname $(basename ${0}))/${1}
 
 case `hostname -s` in
 	snap)
@@ -96,8 +95,8 @@ setup_stageenv() {
 	REVISION=$(make -C ${C}/usr/src/release -V REVISION)
 	BRANCH=$(make -C ${C}/usr/src/release -V BRANCH)
 	OSRELEASE="${REVISION}-${BRANCH}"
-	__DATE="$(cat ${scriptdir}/builddate)"
-	__SVNREV="r$(cat ${scriptdir}/svnrev.txt)"
+	__DATE="${BUILDDATE}"
+	__SVNREV="r${BUILDSVNREV}"
 
 	if [ "X${OSRELEASE}" = "X" ]; then
 		skip=1
