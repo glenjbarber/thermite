@@ -87,6 +87,11 @@ build_release() {
 # Build amd64/i386 "seed" chroots for all branches being built.
 build_chroots() {
 	for _rev in ${heads} ${stables}; do
+		if [ ${_rev} -le 8 ]; then
+			echo -n "==== Skipping ${_rev}; these scripts do not "
+			echo "support stable/8 or earlier." >/dev/stdout
+			break
+		fi
 		build_amd64=0
 		build_i386=0
 		for arch in ${archs}; do
