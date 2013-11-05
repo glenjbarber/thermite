@@ -84,87 +84,89 @@ build_release() {
 	send_logmail ${logdir}/${rev}-${arch}-${type}.vm.log ${rev}-${arch}-${type}
 }
 
-# Build amd64/i386 "seed" chroots for head/.
-build_head_chroots() {
-	for head in ${heads}; do
-		build_head_amd64=0
-		build_head_i386=0
+# Build amd64/i386 "seed" chroots for all branches being built.
+realbuild_chroots() {
+	for _rev in ${heads} ${stables}; do
+		build_amd64=0
+		build_i386=0
 		for arch in ${archs}; do
 			case ${arch} in
 				i386)
-					build_head_i386=1
+					build_i386=1
 					;;
 				*)
-					build_head_amd64=1
+					build_amd64=1
 					;;
 			esac
 		done
 		for type in ${types}; do
-			if [ ${build_head_amd64} -eq 1 ]; then
-				if [ ! -e "${scriptdir}/${head}-amd64-${type}.conf" ];
+			if [ ${build_amd64} -eq 1 ]; then
+				if [ ! -e "${scriptdir}/${_rev}-amd64-${type}.conf" ];
 				then
 					continue
 				fi
-				mkdir -p "${chroots}/${head}/amd64"
-				. "${scriptdir}/${head}-amd64-${type}.conf"
-				echo "== Checking out src tree..." \
-					2>&1 >> ${logdir}/${head}-amd64-${type}.world.log
-				echo "=== SVN checkout base/head for amd64" > /dev/stdout
-				svn co -q ${SVNROOT}/base/head@${__SVNREV} \
-					${chroots}/${head}/amd64 \
-					2>&1 >> ${logdir}/${head}-amd64-${type}.world.log
-				echo "=== Building ${chroots}/${head}/amd64" > /dev/stdout
-				make -C ${chroots}/${head}/amd64 ${WORLD_FLAGS} \
+				mkdir -p "${chroots}/${_rev}/amd64"
+				. "${scriptdir}/${_rev}-amd64-${type}.conf"
+				# Source the build configuration file to get
+				# the SRCBRANCH to use
+				echo "=== SVN checkout ${SRCBRANCH} for amd64" > /dev/stdout
+				. "${scriptdir}/${_rev}-amd64-${type}.conf"
+				svn co -q ${SVNROOT}/${SRCBRANCH} \
+					${chroots}/${_rev}/amd64 \
+					2>&1 >> ${logdir}/${_rev}-amd64-${type}.world.log
+				echo "=== Building ${chroots}/${_rev}/amd64" > /dev/stdout
+				make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
 					TARGET=amd64 TARGET_ARCH=amd64 \
 					buildworld \
 					2>&1 >> \
-					${logdir}/${head}-amd64-${type}.world.log &
+					${logdir}/${_rev}-amd64-${type}.world.log &
 			fi
-			if [ ${build_head_i386} -eq 1 ]; then
-				if [ ! -e "${scriptdir}/${head}-i386-${type}.conf" ];
+			if [ ${build_i386} -eq 1 ]; then
+				if [ ! -e "${scriptdir}/${_rev}-i386-${type}.conf" ];
 				then
 					continue
 				fi
-				mkdir -p "${chroots}/${head}/i386"
-				. "${scriptdir}/${head}-i386-${type}.conf"
-				echo "== Checking out src tree..." \
-					2>&1 >> ${logdir}/${head}-i386-${type}.world.log
-				echo "=== SVN checkout base/head for i386" > /dev/stdout
-				svn co -q ${SVNROOT}/base/head@${__SVNREV} \
-					${chroots}/${head}/i386 \
-					2>&1 >> ${logdir}/${head}-i386-${type}.world.log
-				echo "=== Building ${chroots}/${head}/i386" > /dev/stdout
-				make -C ${chroots}/${head}/i386 ${WORLD_FLAGS} \
+				mkdir -p "${chroots}/${_rev}/i386"
+				. "${scriptdir}/${_rev}-i386-${type}.conf"
+				# Source the build configuration file to get
+				# the SRCBRANCH to use
+				. "${scriptdir}/${_rev}-i386-${type}.conf"
+				echo "=== SVN checkout ${SRCBRANCH} for i386" > /dev/stdout
+				svn co -q ${SVNROOT}/${SRCBRANCH} \
+					${chroots}/${_rev}/i386 \
+					2>&1 >> ${logdir}/${_rev}-i386-${type}.world.log
+				echo "=== Building ${chroots}/${_rev}/i386" > /dev/stdout
+				make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
 					TARGET=i386 TARGET_ARCH=i386 \
 					buildworld \
 					2>&1 >> \
-					${logdir}/${head}-i386-${type}.world.log &
+					${logdir}/${_rev}-i386-${type}.world.log &
 			fi
 		done
 		wait
 		for arch in ${archs}; do
 			for type in ${types}; do
-				if [ -e "${scriptdir}/${head}-${arch}-${type}.conf" ];
+				if [ -e "${scriptdir}/${_rev}-${arch}-${type}.conf" ];
 				then
-					. "${scriptdir}/${head}-${arch}-${type}.conf"
-					mkdir -p ${__WRKDIR_PREFIX}/${head}-${arch}-${type}
-					echo "=== Installing ${chroots}/${head}/${arch}" > /dev/stdout
+					. "${scriptdir}/${_rev}-${arch}-${type}.conf"
+					mkdir -p ${__WRKDIR_PREFIX}/${_rev}-${arch}-${type}
+					echo "=== Installing ${chroots}/${_rev}/${arch}" > /dev/stdout
 					case ${arch} in
 					i386)
-						make -C ${chroots}/${head}/i386 \
+						make -C ${chroots}/${_rev}/i386 \
 							TARGET=i386 TARGET_ARCH=i386 \
-							DESTDIR=${__WRKDIR_PREFIX}/${head}-${arch}-${type} \
+							DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
 							installworld distribution \
 							2>&1 >> \
-							${logdir}/${head}-i386-${type}.world.log &
+							${logdir}/${_rev}-i386-${type}.world.log &
 						;;
 					*)
-						make -C ${chroots}/${head}/amd64 \
+						make -C ${chroots}/${_rev}/amd64 \
 							TARGET=amd64 TARGET_ARCH=amd64 \
-							DESTDIR=${__WRKDIR_PREFIX}/${head}-${arch}-${type} \
+							DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
 							installworld distribution \
 							2>&1 >> \
-							${logdir}/${head}-amd64-${type}.world.log &
+							${logdir}/${_rev}-amd64-${type}.world.log &
 						;;
 					esac
 				fi
@@ -172,98 +174,6 @@ build_head_chroots() {
 		done
 		wait
 	done
-}
-
-# Build amd64/i386 "seed" chroots for stable/.
-build_stable_chroots() {
-	if [ "${rev}" -eq 8 ]; then
-		echo "== Skipping stable/${rev} builds."
-		echo "=== These build scripts do not support stable/${rev}"
-		return 0
-	fi
-	for stable in ${stables}; do
-		build_stable_amd64=0
-		build_stable_i386=0
-		for arch in ${archs}; do
-			case ${arch} in
-				i386)
-					build_stable_i386=1
-					;;
-				*)
-					build_stable_amd64=1
-					;;
-			esac
-		done
-		for type in ${types}; do
-			if [ ${build_stable_amd64} -eq 1 ]; then
-				if [ ! -e "${scriptdir}/${stable}-amd64-${type}.conf" ]; 
-				then
-					continue
-				fi
-				mkdir -p "${chroots}/${stable}/amd64"
-				. "${scriptdir}/${stable}-amd64-${type}.conf"
-				echo "== Checking out src tree..." >/dev/stdout
-				svn co -q ${SVNROOT}/base/stable/${stable}@${__SVNREV} \
-					${chroots}/${stable}/amd64 \
-					2>&1 >> ${logdir}/${stable}-amd64-${type}.world.log
-				echo "== Building ${chroots}/${stable}/amd64" >/dev/stdout
-				make -C ${chroots}/${stable}/amd64 ${WORLD_FLAGS} \
-					TARGET=amd64 TARGET_ARCH=amd64 \
-					buildworld \
-					2>&1 >> \
-					${logdir}/${stable}-amd64-${type}.world.log &
-			fi
-			if [ ${build_stable_i386} -eq 1 ]; then
-				if [ ! -e "${scriptdir}/${stable}-i386-${type}.conf" ]; 
-				then
-					continue
-				fi
-				mkdir -p "${chroots}/${stable}/i386"
-				. "${scriptdir}/${stable}-i386-${type}.conf"
-				echo "== Checking out src tree..." >/dev/stdout
-				svn co -q ${SVNROOT}/base/stable/${stable}@${__SVNREV} \
-					${chroots}/${stable}/i386 \
-					2>&1 >> ${logdir}/${stable}-i386-${type}.world.log
-				echo "== Building ${chroots}/${stable}/i386" >/dev/stdout
-				make -C ${chroots}/${stable}/i386 ${WORLD_FLAGS} \
-					TARGET=i386 TARGET_ARCH=i386 \
-					buildworld \
-					2>&1 >> \
-					${logdir}/${stable}-i386-${type}.world.log &
-			fi
-		done
-		wait
-		for arch in ${archs}; do
-			for type in ${types}; do
-				if [ -e "${scriptdir}/${stable}-${arch}-${type}.conf" ];
-				then
-					. "${scriptdir}/${stable}-${arch}-${type}.conf"
-					mkdir -p ${__WRKDIR_PREFIX}/${stable}-${arch}-${type}
-					echo "== Installing ${chroots}/${stable}/${arch}" >/dev/stdout
-					case ${arch} in
-					i386)
-						make -C ${chroots}/${stable}/i386 \
-							TARGET=i386 TARGET_ARCH=i386 \
-							DESTDIR=${__WRKDIR_PREFIX}/${stable}-${arch}-${type} \
-							installworld distribution \
-							2>&1 >> \
-							${logdir}/${stable}-i386-${type}.world.log &
-						;;
-					*)
-						make -C ${chroots}/${stable}/amd64 \
-							TARGET=amd64 TARGET_ARCH=amd64 \
-							DESTDIR=${__WRKDIR_PREFIX}/${stable}-${arch}-${type} \
-							installworld distribution \
-							2>&1 >> \
-							${logdir}/${stable}-amd64-${type}.world.log &
-						;;
-					esac
-				fi
-			done
-		done
-		wait
-	done
-
 }
 
 build_chroots() {
@@ -277,11 +187,8 @@ build_chroots() {
 	if [ "x${stables}" != "x" ]; then
 		build_stables=1
 	fi
-	if [ ${build_heads} -eq 1 ]; then
-		build_head_chroots
-	fi
-	if [ ${build_stables} -eq 1 ]; then
-		build_stable_chroots
+	if [ ${build_heads} -eq 1 ] || [ ${build_stables} -eq 1 ]; then
+		realbuild_chroots
 	fi
 }
 
