@@ -85,7 +85,7 @@ build_release() {
 }
 
 # Build amd64/i386 "seed" chroots for all branches being built.
-realbuild_chroots() {
+build_chroots() {
 	for _rev in ${heads} ${stables}; do
 		build_amd64=0
 		build_i386=0
@@ -174,22 +174,6 @@ realbuild_chroots() {
 		done
 		wait
 	done
-}
-
-build_chroots() {
-	build_heads=0
-	build_stables=0
-	# set a flag if we are going to build head/ and stable/ bits (i.e.,
-	# check for branches that are excluded from this build)
-	if [ "x${heads}" != "x" ]; then
-		build_heads=1
-	fi
-	if [ "x${stables}" != "x" ]; then
-		build_stables=1
-	fi
-	if [ ${build_heads} -eq 1 ] || [ ${build_stables} -eq 1 ]; then
-		realbuild_chroots
-	fi
 }
 
 main() {
