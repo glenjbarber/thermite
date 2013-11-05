@@ -63,8 +63,9 @@ build_release() {
 	echo "=== Building release: ${rev}-${arch}-${type}" > /dev/stdout
 	printenv > ${logdir}/${rev}-${arch}-${type}.log
 	env -i /bin/sh ${srcdir}/release.sh -c ${scriptdir}/${rev}-${arch}-${type}.conf \
-		>> ${logdir}/${rev}-${arch}-${type}.log 2>&1
+		>> ${logdir}/${rev}-${arch}-${type}.log 2>&1 &
 
+	wait
 	send_logmail ${logdir}/${rev}-${arch}-${type}.log ${rev}-${arch}-${type}
 
 	# Short circuit to skip vm image creation for non-x86 architectures.
@@ -116,7 +117,8 @@ build_head_chroots() {
 				make -C ${chroots}/${head}/amd64 ${WORLD_FLAGS} \
 					TARGET=amd64 TARGET_ARCH=amd64 \
 					buildworld \
-					2>&1 >> ${logdir}/${head}-amd64-${type}.world.log
+					2>&1 >> \
+					${logdir}/${head}-amd64-${type}.world.log &
 			fi
 			if [ ${build_head_i386} -eq 1 ]; then
 				if [ ! -e "${scriptdir}/${head}-i386-${type}.conf" ];
@@ -135,9 +137,11 @@ build_head_chroots() {
 				make -C ${chroots}/${head}/i386 ${WORLD_FLAGS} \
 					TARGET=i386 TARGET_ARCH=i386 \
 					buildworld \
-					2>&1 >> ${logdir}/${head}-i386-${type}.world.log
+					2>&1 >> \
+					${logdir}/${head}-i386-${type}.world.log &
 			fi
 		done
+		wait
 		for arch in ${archs}; do
 			for type in ${types}; do
 				if [ -e "${scriptdir}/${head}-${arch}-${type}.conf" ];
@@ -151,19 +155,22 @@ build_head_chroots() {
 							TARGET=i386 TARGET_ARCH=i386 \
 							DESTDIR=${__WRKDIR_PREFIX}/${head}-${arch}-${type} \
 							installworld distribution \
-							2>&1 >> ${logdir}/${head}-i386-${type}.world.log
+							2>&1 >> \
+							${logdir}/${head}-i386-${type}.world.log &
 						;;
 					*)
 						make -C ${chroots}/${head}/amd64 \
 							TARGET=amd64 TARGET_ARCH=amd64 \
 							DESTDIR=${__WRKDIR_PREFIX}/${head}-${arch}-${type} \
 							installworld distribution \
-							2>&1 >> ${logdir}/${head}-amd64-${type}.world.log
+							2>&1 >> \
+							${logdir}/${head}-amd64-${type}.world.log &
 						;;
 					esac
 				fi
 			done
 		done
+		wait
 	done
 }
 
@@ -203,7 +210,8 @@ build_stable_chroots() {
 				make -C ${chroots}/${stable}/amd64 ${WORLD_FLAGS} \
 					TARGET=amd64 TARGET_ARCH=amd64 \
 					buildworld \
-					2>&1 >> ${logdir}/${stable}-amd64-${type}.world.log
+					2>&1 >> \
+					${logdir}/${stable}-amd64-${type}.world.log &
 			fi
 			if [ ${build_stable_i386} -eq 1 ]; then
 				if [ ! -e "${scriptdir}/${stable}-i386-${type}.conf" ]; 
@@ -220,9 +228,11 @@ build_stable_chroots() {
 				make -C ${chroots}/${stable}/i386 ${WORLD_FLAGS} \
 					TARGET=i386 TARGET_ARCH=i386 \
 					buildworld \
-					2>&1 >> ${logdir}/${stable}-i386-${type}.world.log
+					2>&1 >> \
+					${logdir}/${stable}-i386-${type}.world.log &
 			fi
 		done
+		wait
 		for arch in ${archs}; do
 			for type in ${types}; do
 				if [ -e "${scriptdir}/${stable}-${arch}-${type}.conf" ];
@@ -236,19 +246,22 @@ build_stable_chroots() {
 							TARGET=i386 TARGET_ARCH=i386 \
 							DESTDIR=${__WRKDIR_PREFIX}/${stable}-${arch}-${type} \
 							installworld distribution \
-							2>&1 >> ${logdir}/${stable}-i386-${type}.world.log
+							2>&1 >> \
+							${logdir}/${stable}-i386-${type}.world.log &
 						;;
 					*)
 						make -C ${chroots}/${stable}/amd64 \
 							TARGET=amd64 TARGET_ARCH=amd64 \
 							DESTDIR=${__WRKDIR_PREFIX}/${stable}-${arch}-${type} \
 							installworld distribution \
-							2>&1 >> ${logdir}/${stable}-amd64-${type}.world.log
+							2>&1 >> \
+							${logdir}/${stable}-amd64-${type}.world.log &
 						;;
 					esac
 				fi
 			done
 		done
+		wait
 	done
 
 }
@@ -276,6 +289,7 @@ main() {
 	prebuild_setup
 	truncate_logs
 	build_chroots
+	wait
 	for rev in ${revs}; do
 		for arch in ${archs}; do
 			for type in ${types}; do
