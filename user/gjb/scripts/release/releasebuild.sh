@@ -69,8 +69,13 @@ build_release() {
 	send_logmail ${logdir}/${rev}-${arch}-${type}.log ${rev}-${arch}-${type}
 
 	# Short circuit to skip vm image creation for non-x86 architectures.
+	# Also recreate the memstick.img for i386 while here.
 	case ${arch} in
-		amd64|i386)
+		amd64)
+			;;
+		i386)
+			/bin/sh ${scriptdir}/remake-memstick.sh \
+				-c ${scriptdir}/${rev}-${arch}-${type}.conf
 			;;
 		*)
 			return 0
@@ -191,14 +196,6 @@ main() {
 			for type in ${types}; do
 				if [ -e ${scriptdir}/${rev}-${arch}-${type}.conf ]; then
 					build_release
-					case ${arch} in
-						i386)
-							/bin/sh ${scriptdir}/remake-memstick.sh \
-								-c ${scriptdir}/${rev}-${arch}-${type}.conf
-							;;
-						*)
-							;;
-					esac
 				else
 					echo "=== Skipping build: ${rev}-${arch}-${type}"
 					echo "=== Configuration file does not exist."
