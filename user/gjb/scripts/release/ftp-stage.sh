@@ -34,7 +34,6 @@ setup_stageenv() {
 	isoarch=
 	backpath=
 	skip=0
-	releaseimages="memstick.img disc1.iso bootonly.iso"
 	vmimages="qcow2 vmdk"
 	REVISION=
 	BRANCH=
@@ -59,7 +58,6 @@ setup_stageenv() {
 	# Overrides for paths, image files, etc.
 	case ${arch} in
 		sparc64)
-			releaseimages="disc1.iso bootonly.iso"
 			isoarch="${arch}"
 			path="${arch}/${arch}"
 			backpath="${arch}"
@@ -97,6 +95,7 @@ setup_stageenv() {
 	OSRELEASE="${REVISION}-${BRANCH}"
 	__DATE="${BUILDDATE}"
 	__SVNREV="r${BUILDSVNREV}"
+	releaseimages="$(make -C ${C}/usr/src/release -V IMAGES)"
 
 	if [ "X${OSRELEASE}" = "X" ]; then
 		skip=1
