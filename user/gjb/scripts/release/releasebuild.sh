@@ -16,7 +16,6 @@ fi
 . $(dirname $(basename ${0}))/${1}
 
 prebuild_setup() {
-	sh ${scriptdir}/getrev.sh || exit 1
 	mkdir -p "${logdir}" "${srcdir}"
 	svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
 	svn revert ${srcdir}/release.sh
