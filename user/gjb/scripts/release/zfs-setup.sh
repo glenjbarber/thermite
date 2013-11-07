@@ -27,12 +27,17 @@ zfs_teardown() {
 		for a in ${archs}; do
 			for t in ${types}; do
 				s="${r}-${a}-${t}"
-				zfs list ${zfs_parent}/${s} >/dev/null 2>&1
-				rc=$?
-				if [ ${rc} -eq 0 ]; then
-					echo "${pfx} Destroying ${zfs_parent}/${s}" \
-						>/dev/stdout
-					zfs destroy ${zfs_parent}/${s}
+				if [ -e ${scriptdir}/${s}.conf ];
+				then
+					zfs list ${zfs_parent}/${s} >/dev/null 2>&1
+					rc=$?
+					if [ ${rc} -eq 0 ]; then
+						echo -n "${pfx} Destroying " \
+							>/dev/stdout
+						echo " ${zfs_parent}/${s}" \
+							>/dev/stdout
+						zfs destroy ${zfs_parent}/${s}
+					fi
 				fi
 			done
 		done
@@ -45,9 +50,12 @@ zfs_setup() {
 		for a in ${archs}; do
 			for t in ${types}; do
 				s="${r}-${a}-${t}"
-				echo "${pfx} Creating ${zfs_parent}/${s}" \
-					>/dev/stdout
-				zfs create -o atime=off ${zfs_parent}/${s}
+				if [ -e ${scriptdir}/${s}.conf ];
+				then
+					echo "${pfx} Creating ${zfs_parent}/${s}" \
+						>/dev/stdout
+					zfs create -o atime=off ${zfs_parent}/${s}
+				fi
 			done
 		done
 	done
@@ -55,8 +63,6 @@ zfs_setup() {
 }
 
 zfs_teardown
-wait
 zfs_setup
-wait
 exit 0
 
