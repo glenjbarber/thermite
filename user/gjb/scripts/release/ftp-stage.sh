@@ -143,7 +143,7 @@ stage_builds() {
 				for _i in ${releaseimages}; do
 					echo -n "=== Renaming ${_i} to "
 					echo "${__DISCNAME}-${__DATE}-${__SVNREV}-${_i}"
-					mv *-${_i} \
+					mv ${__DISCNAME}-${_i} \
 						${__DISCNAME}-${__DATE}-${__SVNREV}-${_i}
 				done
 				rm -f CHECKSUM.SHA256* CHECKSUM.MD5*
