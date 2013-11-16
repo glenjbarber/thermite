@@ -100,11 +100,20 @@ while ! umount ${CHROOTDIR}/dev; do
 	sleep 1
 done
 set -e
-diskformats="vmdk qcow2"
+diskformats="vmdk vpc qcow2"
 for f in ${diskformats}; do
+	local _f
+	_f=${f}
+	case ${_f} in
+		vpc)
+			_f=vhd
+			;;
+		*)
+			;;
+	esac
 	/usr/local/bin/qemu-img convert -O ${f} ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.disk \
-		${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.${f}
-	xz ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.${f}
+		${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.${_f}
+	xz ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.${_f}
 done
 cd ${CHROOTDIR}/vmimage
 sha256 FreeBSD*.xz > CHECKSUM.SHA256
