@@ -102,7 +102,6 @@ done
 set -e
 diskformats="vmdk vpc qcow2"
 for f in ${diskformats}; do
-	local _f
 	_f=${f}
 	case ${_f} in
 		vpc)
