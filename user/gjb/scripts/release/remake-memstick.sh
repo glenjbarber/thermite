@@ -56,6 +56,9 @@ rm -f CHECKSUM.* || exit 1
 /bin/sh ${CHROOTDIR}/usr/src/release/${MEMSTICK_ARCH}/make-memstick.sh \
 	${CHROOTDIR}/usr/obj/usr/src/release/release \
 	${CHROOTDIR}/R/${MEMSTICK_IMAGE_NAME}
+/bin/sh ${CHROOTDIR}/usr/src/release/${MEMSTICK_ARCH}/make-memstick.sh \
+	${CHROOTDIR}/usr/obj/usr/src/release/bootonly \
+	${CHROOTDIR}/R/${MEMSTICK_IMAGE_NAME}-mini
 )
 
 cd ${CHROOTDIR}/R
