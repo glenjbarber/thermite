@@ -34,7 +34,7 @@ setup_stageenv() {
 	isoarch=
 	backpath=
 	skip=0
-	vmimages="qcow2 vmdk"
+	vmimages="qcow2 vmdk vhd"
 	REVISION=
 	BRANCH=
 	OSRELEASE=
