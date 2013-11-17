@@ -48,6 +48,7 @@ esac
 
 MEMSTICK_IMAGE_NAME=$(make -C ${CHROOTDIR}/usr/src/release -V REVISION -V BRANCH | tr '\n' '-')
 MEMSTICK_IMAGE_NAME="$(uname -s)-${MEMSTICK_IMAGE_NAME}${MEMSTICK_ARCH}"
+MINI_MEMSTICK_IMAGE_NAME="${MEMSTICK_IMAGE_NAME}-mini-memstick.img"
 MEMSTICK_IMAGE_NAME="${MEMSTICK_IMAGE_NAME}-memstick.img"
 
 cd ${CHROOTDIR}/R && (
@@ -58,7 +59,7 @@ rm -f CHECKSUM.* || exit 1
 	${CHROOTDIR}/R/${MEMSTICK_IMAGE_NAME}
 /bin/sh ${CHROOTDIR}/usr/src/release/${MEMSTICK_ARCH}/make-memstick.sh \
 	${CHROOTDIR}/usr/obj/usr/src/release/bootonly \
-	${CHROOTDIR}/R/${MEMSTICK_IMAGE_NAME}-mini
+	${CHROOTDIR}/R/${MINI_MEMSTICK_IMAGE_NAME}
 )
 
 cd ${CHROOTDIR}/R
