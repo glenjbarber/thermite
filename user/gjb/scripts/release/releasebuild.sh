@@ -87,6 +87,57 @@ build_release() {
 	send_logmail ${logdir}/${rev}-${arch}-${type}.vm.log ${rev}-${arch}-${type}
 }
 
+# Install amd64/i386 "seed" chroots for all branches being built.
+install_chroots() {
+	for _rev in ${heads} ${stables}; do
+		if [ ${_rev} -le 8 ]; then
+			echo -n "==== Skipping ${_rev}; these scripts do not "
+			echo "support stable/8 or earlier." >/dev/stdout
+			break
+		fi
+		build_amd64=0
+		build_i386=0
+		for arch in ${archs}; do
+			case ${arch} in
+				i386)
+					build_i386=1
+					;;
+				*)
+					build_amd64=1
+					;;
+			esac
+		done
+		for arch in ${archs}; do
+			for type in ${types}; do
+				if [ -e "${scriptdir}/${_rev}-${arch}-${type}.conf" ];
+				then
+					. "${scriptdir}/${_rev}-${arch}-${type}.conf"
+					mkdir -p ${__WRKDIR_PREFIX}/${_rev}-${arch}-${type}
+					echo "=== Installing ${chroots}/${_rev}/${arch}" > /dev/stdout
+					case ${arch} in
+					i386)
+						make -C ${chroots}/${_rev}/i386 \
+							TARGET=i386 TARGET_ARCH=i386 \
+							DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
+							installworld distribution \
+							2>&1 >> \
+							${logdir}/${_rev}-i386-${type}.world.log
+						;;
+					*)
+						make -C ${chroots}/${_rev}/amd64 \
+							TARGET=amd64 TARGET_ARCH=amd64 \
+							DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
+							installworld distribution \
+							2>&1 >> \
+							${logdir}/${_rev}-amd64-${type}.world.log
+						;;
+					esac
+				fi
+			done
+		done
+	done
+}
+
 # Build amd64/i386 "seed" chroots for all branches being built.
 build_chroots() {
 	for _rev in ${heads} ${stables}; do
@@ -149,34 +200,6 @@ build_chroots() {
 					${logdir}/${_rev}-i386-${type}.world.log
 			fi
 		done
-		for arch in ${archs}; do
-			for type in ${types}; do
-				if [ -e "${scriptdir}/${_rev}-${arch}-${type}.conf" ];
-				then
-					. "${scriptdir}/${_rev}-${arch}-${type}.conf"
-					mkdir -p ${__WRKDIR_PREFIX}/${_rev}-${arch}-${type}
-					echo "=== Installing ${chroots}/${_rev}/${arch}" > /dev/stdout
-					case ${arch} in
-					i386)
-						make -C ${chroots}/${_rev}/i386 \
-							TARGET=i386 TARGET_ARCH=i386 \
-							DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
-							installworld distribution \
-							2>&1 >> \
-							${logdir}/${_rev}-i386-${type}.world.log
-						;;
-					*)
-						make -C ${chroots}/${_rev}/amd64 \
-							TARGET=amd64 TARGET_ARCH=amd64 \
-							DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
-							installworld distribution \
-							2>&1 >> \
-							${logdir}/${_rev}-amd64-${type}.world.log
-						;;
-					esac
-				fi
-			done
-		done
 	done
 }
 
@@ -184,6 +207,7 @@ main() {
 	prebuild_setup
 	truncate_logs
 	build_chroots
+	install_chroots
 	for rev in ${revs}; do
 		for arch in ${archs}; do
 			for type in ${types}; do
