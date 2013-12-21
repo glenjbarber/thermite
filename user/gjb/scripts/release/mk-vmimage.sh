@@ -80,7 +80,7 @@ gpart add -t freebsd-ufs -l rootfs /dev/${mddev}
 newfs /dev/${mddev}p3
 mount /dev/${mddev}p3 ${CHROOTDIR}/vmimage/mnt
 
-# Everything at this point must succeed.
+# Errors here are ok, 'set -e' is re-enabled below again.
 set +e
 mount -t devfs devfs ${CHROOTDIR}/dev
 chroot ${CHROOTDIR} make -s -C /usr/src DESTDIR=/vmimage/mnt \
