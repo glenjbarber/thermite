@@ -14,9 +14,6 @@ fi
 
 . $(dirname $(basename ${0}))/${1}
 
-readfiles() {
-}
-
 get_vm_checksum() {
 	local _s="${r}-${a}-${t}"
 	sumfiles="SHA256 MD5"
