@@ -175,6 +175,11 @@ build_chroots() {
 				echo "=== Building ${chroots}/${_rev}/amd64" > /dev/stdout
 				make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
 					TARGET=amd64 TARGET_ARCH=amd64 \
+					make \
+					2>&1 >> \
+					${logdir}/${_rev}-amd64-${type}.world.log
+				make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
+					TARGET=amd64 TARGET_ARCH=amd64 \
 					buildworld \
 					2>&1 >> \
 					${logdir}/${_rev}-amd64-${type}.world.log
