@@ -200,6 +200,11 @@ build_chroots() {
 				echo "=== Building ${chroots}/${_rev}/i386" > /dev/stdout
 				make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
 					TARGET=i386 TARGET_ARCH=i386 \
+					make \
+					2>&1 >> \
+					${logdir}/${_rev}-amd64-${type}.world.log
+				make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
+					TARGET=i386 TARGET_ARCH=i386 \
 					buildworld \
 					2>&1 >> \
 					${logdir}/${_rev}-i386-${type}.world.log
