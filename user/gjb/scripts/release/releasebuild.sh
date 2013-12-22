@@ -168,12 +168,15 @@ build_chroots() {
 				svn co -q ${SVNROOT}/${SRCBRANCH} \
 					${chroots}/${_rev}/amd64 \
 					2>&1 >> ${logdir}/${_rev}-amd64-${type}.world.log
-				echo "=== Building ${chroots}/${_rev}/amd64" > /dev/stdout
+				echo "=== Building ${chroots}/${_rev}/amd64 make(1)" > \
+					/dev/stdout
 				make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
 					TARGET=amd64 TARGET_ARCH=amd64 \
 					make \
 					2>&1 >> \
 					${logdir}/${_rev}-amd64-${type}.world.log
+				echo "=== Building ${chroots}/${_rev}/amd64 world" > \
+					/dev/stdout
 				make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
 					TARGET=amd64 TARGET_ARCH=amd64 \
 					buildworld \
