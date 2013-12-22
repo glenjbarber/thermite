@@ -19,7 +19,7 @@ case `hostname -s` in
 	snap)
 		relengdir="/snap/releng"
 		;;
-	bake | cook)
+	bake | grind)
 		relengdir="/releng"
 		;;
 	*)

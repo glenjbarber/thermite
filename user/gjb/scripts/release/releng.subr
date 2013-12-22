@@ -9,10 +9,10 @@ __SCRIPTDIR="$(dirname $(realpath ${0}))"
 __WRKDIR_PREFIX=
 
 case `hostname -s` in
-    snap|nucleus)
+    snap)
 	__WRKDIR_PREFIX="/snap/releng"
 	;;
-    bake | cook)
+    bake | grind)
 	__WRKDIR_PREFIX="/releng"
 	;;
     *)
