@@ -116,22 +116,18 @@ install_chroots() {
 					echo "=== Installing ${chroots}/${_rev}/${arch}" > /dev/stdout
 					case ${arch} in
 					i386)
-						make -C ${chroots}/${_rev}/i386 \
-							TARGET=i386 TARGET_ARCH=i386 \
-							DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
-							installworld distribution \
-							2>&1 >> \
-							${logdir}/${_rev}-i386-${type}.world.log
+						_arch=i386
 						;;
 					*)
-						make -C ${chroots}/${_rev}/amd64 \
-							TARGET=amd64 TARGET_ARCH=amd64 \
-							DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
-							installworld distribution \
-							2>&1 >> \
-							${logdir}/${_rev}-amd64-${type}.world.log
+						_arch=amd64
 						;;
 					esac
+					make -C ${chroots}/${_rev}/${_arch} \
+						TARGET=${_arch} TARGET_ARCH=${_arch} \
+						DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
+						installworld distribution \
+						2>&1 >> \
+						${logdir}/${_rev}-${_arch}-${type}.world.log
 				fi
 			done
 		done
