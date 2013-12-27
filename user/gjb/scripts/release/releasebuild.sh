@@ -20,17 +20,6 @@ prebuild_setup() {
 	svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
 	svn revert ${srcdir}/release.sh
 	patch ${srcdir}/release.sh < ${scriptdir}/release.sh.diff || exit 1
-
-	# Remove the release.sh 'buildworld/installworld/distribution' functionality;
-	# it is short-circuited in build_chroots() to run once per branch (twice, if
-	# amd64 and i386 are built), instead of one buildworld per architecture.
-	sed -i '' 's:^cd ${CHROOTDIR}/usr/src:# REMOVED1:' ${srcdir}/release.sh
-	sed -i '' 's:^make ${CHROOT_WMAKEFLAGS} buildworld:# REMOVED2:' \
-		${srcdir}/release.sh
-	sed -i '' 's:^make ${CHROOT_IMAKEFLAGS} installworld DESTDIR=${CHROOTDIR}:# REMOVED3:' \
-		${srcdir}/release.sh
-	sed -i '' 's:^make ${CHROOT_DMAKEFLAGS} distribution DESTDIR=${CHROOTDIR}:# REMOVED4:' \
-		${srcdir}/release.sh
 }
 
 # Clear all log files.
