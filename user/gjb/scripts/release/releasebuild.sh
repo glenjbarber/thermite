@@ -158,6 +158,7 @@ build_chroots() {
 				svn co -q ${SVNROOT}/${SRCBRANCH} \
 					${chroots}/${_rev}/amd64 \
 					2>&1 >> ${logdir}/${_rev}-amd64-${type}.world.log
+				if [ ${_rev} -lt 10 ]; then
 				echo "=== Building ${chroots}/${_rev}/amd64 make(1)" > \
 					/dev/stdout
 				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/amd64 \
@@ -166,6 +167,7 @@ build_chroots() {
 					make \
 					2>&1 >> \
 					${logdir}/${_rev}-amd64-${type}.world.log
+				fi
 				echo "=== Building ${chroots}/${_rev}/amd64 world" > \
 					/dev/stdout
 				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/amd64 \
