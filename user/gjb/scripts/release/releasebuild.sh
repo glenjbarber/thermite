@@ -111,7 +111,8 @@ install_chroots() {
 						_arch=amd64
 						;;
 					esac
-					make -C ${chroots}/${_rev}/${_arch} \
+					env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/${_arch} \
+						make -C ${chroots}/${_rev}/${_arch} \
 						TARGET=${_arch} TARGET_ARCH=${_arch} \
 						DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
 						installworld distribution \
@@ -159,14 +160,16 @@ build_chroots() {
 					2>&1 >> ${logdir}/${_rev}-amd64-${type}.world.log
 				echo "=== Building ${chroots}/${_rev}/amd64 make(1)" > \
 					/dev/stdout
-				make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
+				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/amd64 \
+					make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
 					TARGET=amd64 TARGET_ARCH=amd64 \
 					make \
 					2>&1 >> \
 					${logdir}/${_rev}-amd64-${type}.world.log
 				echo "=== Building ${chroots}/${_rev}/amd64 world" > \
 					/dev/stdout
-				make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
+				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/amd64 \
+					make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
 					TARGET=amd64 TARGET_ARCH=amd64 \
 					buildworld \
 					2>&1 >> \
@@ -185,13 +188,16 @@ build_chroots() {
 				svn co -q ${SVNROOT}/${SRCBRANCH} \
 					${chroots}/${_rev}/i386 \
 					2>&1 >> ${logdir}/${_rev}-i386-${type}.world.log
-				echo "=== Building ${chroots}/${_rev}/i386" > /dev/stdout
-				make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
+				echo "=== Building ${chroots}/${_rev}/i386 make(1)" > /dev/stdout
+				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/i386 \
+					make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
 					TARGET=i386 TARGET_ARCH=i386 \
 					make \
 					2>&1 >> \
 					${logdir}/${_rev}-amd64-${type}.world.log
-				make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
+				echo "=== Building ${chroots}/${_rev}/i386 world" > /dev/stdout
+				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/i386 \
+					make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
 					TARGET=i386 TARGET_ARCH=i386 \
 					buildworld \
 					2>&1 >> \
