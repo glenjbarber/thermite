@@ -194,7 +194,7 @@ build_chroots() {
 					TARGET=i386 TARGET_ARCH=i386 \
 					make \
 					2>&1 >> \
-					${logdir}/${_rev}-amd64-${type}.world.log
+					${logdir}/${_rev}-i386-${type}.world.log
 				echo "=== Building ${chroots}/${_rev}/i386 world" > /dev/stdout
 				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/i386 \
 					make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
