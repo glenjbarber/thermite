@@ -35,6 +35,7 @@ setup_stageenv() {
 	backpath=
 	skip=0
 	vmimages="qcow2 vmdk vhd"
+	WITH_DVD=
 	REVISION=
 	BRANCH=
 	OSRELEASE=
