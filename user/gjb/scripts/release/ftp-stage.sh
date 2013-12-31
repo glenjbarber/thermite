@@ -95,13 +95,13 @@ setup_stageenv() {
 	OSRELEASE="${REVISION}-${BRANCH}"
 	__DATE="${BUILDDATE}"
 	__SVNREV="r${BUILDSVNREV}"
-	releaseimages="$(make -C ${C}/usr/src/release -V IMAGES)"
 
 	if [ "X${OSRELEASE}" = "X" ]; then
 		skip=1
 	fi
 
 	. "${scriptdir}/${rev}-${arch}-${type}.conf"
+	releaseimages="$(make -C ${C}/usr/src/release WITH_DVD=${WITH_DVD} -V IMAGES)"
 	if [ "X${TARGET}" = "X" ] && [ "X${TARGET_ARCH}" = "X" ]; then
 		TARGET=$(uname -m)
 		TARGET_ARCH=$(uname -p)
