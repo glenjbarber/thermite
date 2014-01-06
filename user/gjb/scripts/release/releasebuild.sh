@@ -62,7 +62,8 @@ build_release() {
 			;;
 		i386)
 			/bin/sh ${scriptdir}/remake-memstick.sh \
-				-c ${scriptdir}/${rev}-${arch}-${type}.conf
+				-c ${scriptdir}/${rev}-${arch}-${type}.conf >> \
+				${logdir}/${rev}-${arch}-${type}.log
 			;;
 		*)
 			return 0
