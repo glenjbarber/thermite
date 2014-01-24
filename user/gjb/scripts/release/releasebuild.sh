@@ -255,8 +255,9 @@ install_chroots() {
 			_chrootarch="amd64"
 			;;
 	esac
-	verbose "Creating ${__WRKDIR_PREFIX}/${rev}-${arch}-${type}"
+	info "Creating ${__WRKDIR_PREFIX}/${rev}-${arch}-${type}"
 	mkdir -p "${__WRKDIR_PREFIX}/${rev}-${arch}-${type}"
+	info "Installing ${__WRKDIR_PREFIX}/${rev}-${arch}-${type}"
 	env MAKEOBJDIRPREFIX=${chroots}/${rev}-obj/${_chrootarch}/${type} \
 		make -C ${chroots}/${rev}/${_chrootarch}/${type} \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
