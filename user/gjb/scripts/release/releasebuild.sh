@@ -93,9 +93,10 @@ zfs_mount_tree() {
 	source_config || return 0
 	_tree=${1}
 	[ -z ${_tree} ] && return 0
+	seed_src=
 	case ${_tree} in
 		src)
-			# Continue
+			seed_src=1
 			;;
 		doc)
 			[ ! -z ${NODOC} ] && return 0
@@ -114,7 +115,16 @@ zfs_mount_tree() {
 	info "Cloning ${_clone}@clone to ${_target}"
 	echo zfs clone -p -o mountpoint=${_mount}/usr/${_tree} \
 		${_clone}@clone ${_target}
-	unset _clone _mount _target _tree
+	if [ ! -z ${seed_src} ]; then
+		# Only create chroot seeds for x86.
+		if [ "${arch}" = "amd64" ] || [ "${arch}" = "i386" ]; then
+			_seedmount=${chroots}/${rev}/${arch}/${type}
+			_seedtarget="${zfs_parent}/${rev}-${arch}-${type}-chroot"
+			echo zfs clone -p -o mountpoint=${_seedmount} \
+				${_clone}@clone ${_seedtarget}
+		fi
+	fi
+	unset _clone _mount _target _tree _seedmount _seedtarget
 }
 
 zfs_create_tree() {
