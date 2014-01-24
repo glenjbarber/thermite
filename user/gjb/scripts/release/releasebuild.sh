@@ -15,6 +15,12 @@ fi
 
 . $(realpath ${1})
 
+info() {
+	out="${1}"
+	printf "INFO:\t${out}\n" >/dev/stdout
+	unset out
+}
+
 prebuild_setup() {
 	mkdir -p "${logdir}" "${srcdir}"
 	svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
