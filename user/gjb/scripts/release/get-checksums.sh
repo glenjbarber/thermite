@@ -30,7 +30,7 @@ get_vm_checksum() {
 	for _f in ${sumfiles}; do
 		case ${_f} in
 			SHA256)
-				echo "- ${__REVISION}-${__BRANCH} ${a}:"
+				echo "o ${__REVISION}-${__BRANCH} ${a}:"
 				;;
 			*)
 				;;
@@ -60,7 +60,7 @@ get_iso_checksum() {
 	for _f in ${sumfiles}; do
 		case ${_f} in
 			SHA256)
-				echo "- ${__REVISION}-${__BRANCH} ${a}:"
+				echo "o ${__REVISION}-${__BRANCH} ${a}:"
 				;;
 			*)
 				;;
