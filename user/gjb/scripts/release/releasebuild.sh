@@ -21,6 +21,53 @@ info() {
 	unset out
 }
 
+check_use_zfs() {
+	if [ -z ${use_zfs} ]; then
+		return 1
+	fi
+	return 0
+}
+
+source_config() {
+	local configfile
+	configfile="${scriptdir}/${rev}-${arch}-${type}.conf"
+	if [ ! -e "${configfile}" ]; then
+		return 1
+	fi
+	. "${configfile}"
+	return 0
+}
+
+zfs_ports_seed() {
+	source_config || return 0
+	# zfs create -o atime=off ${zfs_parent}/${rev}-ports-${type}
+	# svn co -q svn://svn.freebsd.org/ports/head ${zfs_mount}/${rev}-ports-${type}
+	# zfs snapshot ${zfs_parent}/${rev}-ports-${type}@clone
+	# zfs clone -p -o mountpoint=${zfs_mount}/${rev}-${arch}-${type}/usr/ports \
+		# ${zfs_parent}/${rev}-ports-${type}@clone \
+		# ${zfs_parent}/${rev}-${arch}-${type}-ports
+}
+
+zfs_doc_seed() {
+	source_config || return 0
+	# zfs create -o atime=off ${zfs_parent}/${rev}-doc-${type}
+	# svn co -q svn://svn.freebsd.org/doc/head ${zfs_mount}/${rev}-doc-${type}
+	# zfs snapshot ${zfs_parent}/${rev}-doc-${type}@clone
+	# zfs clone -p -o mountpoint=${zfs_mount}/${rev}-${arch}-${type}/usr/doc \
+		# ${zfs_parent}/${rev}-doc-${type}@clone \
+		# ${zfs_parent}/${rev}-${arch}-${type}-doc
+}
+
+zfs_src_seed() {
+	source_config || return 0
+	# zfs create -o atime=off ${zfs_parent}/${rev}-src-${type}
+	# svn co -q svn://svn.freebsd.org/src/head ${zfs_mount}/${rev}-src-${type}
+	# zfs snapshot ${zfs_parent}/${rev}-src-${type}@clone
+	# zfs clone -p -o mountpoint=${zfs_mount}/${rev}-${arch}-${type}/usr/src \
+		# ${zfs_parent}/${rev}-src-${type}@clone \
+		# ${zfs_parent}/${rev}-${arch}-${type}-src
+}
+
 prebuild_setup() {
 	mkdir -p "${logdir}" "${srcdir}"
 	svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
