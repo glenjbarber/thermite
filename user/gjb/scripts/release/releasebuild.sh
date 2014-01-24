@@ -170,14 +170,8 @@ prebuild_setup() {
 
 # Clear all log files.
 truncate_logs() {
-	for rev in ${revs}; do
-		for arch in ${archs}; do
-			for type in ${types}; do
-				for log in '.log' '.vm.log' '.world.log'; do
-					echo > ${logdir}/${rev}-${arch}-${type}${log}
-				done
-			done
-		done
+	for log in '.log' '.vm.log' '.world.log'; do
+		echo > ${logdir}/${rev}-${arch}-${type}${log}
 	done
 }
 
@@ -356,8 +350,8 @@ build_chroots() {
 }
 
 main() {
+	runall truncate_logs
 	prebuild_setup
-	truncate_logs
 	build_chroots
 	install_chroots
 	for rev in ${revs}; do
