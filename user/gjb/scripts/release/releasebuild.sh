@@ -89,96 +89,76 @@ source_config() {
 	return 0
 }
 
-zfs_ports_seed() {
+zfs_mount_tree() {
 	source_config || return 0
-	[ ! -z ${NOPORTS} ] && return 0
-	[ ! -z $(eval echo \${zfs_ports_seed_${rev}_${type}}) ] && return 0
-	_clone="${zfs_parent}/${rev}-ports-${type}"
-	_mount="/${zfs_mount}/${rev}-ports-${type}"
-	info "Creating ${_clone}"
-	echo zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
-	info "Source checkout ${SVNROOT}/${PORTBRANCH} to ${_mount}"
-	echo svn co -q ${SVNROOT}/${PORTBRANCH} ${_mount}
-	info "Creating ZFS snapshot ${_clone}@clone"
-	echo zfs snapshot ${_clone}@clone
-	eval zfs_ports_seed_${rev}_${type}=1
-	unset _clone _mount
-}
-
-zfs_ports_mount() {
-	source_config || return 0
-	[ ! -z ${NOPORTS} ] && return 0
-	_clone="${zfs_parent}/${rev}-ports-${type}"
+	_tree=${1}
+	[ -z ${_tree} ] && return 0
+	case ${_tree} in
+		src)
+			# Continue
+			;;
+		doc)
+			[ ! -z ${NODOC} ] && return 0
+			;;
+		ports)
+			[ ! -z ${NOPORTS} ] && return 0
+			;;
+		*)
+			info "Unknown source tree type: ${_tree}"
+			return 0
+			;;
+	esac
+	_clone="${zfs_parent}/${rev}-${_tree}-${type}"
 	_mount="/${zfs_mount}/${rev}-${arch}-${type}"
-	_target="/${zfs_parent}/${rev}-${arch}-${type}-ports"
+	_target="${zfs_parent}/${rev}-${arch}-${type}-${_tree}"
 	info "Cloning ${_clone}@clone to ${_target}"
-	echo zfs clone -p -o mountpoint=${_mount}/usr/ports \
+	echo zfs clone -p -o mountpoint=${_mount}/usr/${_tree} \
 		${_clone}@clone ${_target}
-	unset _clone _mount _target
+	unset _clone _mount _target _tree
 }
 
-zfs_doc_seed() {
+zfs_create_tree() {
 	source_config || return 0
-	[ ! -z ${NODOC} ] && return 0
-	[ ! -z $(eval echo \${zfs_doc_seed_${rev}_${type}}) ] && return 0
-	_clone="${zfs_parent}/${rev}-doc-${type}"
-	_mount="/${zfs_mount}/${rev}-doc-${type}"
+	_tree=${1}
+	[ -z ${_tree} ] && return 0
+	[ ! -z $(eval echo \${zfs_${_tree}_seed_${rev}_${type}}) ] && return 0
+	case ${_tree} in
+		src)
+			_svnsrc="${SVNROOT}/${SRCBRANCH}"
+			;;
+		doc)
+			[ ! -z ${NODOC} ] && return 0
+			_svnsrc="${SVNROOT}/${DOCBRANCH}"
+			;;
+		ports)
+			[ ! -z ${NOPORTS} ] && return 0
+			_svnsrc="${SVNROOT}/${PORTBRANCH}"
+			;;
+		*)
+			info "Unknown source tree type: ${_tree}"
+			return 0
+			;;
+	esac
+	_clone="${zfs_parent}/${rev}-${_tree}-${type}"
+	_mount="/${zfs_mount}/${rev}-${_tree}-${type}"
 	info "Creating ${_clone}"
 	echo zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
-	info "Source checkout ${SVNROOT}/${DOCBRANCH} to ${_mount}"
-	echo svn co -q ${SVNROOT}/${DOCBRANCH} ${_mount}
+	info "Source checkout ${_svnsrc} to ${_mount}"
+	echo svn co -q ${_svnsrc} ${_mount}
 	info "Creating ZFS snapshot ${_clone}@clone"
 	echo zfs snapshot ${_clone}@clone
-	eval zfs_doc_seed_${rev}_${type}=1
-	unset _clone _mount
-}
-
-zfs_doc_mount() {
-	source_config || return 0
-	[ ! -z ${NODOC} ] && return 0
-	_clone="${zfs_parent}/${rev}-doc-${type}"
-	_mount="/${zfs_mount}/${rev}-doc-${type}"
-	_target="/${zfs_parent}/${rev}-${arch}-${type}-doc"
-	info "Cloning ${_clone}@clone to ${_target}"
-	echo zfs clone -p -o mountpoint=${_mount}/usr/doc \
-		${_clone}@clone ${_target}
-	unset _clone _mount _target
-}
-
-zfs_src_seed() {
-	source_config || return 0
-	[ ! -z $(eval echo \${zfs_src_seed_${rev}_${type}}) ] && return 0
-	_clone="${zfs_parent}/${rev}-src-${type}"
-	_mount="/${zfs_mount}/${rev}-src-${type}"
-	info "Creating ${_clone}"
-	echo zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
-	info "Source checkout ${SVNROOT}/${SRCBRANCH} to ${_mount}"
-	echo svn co -q ${SVNROOT}/${SRCBRANCH} ${_mount}
-	info "Creating ZFS snapshot ${_clone}@clone"
-	echo zfs snapshot ${_clone}@clone
-	eval zfs_src_seed_${rev}_${type}=1
-	unset _clone _mount
-}
-
-zfs_src_mount() {
-	source_config || return 0
-	_clone="${zfs_parent}/${rev}-src-${type}"
-	_mount="/${zfs_mount}/${rev}-src-${type}"
-	_target="${zfs_parent}/${rev}-${arch}-${type}-src"
-	info "Cloning ${_clone}@clone to ${_target}"
-	echo zfs clone -p -o mountpoint=${_mount}/usr/src \
-		${_clone}@clone ${_target}
-	unset _clone _mount _target
+	eval zfs_${_tree}_seed_${rev}_${type}=1
+	unset _clone _mount _tree _svnsrc
 }
 
 zfs_bootstrap() {
 	[ -z ${use_zfs} ] && return 0
-	runall zfs_src_seed
-	runall zfs_src_mount
-	runall zfs_ports_seed
-	runall zfs_ports_mount
-	runall zfs_doc_seed
-	runall zfs_doc_mount
+	runall zfs_create_tree src
+	runall zfs_create_tree ports
+	runall zfs_create_tree doc
+	runall zfs_mount_tree src
+	runall zfs_mount_tree ports
+	runall zfs_mount_tree doc
 }
 
 prebuild_setup() {
