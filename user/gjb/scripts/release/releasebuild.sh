@@ -311,8 +311,8 @@ build_chroots() {
 }
 
 main() {
-	runall truncate_logs
 	prebuild_setup
+	runall truncate_logs
 	runall build_chroots
 	runall install_chroots
 	for rev in ${revs}; do
