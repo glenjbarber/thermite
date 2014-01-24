@@ -113,14 +113,14 @@ zfs_mount_tree() {
 	_mount="/${zfs_mount}/${rev}-${arch}-${type}"
 	_target="${zfs_parent}/${rev}-${arch}-${type}-${_tree}"
 	info "Cloning ${_clone}@clone to ${_target}"
-	echo zfs clone -p -o mountpoint=${_mount}/usr/${_tree} \
+	zfs clone -p -o mountpoint=${_mount}/usr/${_tree} \
 		${_clone}@clone ${_target}
 	if [ ! -z ${seed_src} ]; then
 		# Only create chroot seeds for x86.
 		if [ "${arch}" = "amd64" ] || [ "${arch}" = "i386" ]; then
 			_seedmount=${chroots}/${rev}/${arch}/${type}
 			_seedtarget="${zfs_parent}/${rev}-${arch}-${type}-chroot"
-			echo zfs clone -p -o mountpoint=${_seedmount} \
+			zfs clone -p -o mountpoint=${_seedmount} \
 				${_clone}@clone ${_seedtarget}
 		fi
 	fi
@@ -152,11 +152,11 @@ zfs_create_tree() {
 	_clone="${zfs_parent}/${rev}-${_tree}-${type}"
 	_mount="/${zfs_mount}/${rev}-${_tree}-${type}"
 	info "Creating ${_clone}"
-	echo zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
+	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
 	info "Source checkout ${_svnsrc} to ${_mount}"
-	echo svn co -q ${_svnsrc} ${_mount}
+	svn co -q ${_svnsrc} ${_mount}
 	info "Creating ZFS snapshot ${_clone}@clone"
-	echo zfs snapshot ${_clone}@clone
+	zfs snapshot ${_clone}@clone
 	eval zfs_${_tree}_seed_${rev}_${type}=1
 	unset _clone _mount _tree _svnsrc
 }
