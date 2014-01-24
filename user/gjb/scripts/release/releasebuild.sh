@@ -16,9 +16,60 @@ fi
 . $(realpath ${1})
 
 info() {
-	out="${1}"
+	out="${@}"
 	printf "INFO:\t${out}\n" >/dev/stdout
 	unset out
+}
+
+verbose() {
+	if [ -z ${debug} ] || [ ${debug} -eq 0 ]; then
+		return 0
+	fi
+	out="${@}"
+	printf "DEBUG:\t${out}\n" >/dev/stdout
+	unset out
+}
+
+runcmd() {
+	verbose "${rev} ${arch} ${type}"
+	eval "$@"
+}
+
+loop_revs() {
+	verbose "loop_revs() start"
+	for rev in ${revs}; do
+		verbose "loop_revs() arguments: $@"
+		eval runcmd "$@"
+	done
+	unset rev
+	verbose "loop_revs() stop"
+}
+
+loop_archs() {
+	verbose "loop_archs() start"
+	for arch in ${archs}; do
+		verbose "loop_archs() arguments: $@"
+		eval runcmd "$@"
+	done
+	unset arch
+	verbose "loop_archs() stop"
+}
+
+loop_types() {
+	verbose "loop_types() start"
+	for type in ${types}; do
+		verbose "loop_types() arguments: $@"
+		eval runcmd "$@"
+	done
+	unset type
+	verbose "loop_types() stop"
+}
+
+runall() {
+	verbose "runall() start"
+	verbose "runall() arguments: $@"
+	eval loop_revs loop_archs loop_types "$@"
+	verbose "runall() stop"
 }
 
 check_use_zfs() {
