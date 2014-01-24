@@ -91,32 +91,94 @@ source_config() {
 
 zfs_ports_seed() {
 	source_config || return 0
-	# zfs create -o atime=off ${zfs_parent}/${rev}-ports-${type}
-	# svn co -q ${SVNROOT}/${PORTBRANCH} ${zfs_mount}/${rev}-ports-${type}
-	# zfs snapshot ${zfs_parent}/${rev}-ports-${type}@clone
-	# zfs clone -p -o mountpoint=${zfs_mount}/${rev}-${arch}-${type}/usr/ports \
-		# ${zfs_parent}/${rev}-ports-${type}@clone \
-		# ${zfs_parent}/${rev}-${arch}-${type}-ports
+	[ ! -z ${NOPORTS} ] && return 0
+	[ ! -z $(eval echo \${zfs_ports_seed_${rev}_${type}}) ] && return 0
+	_clone="${zfs_parent}/${rev}-ports-${type}"
+	_mount="/${zfs_mount}/${rev}-ports-${type}"
+	info "Creating ${_clone}"
+	echo zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
+	info "Source checkout ${SVNROOT}/${PORTBRANCH} to ${_mount}"
+	echo svn co -q ${SVNROOT}/${PORTBRANCH} ${_mount}
+	info "Creating ZFS snapshot ${_clone}@clone"
+	echo zfs snapshot ${_clone}@clone
+	eval zfs_ports_seed_${rev}_${type}=1
+	unset _clone _mount
+}
+
+zfs_ports_mount() {
+	source_config || return 0
+	[ ! -z ${NOPORTS} ] && return 0
+	_clone="${zfs_parent}/${rev}-ports-${type}"
+	_mount="/${zfs_mount}/${rev}-${arch}-${type}"
+	_target="/${zfs_parent}/${rev}-${arch}-${type}-ports"
+	info "Cloning ${_clone}@clone to ${_target}"
+	echo zfs clone -p -o mountpoint=${_mount}/usr/ports \
+		${_clone}@clone ${_target}
+	unset _clone _mount _target
 }
 
 zfs_doc_seed() {
 	source_config || return 0
-	# zfs create -o atime=off ${zfs_parent}/${rev}-doc-${type}
-	# svn co -q ${SVNROOT}/${DOCBRANCH} ${zfs_mount}/${rev}-doc-${type}
-	# zfs snapshot ${zfs_parent}/${rev}-doc-${type}@clone
-	# zfs clone -p -o mountpoint=${zfs_mount}/${rev}-${arch}-${type}/usr/doc \
-		# ${zfs_parent}/${rev}-doc-${type}@clone \
-		# ${zfs_parent}/${rev}-${arch}-${type}-doc
+	[ ! -z ${NODOC} ] && return 0
+	[ ! -z $(eval echo \${zfs_doc_seed_${rev}_${type}}) ] && return 0
+	_clone="${zfs_parent}/${rev}-doc-${type}"
+	_mount="/${zfs_mount}/${rev}-doc-${type}"
+	info "Creating ${_clone}"
+	echo zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
+	info "Source checkout ${SVNROOT}/${DOCBRANCH} to ${_mount}"
+	echo svn co -q ${SVNROOT}/${DOCBRANCH} ${_mount}
+	info "Creating ZFS snapshot ${_clone}@clone"
+	echo zfs snapshot ${_clone}@clone
+	eval zfs_doc_seed_${rev}_${type}=1
+	unset _clone _mount
+}
+
+zfs_doc_mount() {
+	source_config || return 0
+	[ ! -z ${NODOC} ] && return 0
+	_clone="${zfs_parent}/${rev}-doc-${type}"
+	_mount="/${zfs_mount}/${rev}-doc-${type}"
+	_target="/${zfs_parent}/${rev}-${arch}-${type}-doc"
+	info "Cloning ${_clone}@clone to ${_target}"
+	echo zfs clone -p -o mountpoint=${_mount}/usr/doc \
+		${_clone}@clone ${_target}
+	unset _clone _mount _target
 }
 
 zfs_src_seed() {
 	source_config || return 0
-	# zfs create -o atime=off ${zfs_parent}/${rev}-src-${type}
-	# svn co -q ${SVNROOT}/${SRCBRANCH} ${zfs_mount}/${rev}-src-${type}
-	# zfs snapshot ${zfs_parent}/${rev}-src-${type}@clone
-	# zfs clone -p -o mountpoint=${zfs_mount}/${rev}-${arch}-${type}/usr/src \
-		# ${zfs_parent}/${rev}-src-${type}@clone \
-		# ${zfs_parent}/${rev}-${arch}-${type}-src
+	[ ! -z $(eval echo \${zfs_src_seed_${rev}_${type}}) ] && return 0
+	_clone="${zfs_parent}/${rev}-src-${type}"
+	_mount="/${zfs_mount}/${rev}-src-${type}"
+	info "Creating ${_clone}"
+	echo zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
+	info "Source checkout ${SVNROOT}/${SRCBRANCH} to ${_mount}"
+	echo svn co -q ${SVNROOT}/${SRCBRANCH} ${_mount}
+	info "Creating ZFS snapshot ${_clone}@clone"
+	echo zfs snapshot ${_clone}@clone
+	eval zfs_src_seed_${rev}_${type}=1
+	unset _clone _mount
+}
+
+zfs_src_mount() {
+	source_config || return 0
+	_clone="${zfs_parent}/${rev}-src-${type}"
+	_mount="/${zfs_mount}/${rev}-src-${type}"
+	_target="${zfs_parent}/${rev}-${arch}-${type}-src"
+	info "Cloning ${_clone}@clone to ${_target}"
+	echo zfs clone -p -o mountpoint=${_mount}/usr/src \
+		${_clone}@clone ${_target}
+	unset _clone _mount _target
+}
+
+zfs_bootstrap() {
+	[ -z ${use_zfs} ] && return 0
+	runall zfs_src_seed
+	runall zfs_src_mount
+	runall zfs_ports_seed
+	runall zfs_ports_mount
+	runall zfs_doc_seed
+	runall zfs_doc_mount
 }
 
 prebuild_setup() {
