@@ -13,7 +13,7 @@ if [ "$#" -ne 1 ]; then
 	quick_usage
 fi
 
-. $(dirname $(basename ${0}))/${1}
+. $(realpath ${1})
 
 prebuild_setup() {
 	mkdir -p "${logdir}" "${srcdir}"
