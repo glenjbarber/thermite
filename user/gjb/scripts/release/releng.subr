@@ -34,5 +34,5 @@ NOPORTS=yes
 
 # Can't source files for these values, because we run with restricted
 # environment.
-_SVNREV="260369"
-DATE="20140106"
+_SVNREV="261033"
+DATE="20140122"
