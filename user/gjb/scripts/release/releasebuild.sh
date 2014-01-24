@@ -54,7 +54,7 @@ send_logmail() {
 
 # Run the release builds.
 build_release() {
-	echo "=== Building release: ${rev}-${arch}-${type}" > /dev/stdout
+	info "=== Building release: ${rev}-${arch}-${type}"
 	printenv > ${logdir}/${rev}-${arch}-${type}.log
 	env -i /bin/sh ${srcdir}/release.sh -c ${scriptdir}/${rev}-${arch}-${type}.conf \
 		>> ${logdir}/${rev}-${arch}-${type}.log 2>&1
@@ -75,7 +75,7 @@ build_release() {
 			return 0
 			;;
 	esac
-	echo "=== Building vm image: ${rev}-${arch}-${type}" > /dev/stdout
+	info "=== Building vm image: ${rev}-${arch}-${type}"
 	printenv > ${logdir}/${rev}-${arch}-${type}.vm.log
 	env -i /bin/sh ${scriptdir}/mk-vmimage.sh -c ${scriptdir}/${rev}-${arch}-${type}.conf \
 		>> ${logdir}/${rev}-${arch}-${type}.vm.log 2>&1
@@ -87,8 +87,7 @@ build_release() {
 install_chroots() {
 	for _rev in ${heads} ${stables}; do
 		if [ ${_rev} -le 8 ]; then
-			echo -n "==== Skipping ${_rev}; these scripts do not "
-			echo "support stable/8 or earlier." >/dev/stdout
+			info "==== Skipping ${_rev}; these scripts do not support stable/8 or earlier."
 			break
 		fi
 		build_amd64=0
@@ -109,7 +108,7 @@ install_chroots() {
 				then
 					. "${scriptdir}/${_rev}-${arch}-${type}.conf"
 					mkdir -p ${__WRKDIR_PREFIX}/${_rev}-${arch}-${type}
-					echo "=== Installing ${chroots}/${_rev}/${arch}" > /dev/stdout
+					info "=== Installing ${chroots}/${_rev}/${arch}"
 					case ${arch} in
 					i386)
 						_arch=i386
@@ -135,8 +134,7 @@ install_chroots() {
 build_chroots() {
 	for _rev in ${heads} ${stables}; do
 		if [ ${_rev} -le 8 ]; then
-			echo -n "==== Skipping ${_rev}; these scripts do not "
-			echo "support stable/8 or earlier." >/dev/stdout
+			info "==== Skipping ${_rev}; these scripts do not support stable/8 or earlier."
 			break
 		fi
 		build_amd64=0
@@ -166,20 +164,18 @@ build_chroots() {
 				# Source the build configuration file to get
 				# the SRCBRANCH to use
 				. "${scriptdir}/${_rev}-amd64-${type}.conf"
-				echo "=== SVN checkout ${SRCBRANCH} for amd64" > /dev/stdout
+				info "=== SVN checkout ${SRCBRANCH} for amd64"
 				svn co -q ${SVNROOT}/${SRCBRANCH} \
 					${chroots}/${_rev}/amd64 \
 					2>&1 >> ${logdir}/${_rev}-amd64-${type}.world.log
-				echo "=== Building ${chroots}/${_rev}/amd64 make(1)" > \
-					/dev/stdout
+				info "=== Building ${chroots}/${_rev}/amd64 make(1)"
 				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/amd64 \
 					make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
 					TARGET=amd64 TARGET_ARCH=amd64 \
 					${__makecmd} \
 					2>&1 >> \
 					${logdir}/${_rev}-amd64-${type}.world.log
-				echo "=== Building ${chroots}/${_rev}/amd64 world" > \
-					/dev/stdout
+				info "=== Building ${chroots}/${_rev}/amd64 world"
 				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/amd64 \
 					make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
 					TARGET=amd64 TARGET_ARCH=amd64 \
@@ -196,18 +192,18 @@ build_chroots() {
 				# Source the build configuration file to get
 				# the SRCBRANCH to use
 				. "${scriptdir}/${_rev}-i386-${type}.conf"
-				echo "=== SVN checkout ${SRCBRANCH} for i386" > /dev/stdout
+				info "=== SVN checkout ${SRCBRANCH} for i386"
 				svn co -q ${SVNROOT}/${SRCBRANCH} \
 					${chroots}/${_rev}/i386 \
 					2>&1 >> ${logdir}/${_rev}-i386-${type}.world.log
-				echo "=== Building ${chroots}/${_rev}/i386 make(1)" > /dev/stdout
+				info "=== Building ${chroots}/${_rev}/i386 make(1)"
 				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/i386 \
 					make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
 					TARGET=i386 TARGET_ARCH=i386 \
 					${__makecmd} \
 					2>&1 >> \
 					${logdir}/${_rev}-i386-${type}.world.log
-				echo "=== Building ${chroots}/${_rev}/i386 world" > /dev/stdout
+				info "=== Building ${chroots}/${_rev}/i386 world"
 				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/i386 \
 					make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
 					TARGET=i386 TARGET_ARCH=i386 \
@@ -230,8 +226,7 @@ main() {
 				if [ -e ${scriptdir}/${rev}-${arch}-${type}.conf ]; then
 					build_release
 				else
-					echo "=== Skipping build: ${rev}-${arch}-${type}"
-					echo "=== Configuration file does not exist."
+					info "=== Skipping build: ${rev}-${arch}-${type}, missing configuration file."
 				fi
 			done
 		done
