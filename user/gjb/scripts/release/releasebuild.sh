@@ -199,6 +199,7 @@ send_logmail() {
 
 # Run the release builds.
 build_release() {
+	[ ! -e ${scriptdir}/${rev}-${arch}-${type}.conf ] && return 0
 	info "Building release: ${rev}-${arch}-${type}"
 	printenv > ${logdir}/${rev}-${arch}-${type}.log
 	env -i /bin/sh ${srcdir}/release.sh -c ${scriptdir}/${rev}-${arch}-${type}.conf \
@@ -321,17 +322,7 @@ main() {
 	runall truncate_logs
 	runall build_chroots
 	runall install_chroots
-	for rev in ${revs}; do
-		for arch in ${archs}; do
-			for type in ${types}; do
-				if [ -e ${scriptdir}/${rev}-${arch}-${type}.conf ]; then
-					build_release
-				else
-					info "Skipping build: ${rev}-${arch}-${type}, missing configuration file."
-				fi
-			done
-		done
-	done
+	runall build_release
 }
 
 main
