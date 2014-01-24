@@ -307,7 +307,7 @@ build_chroots() {
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		${__makecmd} 2>&1 >> \
 		${logdir}/${rev}-${_chrootarch}-${type}.world.log
-	info "Building ${chroots}/${rev}/${_chrootarch} world"
+	info "Building ${chroots}/${rev}/${_chrootarch}/${type} world"
 	env MAKEOBJDIRPREFIX=${chroots}/${rev}-obj/${_chrootarch}/${type} \
 		make -C ${chroots}/${rev}/${_chrootarch}/${type} ${WORLD_FLAGS} \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
