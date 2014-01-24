@@ -219,49 +219,27 @@ build_release() {
 
 # Install amd64/i386 "seed" chroots for all branches being built.
 install_chroots() {
-	for _rev in ${heads} ${stables}; do
-		if [ ${_rev} -le 8 ]; then
-			info "Skipping ${_rev}; these scripts do not support stable/8 or earlier."
-			break
-		fi
-		build_amd64=0
-		build_i386=0
-		for arch in ${archs}; do
-			case ${arch} in
-				i386)
-					build_i386=1
-					;;
-				*)
-					build_amd64=1
-					;;
-			esac
-		done
-		for arch in ${archs}; do
-			for type in ${types}; do
-				if [ -e "${scriptdir}/${_rev}-${arch}-${type}.conf" ];
-				then
-					. "${scriptdir}/${_rev}-${arch}-${type}.conf"
-					mkdir -p ${__WRKDIR_PREFIX}/${_rev}-${arch}-${type}
-					info "Installing ${chroots}/${_rev}/${arch}"
-					case ${arch} in
-					i386)
-						_arch=i386
-						;;
-					*)
-						_arch=amd64
-						;;
-					esac
-					env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/${_arch} \
-						make -C ${chroots}/${_rev}/${_arch} \
-						TARGET=${_arch} TARGET_ARCH=${_arch} \
-						DESTDIR=${__WRKDIR_PREFIX}/${_rev}-${arch}-${type} \
-						installworld distribution \
-						2>&1 >> \
-						${logdir}/${_rev}-${_arch}-${type}.world.log
-				fi
-			done
-		done
-	done
+	source_config || return 0
+	if [ ${rev} -le 8 ]; then
+		info "This script does not support rev=${rev}"
+		return 0
+	fi
+	case ${arch} in
+		i386)
+			_chrootarch="i386"
+			;;
+		*)
+			_chrootarch="amd64"
+			;;
+	esac
+	verbose "Creating ${__WRKDIR_PREFIX}/${rev}-${arch}-${type}"
+	mkdir -p "${__WRKDIR_PREFIX}/${rev}-${arch}-${type}"
+	env MAKEOBJDIRPREFIX=${chroots}/${rev}-obj/${_chrootarch}/${type} \
+		make -C ${chroots}/${rev}/${_chrootarch}/${type} \
+		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
+		DESTDIR=${__WRKDIR_PREFIX}/${rev}-${arch}-${type} \
+		installworld distribution 2>&1 >> \
+		${logdir}/${rev}-${arch}-${type}.world.log
 }
 
 # Build amd64/i386 "seed" chroots for all branches being built.
@@ -353,7 +331,7 @@ main() {
 	runall truncate_logs
 	prebuild_setup
 	build_chroots
-	install_chroots
+	runall install_chroots
 	for rev in ${revs}; do
 		for arch in ${archs}; do
 			for type in ${types}; do
