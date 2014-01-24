@@ -92,7 +92,7 @@ source_config() {
 zfs_ports_seed() {
 	source_config || return 0
 	# zfs create -o atime=off ${zfs_parent}/${rev}-ports-${type}
-	# svn co -q svn://svn.freebsd.org/ports/head ${zfs_mount}/${rev}-ports-${type}
+	# svn co -q ${SVNROOT}/${PORTBRANCH} ${zfs_mount}/${rev}-ports-${type}
 	# zfs snapshot ${zfs_parent}/${rev}-ports-${type}@clone
 	# zfs clone -p -o mountpoint=${zfs_mount}/${rev}-${arch}-${type}/usr/ports \
 		# ${zfs_parent}/${rev}-ports-${type}@clone \
@@ -102,7 +102,7 @@ zfs_ports_seed() {
 zfs_doc_seed() {
 	source_config || return 0
 	# zfs create -o atime=off ${zfs_parent}/${rev}-doc-${type}
-	# svn co -q svn://svn.freebsd.org/doc/head ${zfs_mount}/${rev}-doc-${type}
+	# svn co -q ${SVNROOT}/${DOCBRANCH} ${zfs_mount}/${rev}-doc-${type}
 	# zfs snapshot ${zfs_parent}/${rev}-doc-${type}@clone
 	# zfs clone -p -o mountpoint=${zfs_mount}/${rev}-${arch}-${type}/usr/doc \
 		# ${zfs_parent}/${rev}-doc-${type}@clone \
@@ -112,7 +112,7 @@ zfs_doc_seed() {
 zfs_src_seed() {
 	source_config || return 0
 	# zfs create -o atime=off ${zfs_parent}/${rev}-src-${type}
-	# svn co -q svn://svn.freebsd.org/src/head ${zfs_mount}/${rev}-src-${type}
+	# svn co -q ${SVNROOT}/${SRCBRANCH} ${zfs_mount}/${rev}-src-${type}
 	# zfs snapshot ${zfs_parent}/${rev}-src-${type}@clone
 	# zfs clone -p -o mountpoint=${zfs_mount}/${rev}-${arch}-${type}/usr/src \
 		# ${zfs_parent}/${rev}-src-${type}@clone \
