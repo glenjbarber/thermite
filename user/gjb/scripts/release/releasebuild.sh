@@ -169,6 +169,7 @@ zfs_bootstrap() {
 	runall zfs_mount_tree src
 	runall zfs_mount_tree ports
 	runall zfs_mount_tree doc
+	zfs_bootstrap_done=1
 }
 
 prebuild_setup() {
@@ -292,10 +293,13 @@ build_chroots() {
 	mkdir -p "${chroots}/${rev}/${_chrootarch}/${type}"
 	# Source the build configuration file to get
 	# the SRCBRANCH to use
-	info "SVN checkout ${SRCBRANCH} for ${_chrootarch} ${type}"
-	svn co -q ${SVNROOT}/${SRCBRANCH} \
-		${chroots}/${rev}/${_chrootarch}/${type} \
-		2>&1 >> ${logdir}/${rev}-${_chrootarch}-${type}.world.log
+	if [ -z ${zfs_bootstrap_done} ]; then
+		# Skip svn checkout, the trees are there.
+		info "SVN checkout ${SRCBRANCH} for ${_chrootarch} ${type}"
+		svn co -q ${SVNROOT}/${SRCBRANCH} \
+			${chroots}/${rev}/${_chrootarch}/${type} \
+			2>&1 >> ${logdir}/${rev}-${_chrootarch}-${type}.world.log
+	fi
 	info "Building ${chroots}/${rev}/${_chrootarch}/${type} make(1)"
 	env MAKEOBJDIRPREFIX=${chroots}/${rev}-obj/${_chrootarch}/${type} \
 		make -C ${chroots}/${rev}/${_chrootarch}/${type} ${WORLD_FLAGS} \
@@ -311,6 +315,8 @@ build_chroots() {
 }
 
 main() {
+	zfs_bootstrap_done=
+	zfs_bootstrap
 	prebuild_setup
 	runall truncate_logs
 	runall build_chroots
