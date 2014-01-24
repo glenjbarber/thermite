@@ -227,6 +227,17 @@ build_release() {
 	send_logmail ${logdir}/${rev}-${arch}-${type}.vm.log ${rev}-${arch}-${type}
 }
 
+check_x86() {
+	case ${arch} in
+		amd64|i386)
+			return 0
+			;;
+		*)
+			return 1
+			;;
+	esac
+}
+
 # Install amd64/i386 "seed" chroots for all branches being built.
 install_chroots() {
 	source_config || return 0
@@ -254,87 +265,49 @@ install_chroots() {
 
 # Build amd64/i386 "seed" chroots for all branches being built.
 build_chroots() {
-	for _rev in ${heads} ${stables}; do
-		if [ ${_rev} -le 8 ]; then
-			info "Skipping ${_rev}; these scripts do not support stable/8 or earlier."
-			break
-		fi
-		build_amd64=0
-		build_i386=0
-		for arch in ${archs}; do
-			case ${arch} in
-				i386)
-					build_i386=1
-					;;
-				*)
-					build_amd64=1
-					;;
-			esac
-		done
-		for type in ${types}; do
-			if [ ${_rev} -lt 10 ]; then
-				__makecmd="make"
-			else
-				__makecmd="bmake"
-			fi
-			if [ ${build_amd64} -eq 1 ]; then
-				if [ ! -e "${scriptdir}/${_rev}-amd64-${type}.conf" ];
-				then
-					continue
-				fi
-				mkdir -p "${chroots}/${_rev}/amd64"
-				# Source the build configuration file to get
-				# the SRCBRANCH to use
-				. "${scriptdir}/${_rev}-amd64-${type}.conf"
-				info "SVN checkout ${SRCBRANCH} for amd64"
-				svn co -q ${SVNROOT}/${SRCBRANCH} \
-					${chroots}/${_rev}/amd64 \
-					2>&1 >> ${logdir}/${_rev}-amd64-${type}.world.log
-				info "Building ${chroots}/${_rev}/amd64 make(1)"
-				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/amd64 \
-					make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
-					TARGET=amd64 TARGET_ARCH=amd64 \
-					${__makecmd} \
-					2>&1 >> \
-					${logdir}/${_rev}-amd64-${type}.world.log
-				info "Building ${chroots}/${_rev}/amd64 world"
-				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/amd64 \
-					make -C ${chroots}/${_rev}/amd64 ${WORLD_FLAGS} \
-					TARGET=amd64 TARGET_ARCH=amd64 \
-					buildworld \
-					2>&1 >> \
-					${logdir}/${_rev}-amd64-${type}.world.log
-			fi
-			if [ ${build_i386} -eq 1 ]; then
-				if [ ! -e "${scriptdir}/${_rev}-i386-${type}.conf" ];
-				then
-					continue
-				fi
-				mkdir -p "${chroots}/${_rev}/i386"
-				# Source the build configuration file to get
-				# the SRCBRANCH to use
-				. "${scriptdir}/${_rev}-i386-${type}.conf"
-				info "SVN checkout ${SRCBRANCH} for i386"
-				svn co -q ${SVNROOT}/${SRCBRANCH} \
-					${chroots}/${_rev}/i386 \
-					2>&1 >> ${logdir}/${_rev}-i386-${type}.world.log
-				info "Building ${chroots}/${_rev}/i386 make(1)"
-				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/i386 \
-					make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
-					TARGET=i386 TARGET_ARCH=i386 \
-					${__makecmd} \
-					2>&1 >> \
-					${logdir}/${_rev}-i386-${type}.world.log
-				info "Building ${chroots}/${_rev}/i386 world"
-				env MAKEOBJDIRPREFIX=${chroots}/${_rev}-obj/i386 \
-					make -C ${chroots}/${_rev}/i386 ${WORLD_FLAGS} \
-					TARGET=i386 TARGET_ARCH=i386 \
-					buildworld \
-					2>&1 >> \
-					${logdir}/${_rev}-i386-${type}.world.log
-			fi
-		done
-	done
+	source_config || return 0
+	if [ ${rev} -le 8 ]; then
+		info "This script does not support rev=${rev}"
+		return 0
+	fi
+	# Only build for amd64 and i386.
+	check_x86 || return 0
+	if [ ${rev} -lt 10 ]; then
+		__makecmd="make"
+	else
+		__makecmd="bmake"
+	fi
+	case ${arch} in
+		i386)
+			_chrootarch="i386"
+			;;
+		amd64)
+			_chrootarch="amd64"
+			;;
+		*)
+			# Just to be safe.
+			return 0
+			;;
+	esac
+	mkdir -p "${chroots}/${rev}/${_chrootarch}/${type}"
+	# Source the build configuration file to get
+	# the SRCBRANCH to use
+	info "SVN checkout ${SRCBRANCH} for ${_chrootarch} ${type}"
+	svn co -q ${SVNROOT}/${SRCBRANCH} \
+		${chroots}/${rev}/${_chrootarch}/${type} \
+		2>&1 >> ${logdir}/${rev}-${_chrootarch}-${type}.world.log
+	info "Building ${chroots}/${rev}/${_chrootarch}/${type} make(1)"
+	env MAKEOBJDIRPREFIX=${chroots}/${rev}-obj/${_chrootarch}/${type} \
+		make -C ${chroots}/${rev}/${_chrootarch}/${type} ${WORLD_FLAGS} \
+		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
+		${__makecmd} 2>&1 >> \
+		${logdir}/${rev}-${_chrootarch}-${type}.world.log
+	info "Building ${chroots}/${rev}/${_chrootarch} world"
+	env MAKEOBJDIRPREFIX=${chroots}/${rev}-obj/${_chrootarch}/${type} \
+		make -C ${chroots}/${rev}/${_chrootarch}/${type} ${WORLD_FLAGS} \
+		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
+		buildworld 2>&1 >> \
+		${logdir}/${rev}-${_chrootarch}-${type}.world.log
 }
 
 main() {
