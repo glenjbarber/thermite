@@ -54,6 +54,14 @@ case ${VM_TARGET_ARCH} in
 		;;
 esac
 
+case ${KERNEL} in
+	GENERIC)
+		;;
+	*)
+		exit 0
+		;;
+esac
+
 check_prereq || exit 0
 
 # Use the build environment to get the branch revision (i.e., 10.0) and branch
