@@ -191,7 +191,7 @@ prebuild_setup() {
 	info "Reverting any changes to ${srcdir}/release.sh"
 	svn revert ${srcdir}/release.sh
 	info "Patching release.sh"
-	patch -q ${srcdir}/release.sh < ${scriptdir}/release.sh.diff || exit 1
+	patch -s ${srcdir}/release.sh < ${scriptdir}/release.sh.diff || exit 1
 }
 
 # Clear all log files.
