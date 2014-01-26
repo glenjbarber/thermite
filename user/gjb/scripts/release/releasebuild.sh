@@ -182,11 +182,16 @@ zfs_bootstrap() {
 }
 
 prebuild_setup() {
+	info "Creating ${logdir}"
+	info "Creating ${srcdir}"
 	mkdir -p "${logdir}" "${srcdir}"
 	#svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
+	info "Checking our src/release to ${srcdir}"
 	svn co -q --force svn://svn.freebsd.org/base/user/gjb/hacking/release-embedded/release ${srcdir}
+	info "Reverting any changes to ${srcdir}/release.sh"
 	svn revert ${srcdir}/release.sh
-	patch ${srcdir}/release.sh < ${scriptdir}/release.sh.diff || exit 1
+	info "Patching release.sh"
+	patch -q ${srcdir}/release.sh < ${scriptdir}/release.sh.diff || exit 1
 }
 
 # Clear all log files.
