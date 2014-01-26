@@ -344,7 +344,7 @@ main() {
 	prebuild_setup
 	zfs_bootstrap
 	runall truncate_logs
-	loop_revs loop_archs loop_types build_chroots
+	runall build_chroots
 	runall install_chroots
 	runall build_release
 }
