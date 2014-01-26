@@ -112,14 +112,16 @@ zfs_teardown() {
 zfs_setup() {
 	for r in ${revs}; do
 		for a in ${archs}; do
+			for k in ${kernels}; do
 			for t in ${types}; do
-				s="${r}-${a}-${t}"
+				s="${r}-${a}-${k}-${t}"
 				if [ -e ${scriptdir}/${s}.conf ];
 				then
 					echo "${pfx} Creating ${zfs_parent}/${s}" \
 						>/dev/stdout
 					zfs create -o atime=off ${zfs_parent}/${s}
 				fi
+			done
 			done
 		done
 	done
