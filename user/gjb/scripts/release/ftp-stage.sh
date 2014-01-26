@@ -42,7 +42,7 @@ setup_stageenv() {
 	__DATE=
 	__SVNREV=
 
-	C="${relengdir}/${rev}-${arch}-${type}"
+	C="${relengdir}/${rev}-${arch}-${kernel}-${type}"
 
 	if [ ! -d ${C} ]; then
 		echo "=== Directory ${C} not found"
@@ -50,7 +50,7 @@ setup_stageenv() {
 	fi
 
 	if [ ! -d ${C}/usr/src/release ]; then
-		echo "=== Cannot find release directory for ${rev}-${arch}-${type}"
+		echo "=== Cannot find release directory for ${rev}-${arch}-${kernel}-${type}"
 		echo "=== Unable to determine OSRELEASE value."
 		skip=1
 		return 0
@@ -58,6 +58,10 @@ setup_stageenv() {
 
 	# Overrides for paths, image files, etc.
 	case ${arch} in
+		armv6)
+			isoarch="arm-armv6"
+			path="arm/armv6"
+			;;
 		sparc64)
 			isoarch="${arch}"
 			path="${arch}/${arch}"
@@ -101,7 +105,7 @@ setup_stageenv() {
 		skip=1
 	fi
 
-	. "${scriptdir}/${rev}-${arch}-${type}.conf"
+	. "${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf"
 	releaseimages="$(make -C ${C}/usr/src/release WITH_DVD=${WITH_DVD} -V IMAGES)"
 	if [ "X${TARGET}" = "X" ] && [ "X${TARGET_ARCH}" = "X" ]; then
 		TARGET=$(uname -m)
@@ -115,11 +119,11 @@ stage_builds() {
 	local _ftpdir
 	_ftpdir="${ftpdir}/${ftpsubdir}"
 	if [ "${skip}" -eq 1 ]; then
-		echo "=== Skipping ${rev}-${arch}-${type} staging"
+		echo "=== Skipping ${rev}-${arch}-${kernel}-${type} staging"
 		return 0
 	fi
 	if [ ! -d ${C}/R ]; then
-		echo "=== Skipping ${rev}-${arch}-${type} staging"
+		echo "=== Skipping ${rev}-${arch}-${kernel}-${type} staging"
 		echo "==== ${C}/R directory does not exist"
 		return 0
 	fi
@@ -143,17 +147,17 @@ stage_builds() {
 				cd ${C}/R
 				for _i in ${releaseimages}; do
 					echo -n "=== Renaming ${_i} to "
-					echo "${__DISCNAME}-${__DATE}-${__SVNREV}-${_i}"
+					echo "${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}-${_i}"
 					mv ${__DISCNAME}-${_i} \
-						${__DISCNAME}-${__DATE}-${__SVNREV}-${_i}
+						${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}-${_i}
 				done
 				rm -f CHECKSUM.SHA256* CHECKSUM.MD5*
 				echo "=== Generating SHA256 checksums"
 				sha256 ${__DISCNAME}* > \
-					${C}/R/CHECKSUM.SHA256-${__DATE}-${__SVNREV}
+					${C}/R/CHECKSUM.SHA256-${kernel}-${__DATE}-${__SVNREV}
 				echo "=== Generating MD5 checksums"
 				md5 ${__DISCNAME}* > \
-					${C}/R/CHECKSUM.MD5-${__DATE}-${__SVNREV}
+					${C}/R/CHECKSUM.MD5-${kernel}-${__DATE}-${__SVNREV}
 			)
 			;;
 		*)
@@ -170,9 +174,9 @@ stage_builds() {
 		if [ -e "${C}/R/FreeBSD-${OSRELEASE}-${isoarch}-${image}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/FreeBSD-${OSRELEASE}-${isoarch}-${image} \
 				${_ftpdir}/ISO-IMAGES/${REVISION}/FreeBSD-${OSRELEASE}-${isoarch}-${image}
-		elif [ -e "${C}/R/${__DISCNAME}-${__DATE}-${__SVNREV}-${image}" ]; then
-			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/${__DISCNAME}-${__DATE}-${__SVNREV}-${image} \
-				${_ftpdir}/ISO-IMAGES/${REVISION}/${__DISCNAME}-${__DATE}-${__SVNREV}-${image}
+		elif [ -e "${C}/R/${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}-${image}" ]; then
+			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}-${image} \
+				${_ftpdir}/ISO-IMAGES/${REVISION}/${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}-${image}
 		fi
 	done
 	echo "=== Creating symlinks for CHECKSUM files..."
@@ -181,8 +185,8 @@ stage_builds() {
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash} \
 				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}
 		elif [ -e "${C}/R/CHECKSUM.${hash}-${__DATE}-${__SVNREV}" ]; then
-			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${__DATE}-${__SVNREV} \
-				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}-${__DATE}-${__SVNREV}
+			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${kernel}-${__DATE}-${__SVNREV} \
+				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}-${kernel}-${__DATE}-${__SVNREV}
 		fi
 	done
 	case ${BRANCH} in
@@ -202,7 +206,7 @@ stage_builds() {
 stage_vmimages() {
 	setup_stageenv
 	if [ "${skip}" -eq 1 ] || [ ! -d ${C}/vmimage ]; then
-		echo "=== Skipping ${rev}-${arch}-${type} staging"
+		echo "=== Skipping ${rev}-${arch}-${kernel}-${type} staging"
 		return 0
 	fi
 	FTPPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
@@ -214,15 +218,15 @@ stage_vmimages() {
 	fi
 	for image in ${vmimages}; do
 		mv ${C}/vmimage/${__DISCNAME}*.${image}.xz \
-			${C}/vmimage/${__DISCNAME}-${__DATE}-${__SVNREV}.${image}.xz
+			${C}/vmimage/${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}.${image}.xz
 	done
 	# Remove old checksums.
 	rm -f ${C}/vmimage/CHECKSUM.*
 	(cd ${C}/vmimage &&
 		sha256 ${__DISCNAME}* \
-			> CHECKSUM.SHA256-${__DATE}-${__SVNREV}
+			> CHECKSUM.SHA256-${kernel}-${__DATE}-${__SVNREV}
 		md5 ${__DISCNAME}* \
-			> CHECKSUM.MD5-${__DATE}-${__SVNREV}
+			> CHECKSUM.MD5-${kernel}-${__DATE}-${__SVNREV}
 	)
 	cp -p ${C}/vmimage/CHECKSUM* \
 		${FTPPATH}
@@ -246,19 +250,21 @@ dirperm_fixup() {
 main() {
 	for rev in ${revs}; do
 		for arch in ${archs}; do
+			for kernel in ${kernels}; do
 			for type in ${types}; do
-				if [ -e ${scriptdir}/${rev}-${arch}-${type}.conf ]; then
-					echo "== Staging Release: ${rev}-${arch}-${type}"
+				if [ -e ${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf ]; then
+					echo "== Staging Release: ${rev}-${arch}-${kernel}-${type}"
 					stage_builds
 					case ${arch} in
 						i386|amd64)
-							echo "== Staging VM Images: ${rev}-${arch}-${type}"
+							echo "== Staging VM Images: ${rev}-${arch}-${kernel}-${type}"
 							stage_vmimages
 							;;
 						*)
 							;;
 					esac
 				fi
+			done
 			done
 		done
 	done
