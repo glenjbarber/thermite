@@ -309,6 +309,7 @@ build_chroots() {
 			return 0
 			;;
 	esac
+	[ ! -z $(eval echo \${chroot_${_chrootarch}_build_${rev}_${type}}) ] && return 0
 	_build="${rev}-${_chrootarch}-${type}"
 	_srcdir="${chroots}/${rev}/${_chrootarch}/${type}"
 	_objdir="${chroots}/${rev}-obj/${_chrootarch}/${type}"
@@ -334,6 +335,7 @@ build_chroots() {
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		buildworld 2>&1 >> \
 		${logdir}/${_build}.world.log
+	eval chroot_${_chrootarch}_build_${rev}_${type}=1
 	unset _build _dest _objdir _srcdir
 }
 
@@ -342,7 +344,7 @@ main() {
 	prebuild_setup
 	zfs_bootstrap
 	runall truncate_logs
-	runall build_chroots
+	loop_revs loop_archs loop_types build_chroots
 	runall install_chroots
 	runall build_release
 }
