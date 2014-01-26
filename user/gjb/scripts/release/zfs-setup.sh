@@ -29,6 +29,42 @@ zfs_teardown() {
 				s="${r}-${a}-${t}"
 				if [ -e ${scriptdir}/${s}.conf ];
 				then
+					zfs list ${zfs_parent}/${s}-src >/dev/null 2>&1
+					rc=$?
+					if [ ${rc} -eq 0 ]; then
+						echo -n "${pfx} Destroying " \
+							>/dev/stdout
+						echo " ${zfs_parent}/${s}-src" \
+							>/dev/stdout
+						zfs destroy ${zfs_parent}/${s}-src
+					fi
+					zfs list ${zfs_parent}/${s}-ports >/dev/null 2>&1
+					rc=$?
+					if [ ${rc} -eq 0 ]; then
+						echo -n "${pfx} Destroying " \
+							>/dev/stdout
+						echo " ${zfs_parent}/${s}-ports" \
+							>/dev/stdout
+						zfs destroy ${zfs_parent}/${s}-ports
+					fi
+					zfs list ${zfs_parent}/${s}-doc >/dev/null 2>&1
+					rc=$?
+					if [ ${rc} -eq 0 ]; then
+						echo -n "${pfx} Destroying " \
+							>/dev/stdout
+						echo " ${zfs_parent}/${s}-doc" \
+							>/dev/stdout
+						zfs destroy ${zfs_parent}/${s}-doc
+					fi
+					zfs list ${zfs_parent}/${s}-chroot >/dev/null 2>&1
+					rc=$?
+					if [ ${rc} -eq 0 ]; then
+						echo -n "${pfx} Destroying " \
+							>/dev/stdout
+						echo " ${zfs_parent}/${s}-chroot" \
+							>/dev/stdout
+						zfs destroy ${zfs_parent}/${s}-chroot
+					fi
 					zfs list ${zfs_parent}/${s} >/dev/null 2>&1
 					rc=$?
 					if [ ${rc} -eq 0 ]; then
@@ -38,6 +74,31 @@ zfs_teardown() {
 							>/dev/stdout
 						zfs destroy ${zfs_parent}/${s}
 					fi
+				fi
+			done
+		done
+	done
+
+	for r in ${revs}; do
+		for t in ${types}; do
+			for i in src doc ports; do
+				zfs list ${zfs_parent}/${r}-${i}-${t}@clone >/dev/null 2>&1
+				rc=$?
+				if [ ${rc} -eq 0 ]; then
+					echo -n "${pfx} Destroying " \
+						>/dev/stdout
+					echo " ${zfs_parent}/${r}-${i}-${t}@clone" \
+						>/dev/stdout
+					zfs destroy ${zfs_parent}/${r}-${i}-${t}@clone
+				fi
+				zfs list ${zfs_parent}/${r}-${i}-${t} >/dev/null 2>&1
+				rc=$?
+				if [ ${rc} -eq 0 ]; then
+					echo -n "${pfx} Destroying " \
+						>/dev/stdout
+					echo " ${zfs_parent}/${r}-${i}-${t}" \
+						>/dev/stdout
+					zfs destroy ${zfs_parent}/${r}-${i}-${t}
 				fi
 			done
 		done
