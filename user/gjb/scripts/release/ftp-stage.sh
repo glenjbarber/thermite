@@ -13,7 +13,7 @@ if [ "$#" -ne 1 ]; then
 	quick_usage
 fi
 
-. $(dirname $(basename ${0}))/${1}
+. $(realpath ${1})
 
 case `hostname -s` in
 	snap)
@@ -91,7 +91,7 @@ setup_stageenv() {
 			ftpsubdir="releases"
 			;;
 		*)
-			ftpsubdir=""
+			ftpsubdir="snapshots"
 			;;
 	esac
 
@@ -184,7 +184,7 @@ stage_builds() {
 		if [ -e "${C}/R/CHECKSUM.${hash}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash} \
 				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}
-		elif [ -e "${C}/R/CHECKSUM.${hash}-${__DATE}-${__SVNREV}" ]; then
+		elif [ -e "${C}/R/CHECKSUM.${hash}-${kernel}-${__DATE}-${__SVNREV}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${kernel}-${__DATE}-${__SVNREV} \
 				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}-${kernel}-${__DATE}-${__SVNREV}
 		fi
