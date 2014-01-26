@@ -25,8 +25,10 @@ pfx="==="
 zfs_teardown() {
 	for r in ${revs}; do
 		for a in ${archs}; do
+			for k in ${kernels}; do
 			for t in ${types}; do
-				s="${r}-${a}-${t}"
+				s="${r}-${a}-${k}-${t}"
+				c="${r}-${a}-${t}"
 				if [ -e ${scriptdir}/${s}.conf ];
 				then
 					zfs list ${zfs_parent}/${s}-src >/dev/null 2>&1
@@ -56,14 +58,14 @@ zfs_teardown() {
 							>/dev/stdout
 						zfs destroy ${zfs_parent}/${s}-doc
 					fi
-					zfs list ${zfs_parent}/${s}-chroot >/dev/null 2>&1
+					zfs list ${zfs_parent}/${c}-chroot >/dev/null 2>&1
 					rc=$?
 					if [ ${rc} -eq 0 ]; then
 						echo -n "${pfx} Destroying " \
 							>/dev/stdout
-						echo " ${zfs_parent}/${s}-chroot" \
+						echo " ${zfs_parent}/${c}-chroot" \
 							>/dev/stdout
-						zfs destroy ${zfs_parent}/${s}-chroot
+						zfs destroy ${zfs_parent}/${c}-chroot
 					fi
 					zfs list ${zfs_parent}/${s} >/dev/null 2>&1
 					rc=$?
@@ -75,6 +77,7 @@ zfs_teardown() {
 						zfs destroy ${zfs_parent}/${s}
 					fi
 				fi
+			done
 			done
 		done
 	done
