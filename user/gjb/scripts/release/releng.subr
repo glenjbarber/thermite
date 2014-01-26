@@ -27,6 +27,7 @@ DOCBRANCH="doc/head@rHEAD"
 PORTBRANCH="ports/head@rHEAD"
 WORLD_FLAGS="-j10"
 KERNEL_FLAGS="-j8"
+KERNEL="GENERIC"
 
 # Skip doc/ and ports/ for now, this is only snapshot
 NODOC=yes

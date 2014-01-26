@@ -31,7 +31,7 @@ verbose() {
 }
 
 runcmd() {
-	verbose "${rev} ${arch} ${type}"
+	verbose "${rev} ${arch} ${kernel} ${type}"
 	eval "$@"
 }
 
@@ -55,6 +55,15 @@ loop_archs() {
 	verbose "loop_archs() stop"
 }
 
+loop_kernels() {
+	verbose "loop_kernels() start"
+	for kernel in ${kernels}; do
+		verbose "loop_kernels() arguments: $@"
+		eval runcmd "$@"
+	done
+	unset kernel
+	verbose "loop_kernel() stop"
+}
 loop_types() {
 	verbose "loop_types() start"
 	for type in ${types}; do
@@ -68,7 +77,7 @@ loop_types() {
 runall() {
 	verbose "runall() start"
 	verbose "runall() arguments: $@"
-	eval loop_revs loop_archs loop_types "$@"
+	eval loop_revs loop_archs loop_kernels loop_types "$@"
 	verbose "runall() stop"
 }
 
@@ -81,7 +90,7 @@ check_use_zfs() {
 
 source_config() {
 	local configfile
-	configfile="${scriptdir}/${rev}-${arch}-${type}.conf"
+	configfile="${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf"
 	if [ ! -e "${configfile}" ]; then
 		return 1
 	fi
@@ -110,8 +119,8 @@ zfs_mount_tree() {
 			;;
 	esac
 	_clone="${zfs_parent}/${rev}-${_tree}-${type}"
-	_mount="/${zfs_mount}/${rev}-${arch}-${type}"
-	_target="${zfs_parent}/${rev}-${arch}-${type}-${_tree}"
+	_mount="/${zfs_mount}/${rev}-${arch}-${kernel}-${type}"
+	_target="${zfs_parent}/${rev}-${arch}-${kernel}-${type}-${_tree}"
 	info "Cloning ${_clone}@clone to ${_target}"
 	zfs clone -p -o mountpoint=${_mount}/usr/${_tree} \
 		${_clone}@clone ${_target}
@@ -174,7 +183,8 @@ zfs_bootstrap() {
 
 prebuild_setup() {
 	mkdir -p "${logdir}" "${srcdir}"
-	svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
+	#svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
+	svn co -q --force svn://svn.freebsd.org/base/user/gjb/hacking/release-embedded/release ${srcdir}
 	svn revert ${srcdir}/release.sh
 	patch ${srcdir}/release.sh < ${scriptdir}/release.sh.diff || exit 1
 }
@@ -188,24 +198,26 @@ truncate_logs() {
 
 # Email log output when a stage has completed
 send_logmail() {
-	local _logfile
-	local _build
-	_logfile="${1}"
-	_build="${2}"
-	tail -n 10 "${_logfile}" | \
-		mail -s "${_build} done" ${emailgoesto}
+	local _body
+	local _subject
+	_body="${1}"
+	_subject="${2}"
+	tail -n 10 "${_body}" | \
+		mail -s "${_subject} done" ${emailgoesto}
 	return 0
 }
 
 # Run the release builds.
 build_release() {
-	[ ! -e ${scriptdir}/${rev}-${arch}-${type}.conf ] && return 0
-	info "Building release: ${rev}-${arch}-${type}"
-	printenv > ${logdir}/${rev}-${arch}-${type}.log
-	env -i /bin/sh ${srcdir}/release.sh -c ${scriptdir}/${rev}-${arch}-${type}.conf \
-		>> ${logdir}/${rev}-${arch}-${type}.log 2>&1
+	_build="${rev}-${arch}-${kernel}-${type}"
+	_conf="${scriptdir}/${_build}.conf"
+	[ ! -e ${_conf} ] && return 0
+	info "Building release: ${_build}"
+	printenv > ${logdir}/${_build}.log
+	env -i /bin/sh ${srcdir}/release.sh -c ${_conf} \
+		>> ${logdir}/${_build}.log 2>&1
 
-	send_logmail ${logdir}/${rev}-${arch}-${type}.log ${rev}-${arch}-${type}
+	send_logmail ${logdir}/${_build}.log ${_build}
 
 	# Short circuit to skip vm image creation for non-x86 architectures.
 	# Also recreate the memstick.img for i386 while here.
@@ -214,19 +226,19 @@ build_release() {
 			;;
 		i386)
 			/bin/sh ${scriptdir}/remake-memstick.sh \
-				-c ${scriptdir}/${rev}-${arch}-${type}.conf >> \
-				${logdir}/${rev}-${arch}-${type}.log
+				-c ${_conf} >> ${logdir}/${_build}.log
 			;;
 		*)
 			return 0
 			;;
 	esac
-	info "Building vm image: ${rev}-${arch}-${type}"
-	printenv > ${logdir}/${rev}-${arch}-${type}.vm.log
-	env -i /bin/sh ${scriptdir}/mk-vmimage.sh -c ${scriptdir}/${rev}-${arch}-${type}.conf \
-		>> ${logdir}/${rev}-${arch}-${type}.vm.log 2>&1
+	info "Building vm image: ${_build}"
+	printenv > ${logdir}/${_build}.vm.log
+	env -i /bin/sh ${scriptdir}/mk-vmimage.sh -c ${_conf} \
+		>> ${logdir}/${_build}.vm.log 2>&1
 
-	send_logmail ${logdir}/${rev}-${arch}-${type}.vm.log ${rev}-${arch}-${type}
+	send_logmail ${logdir}/${_build}.vm.log ${_build}
+	unset _build _conf
 }
 
 check_x86() {
@@ -255,15 +267,20 @@ install_chroots() {
 			_chrootarch="amd64"
 			;;
 	esac
-	info "Creating ${__WRKDIR_PREFIX}/${rev}-${arch}-${type}"
-	mkdir -p "${__WRKDIR_PREFIX}/${rev}-${arch}-${type}"
-	info "Installing ${__WRKDIR_PREFIX}/${rev}-${arch}-${type}"
-	env MAKEOBJDIRPREFIX=${chroots}/${rev}-obj/${_chrootarch}/${type} \
-		make -C ${chroots}/${rev}/${_chrootarch}/${type} \
+	_build="${rev}-${arch}-${kernel}-${type}"
+	_dest="${__WRKDIR_PREFIX}/${_build}"
+	_srcdir="${chroots}/${rev}/${_chrootarch}/${type}"
+	_objdir="${chroots}/${rev}-obj/${_chrootarch}/${type}"
+	info "Creating ${_dest}"
+	mkdir -p "${_dest}"
+	info "Installing ${_dest}"
+	env MAKEOBJDIRPREFIX=${_objdir} \
+		make -C ${_srcdir} \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
-		DESTDIR=${__WRKDIR_PREFIX}/${rev}-${arch}-${type} \
+		DESTDIR=${_dest} \
 		installworld distribution 2>&1 >> \
-		${logdir}/${rev}-${arch}-${type}.world.log
+		${logdir}/${_build}.world.log
+	unset _build _dest _objdir _srcdir
 }
 
 # Build amd64/i386 "seed" chroots for all branches being built.
@@ -292,34 +309,38 @@ build_chroots() {
 			return 0
 			;;
 	esac
-	mkdir -p "${chroots}/${rev}/${_chrootarch}/${type}"
+	_build="${rev}-${_chrootarch}-${type}"
+	_srcdir="${chroots}/${rev}/${_chrootarch}/${type}"
+	_objdir="${chroots}/${rev}-obj/${_chrootarch}/${type}"
+	mkdir -p "${_srcdir}"
 	# Source the build configuration file to get
 	# the SRCBRANCH to use
 	if [ -z ${zfs_bootstrap_done} ]; then
 		# Skip svn checkout, the trees are there.
 		info "SVN checkout ${SRCBRANCH} for ${_chrootarch} ${type}"
 		svn co -q ${SVNROOT}/${SRCBRANCH} \
-			${chroots}/${rev}/${_chrootarch}/${type} \
-			2>&1 >> ${logdir}/${rev}-${_chrootarch}-${type}.world.log
+			${_srcdir} \
+			2>&1 >> ${logdir}/${_build}.world.log
 	fi
-	info "Building ${chroots}/${rev}/${_chrootarch}/${type} make(1)"
-	env MAKEOBJDIRPREFIX=${chroots}/${rev}-obj/${_chrootarch}/${type} \
-		make -C ${chroots}/${rev}/${_chrootarch}/${type} ${WORLD_FLAGS} \
+	info "Building ${_srcdir} make(1)"
+	env MAKEOBJDIRPREFIX=${_objdir} \
+		make -C ${_srcdir} ${WORLD_FLAGS} \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		${__makecmd} 2>&1 >> \
-		${logdir}/${rev}-${_chrootarch}-${type}.world.log
-	info "Building ${chroots}/${rev}/${_chrootarch}/${type} world"
-	env MAKEOBJDIRPREFIX=${chroots}/${rev}-obj/${_chrootarch}/${type} \
-		make -C ${chroots}/${rev}/${_chrootarch}/${type} ${WORLD_FLAGS} \
+		${logdir}/${_build}.world.log
+	info "Building ${_srcdir} world"
+	env MAKEOBJDIRPREFIX=${_objdir} \
+		make -C ${_srcdir} ${WORLD_FLAGS} \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		buildworld 2>&1 >> \
-		${logdir}/${rev}-${_chrootarch}-${type}.world.log
+		${logdir}/${_build}.world.log
+	unset _build _dest _objdir _srcdir
 }
 
 main() {
 	zfs_bootstrap_done=
-	zfs_bootstrap
 	prebuild_setup
+	zfs_bootstrap
 	runall truncate_logs
 	runall build_chroots
 	runall install_chroots
