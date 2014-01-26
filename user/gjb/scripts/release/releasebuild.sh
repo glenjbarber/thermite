@@ -306,12 +306,8 @@ build_chroots() {
 		i386)
 			_chrootarch="i386"
 			;;
-		amd64)
-			_chrootarch="amd64"
-			;;
 		*)
-			# Just to be safe.
-			return 0
+			_chrootarch="amd64"
 			;;
 	esac
 	[ ! -z $(eval echo \${chroot_${_chrootarch}_build_${rev}_${type}}) ] && return 0
