@@ -144,10 +144,10 @@ stage_isos() {
 	if [ "X${newname}" != "X${oldname}" ]; then
 		cd ${C}/R
 		for _i in ${releaseimages}; do
-			echo -n "=== Renaming ${_oldname}-${_i} to "
-			echo "${_newname}-${_i}"
-			mv ${_oldname}-${_i} \
-				${_newname}-${_i}
+			echo -n "=== Renaming ${oldname}-${_i} to "
+			echo "${newname}-${_i}"
+			mv ${oldname}-${_i} \
+				${newname}-${_i}
 		done
 		rm -f CHECKSUM.SHA256* CHECKSUM.MD5*
 		# CHECKSUM.SHA256-11.0-CURRENT-amd64-VT-20140127-r261200
@@ -164,7 +164,7 @@ stage_isos() {
 	echo "=== Copying checksums and images to ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}..."
 	cp -p ${C}/R/*CHECKSUM* ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
 	cp -p ${C}/R/${__DISCNAME}* ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
-	unset newprefix oldprefix
+	unset newname oldname
 }
 
 create_dirs() {
