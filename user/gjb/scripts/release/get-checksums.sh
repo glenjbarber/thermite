@@ -45,7 +45,7 @@ get_vm_checksum() {
 
 
 get_iso_checksum() {
-	local _s="${r}-${a}-${t}"
+	local _s="${r}-${a}-${k}-${t}"
 	sumfiles="SHA256 MD5"
 	if [ -e ${scriptdir}/${_s}.conf ]; then
 		. ${scriptdir}/${_s}.conf
@@ -60,7 +60,7 @@ get_iso_checksum() {
 	for _f in ${sumfiles}; do
 		case ${_f} in
 			SHA256)
-				echo "o ${__REVISION}-${__BRANCH} ${a}:"
+				echo "o ${__REVISION}-${__BRANCH} ${a} ${k}:"
 				;;
 			*)
 				;;
@@ -78,8 +78,10 @@ main() {
 	echo
 	for r in ${revs}; do
 		for a in ${archs}; do
+			for k in ${kernels}; do
 			for t in ${types}; do
 				get_iso_checksum
+			done
 			done
 		done
 	done
