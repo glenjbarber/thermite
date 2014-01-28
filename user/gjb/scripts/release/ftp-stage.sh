@@ -279,17 +279,30 @@ stage_vmimages() {
 		# Hide the raw '.disk' file by renaming to a dot-file.
 		mv "${C}/vmimage/${__DISCNAME}.disk" "${C}/vmimage/.${__DISCNAME}.disk"
 	fi
+	oldname="${__DISCNAME}"
+	newname="${oldname}"
+	shasuffix=
+	case ${kernel} in
+		GENERIC*)
+			;;
+		*)
+			newname="${newname}-${kernel}"
+			shasuffix="${kernel}"
+			;;
+	esac
+	newname="${newname}-${__DATE}-${__SVNREV}"
+	shasuffix="${shasuffix}-${__DATE}-${__SVNREV}"
 	for image in ${vmimages}; do
 		mv ${C}/vmimage/${__DISCNAME}*.${image}.xz \
-			${C}/vmimage/${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}.${image}.xz
+			${C}/vmimage/${newname}.${image}.xz
 	done
 	# Remove old checksums.
 	rm -f ${C}/vmimage/CHECKSUM.*
 	(cd ${C}/vmimage &&
 		sha256 ${__DISCNAME}* \
-			> CHECKSUM.SHA256-${kernel}-${__DATE}-${__SVNREV}
+			> CHECKSUM.SHA256-${shasuffix}
 		md5 ${__DISCNAME}* \
-			> CHECKSUM.MD5-${kernel}-${__DATE}-${__SVNREV}
+			> CHECKSUM.MD5-${shasuffix}
 	)
 	cp -p ${C}/vmimage/CHECKSUM* \
 		${FTPPATH}
@@ -300,6 +313,7 @@ stage_vmimages() {
 	done
 	unlink ${LATESTPATH}
 	ln -sf ${__DATE} ${LATESTPATH}
+	unset newname oldname shasuffix
 	return 0
 }
 
