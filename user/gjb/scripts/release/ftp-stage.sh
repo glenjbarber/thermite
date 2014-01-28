@@ -212,6 +212,14 @@ create_dir_symlinks() {
 }
 
 create_iso_symlinks() {
+	case ${arch} in
+		armv6)
+			return 0
+			;;
+		*)
+			# continue
+			;;
+	esac
 	echo "=== Creating symlinks for ISO-IMAGES..."
 	for image in ${releaseimages}; do
 		# FreeBSD-11.0-CURRENT-amd64-bootonly.iso
