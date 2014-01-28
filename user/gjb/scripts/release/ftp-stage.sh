@@ -106,11 +106,19 @@ setup_stageenv() {
 	fi
 
 	. "${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf"
-	releaseimages="$(make -C ${C}/usr/src/release WITH_DVD=${WITH_DVD} -V IMAGES)"
-	if [ "X${TARGET}" = "X" ] && [ "X${TARGET_ARCH}" = "X" ]; then
-		TARGET=$(uname -m)
-		TARGET_ARCH=$(uname -p)
-	fi
+	case ${arch} in
+		armv6)
+			TARGET="${XDEV}"
+			TARGET_ARCH="${XDEV_ARCH}"
+			;;
+		*)
+			releaseimages="$(make -C ${C}/usr/src/release WITH_DVD=${WITH_DVD} -V IMAGES)"
+			if [ "X${TARGET}" = "X" ] && [ "X${TARGET_ARCH}" = "X" ]; then
+				TARGET=$(uname -m)
+				TARGET_ARCH=$(uname -p)
+			fi
+			;;
+	esac
 	__DISCNAME="$(make -C ${C}/usr/src/release TARGET=${TARGET} TARGET_ARCH=${TARGET_ARCH} -V OSRELEASE)"
 }
 
@@ -143,12 +151,17 @@ stage_isos() {
 	# is a snapshot build, rename the ISOs, and regenerate the hashes.
 	if [ "X${newname}" != "X${oldname}" ]; then
 		cd ${C}/R
-		for _i in ${releaseimages}; do
-			echo -n "=== Renaming ${oldname}-${_i} to "
-			echo "${newname}-${_i}"
-			mv ${oldname}-${_i} \
-				${newname}-${_i}
-		done
+		if [ "X${arch}" != "Xarmv6" ]; then
+			for _i in ${releaseimages}; do
+				echo -n "=== Renaming ${oldname}-${_i} to "
+				echo "${newname}-${_i}"
+				mv ${oldname}-${_i} \
+					${newname}-${_i}
+			done
+		else
+			echo -n "=== Renameing ${oldname}.img.bz2 to "
+			echo "${newname}.img.bz2"
+		fi
 		rm -f CHECKSUM.SHA256* CHECKSUM.MD5*
 		# CHECKSUM.SHA256-11.0-CURRENT-amd64-VT-20140127-r261200
 		echo "=== Regenerating SHA256 checksums"
