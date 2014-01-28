@@ -287,11 +287,11 @@ stage_vmimages() {
 			;;
 		*)
 			newname="${newname}-${kernel}"
-			shasuffix="${kernel}"
+			shasuffix="${kernel}-"
 			;;
 	esac
 	newname="${newname}-${__DATE}-${__SVNREV}"
-	shasuffix="${shasuffix}-${__DATE}-${__SVNREV}"
+	shasuffix="${shasuffix}${__DATE}-${__SVNREV}"
 	for image in ${vmimages}; do
 		mv ${C}/vmimage/${__DISCNAME}*.${image}.xz \
 			${C}/vmimage/${newname}.${image}.xz
