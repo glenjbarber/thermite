@@ -199,6 +199,9 @@ truncate_logs() {
 	for log in '.log' '.vm.log' '.world.log'; do
 		echo > ${logdir}/${rev}-${arch}-${type}${log}
 	done
+	for log in '.log'; do
+		echo > ${logdir}/${rev}-${arch}-${kernel}-${type}${log}
+	done
 }
 
 # Email log output when a stage has completed
