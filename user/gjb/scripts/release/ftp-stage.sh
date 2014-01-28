@@ -178,7 +178,7 @@ create_dirs() {
 }
 
 create_dir_symlinks() {
-	if [ ! -z ${backpath} ]; then
+	if [ ! -z ${backpath} ] && [ ! -L ${_ftpdir}/${backpath}/${OSRELEASE} ]; then
 		echo "=== Creating backwards-compatible symlink:"
 		echo "==== ${backpath}/${OSRELEASE} -> ${path}/${OSRELEASE}"
 		ln -sf ${backpath}/${OSRELEASE} ${_ftpdir}/${backpath}/${OSRELEASE}
