@@ -121,19 +121,19 @@ stage_isos() {
 
 	# FreeBSD-11.0-CURRENT-amd64
 	oldname="${__DISCNAME}"
-	newname="${__DISCNAME}"
+	newname="${oldname}"
 	case ${kernel} in
 		GENERIC*)
 			;;
 		*)
 			# FreeBSD-11.0-CURRENT-amd64-VT
-			newname="${__DISCNAME}-${kernel}"
+			newname="${newname}-${kernel}"
 			;;
 	esac
 	case ${type} in
 		snap)
 			# FreeBSD-11.0-CURRENT-20140127-r261200
-			newname="${__DISCNAME}-${__DATE}-${__SVNREV}"
+			newname="${newname}-${__DATE}-${__SVNREV}"
 			;;
 		*)
 			;;
