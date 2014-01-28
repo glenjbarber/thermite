@@ -114,81 +114,74 @@ setup_stageenv() {
 	__DISCNAME="$(make -C ${C}/usr/src/release TARGET=${TARGET} TARGET_ARCH=${TARGET_ARCH} -V OSRELEASE)"
 }
 
-stage_builds() {
-	setup_stageenv
-	local _ftpdir
-	_ftpdir="${ftpdir}/${ftpsubdir}"
-	if [ "${skip}" -eq 1 ]; then
-		echo "=== Skipping ${rev}-${arch}-${kernel}-${type} staging"
-		return 0
+stage_isos() {
+	echo "=== Rsync ${C}/R/ftp to ${_ftpdir}/${path}/${OSRELEASE}..."
+	rsync -a --delete ${C}/R/ftp/* \
+		${_ftpdir}/${path}/${OSRELEASE}/
+
+	# FreeBSD-11.0-CURRENT-amd64
+	oldname="${__DISCNAME}"
+	newname="${__DISCNAME}"
+	case ${kernel} in
+		GENERIC*)
+			;;
+		*)
+			# FreeBSD-11.0-CURRENT-amd64-VT
+			newname="${__DISCNAME}-${kernel}"
+			;;
+	esac
+	case ${type} in
+		snap)
+			# FreeBSD-11.0-CURRENT-20140127-r261200
+			newname="${__DISCNAME}-${__DATE}-${__SVNREV}"
+			;;
+		*)
+			;;
+	esac
+
+	# If the resulting image name has changed (non-GENERIC kernel, or this
+	# is a snapshot build, rename the ISOs, and regenerate the hashes.
+	if [ "X${newname}" != "X${oldname}" ]; then
+		cd ${C}/R
+		for _i in ${releaseimages}; do
+			echo -n "=== Renaming ${_oldname}-${_i} to "
+			echo "${_newname}-${_i}"
+			mv ${_oldname}-${_i} \
+				${_newname}-${_i}
+		done
+		rm -f CHECKSUM.SHA256* CHECKSUM.MD5*
+		# CHECKSUM.SHA256-11.0-CURRENT-amd64-VT-20140127-r261200
+		echo "=== Regenerating SHA256 checksums"
+		sha256 ${__DISCNAME}* > \
+			${C}/R/CHECKSUM.SHA256-${_sumsuffix}
+		# CHECKSUM.MD5-11.0-CURRENT-amd64-VT-20140127-r261200
+		echo "=== Regenerating MD5 checksums"
+		md5 ${__DISCNAME}* > \
+			${C}/R/CHECKSUM.MD5-${_sumsuffix}
 	fi
-	if [ ! -d ${C}/R ]; then
-		echo "=== Skipping ${rev}-${arch}-${kernel}-${type} staging"
-		echo "==== ${C}/R directory does not exist"
-		return 0
-	fi
+
+	# Copy ISO images to FTP snapshots directory.
+	echo "=== Copying checksums and images to ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}..."
+	cp -p ${C}/R/*CHECKSUM* ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
+	cp -p ${C}/R/${__DISCNAME}* ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
+	unset newprefix oldprefix
+}
+
+create_dirs() {
 	echo "=== Creating ${_ftpdir}/${path}/${OSRELEASE}..."
 	mkdir -p ${_ftpdir}/${path}/${OSRELEASE}/
+	echo "=== Creating ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}..."
+	mkdir -p ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
+	echo "=== Creating ${_ftpdir}/ISO-IMAGES/${REVISION}..."
+	mkdir -p ${_ftpdir}/ISO-IMAGES/${REVISION}
+}
+
+create_dir_symlinks() {
 	if [ ! -z ${backpath} ]; then
 		echo "=== Creating backwards-compatible symlink:"
 		echo "==== ${backpath}/${OSRELEASE} -> ${path}/${OSRELEASE}"
 		ln -sf ${backpath}/${OSRELEASE} ${_ftpdir}/${backpath}/${OSRELEASE}
 	fi
-	echo "=== Rsync ${C}/R/ftp to ${_ftpdir}/${path}/${OSRELEASE}..."
-	rsync -a --delete ${C}/R/ftp/* \
-		${_ftpdir}/${path}/${OSRELEASE}/
-
-	# Copy ISO images to FTP snapshots directory.
-	echo "=== Creating ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}..."
-	mkdir -p ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
-	case ${type} in
-		snap)
-			(
-				cd ${C}/R
-				for _i in ${releaseimages}; do
-					echo -n "=== Renaming ${_i} to "
-					echo "${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}-${_i}"
-					mv ${__DISCNAME}-${_i} \
-						${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}-${_i}
-				done
-				rm -f CHECKSUM.SHA256* CHECKSUM.MD5*
-				echo "=== Generating SHA256 checksums"
-				sha256 ${__DISCNAME}* > \
-					${C}/R/CHECKSUM.SHA256-${kernel}-${__DATE}-${__SVNREV}
-				echo "=== Generating MD5 checksums"
-				md5 ${__DISCNAME}* > \
-					${C}/R/CHECKSUM.MD5-${kernel}-${__DATE}-${__SVNREV}
-			)
-			;;
-		*)
-			;;
-	esac
-	echo "=== Copying checksums and images to ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}..."
-	cp -p ${C}/R/*CHECKSUM* ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
-	cp -p ${C}/R/${__DISCNAME}* ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
-
-	echo "=== Creating ${_ftpdir}/ISO-IMAGES/${REVISION}..."
-	mkdir -p ${_ftpdir}/ISO-IMAGES/${REVISION}
-	echo "=== Creating symlinks for ISO-IMAGES..."
-	for image in ${releaseimages}; do
-		if [ -e "${C}/R/FreeBSD-${OSRELEASE}-${isoarch}-${image}" ]; then
-			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/FreeBSD-${OSRELEASE}-${isoarch}-${image} \
-				${_ftpdir}/ISO-IMAGES/${REVISION}/FreeBSD-${OSRELEASE}-${isoarch}-${image}
-		elif [ -e "${C}/R/${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}-${image}" ]; then
-			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}-${image} \
-				${_ftpdir}/ISO-IMAGES/${REVISION}/${__DISCNAME}-${kernel}-${__DATE}-${__SVNREV}-${image}
-		fi
-	done
-	echo "=== Creating symlinks for CHECKSUM files..."
-	for hash in MD5 SHA256; do
-		if [ -e "${C}/R/CHECKSUM.${hash}" ]; then
-			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash} \
-				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}
-		elif [ -e "${C}/R/CHECKSUM.${hash}-${kernel}-${__DATE}-${__SVNREV}" ]; then
-			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${kernel}-${__DATE}-${__SVNREV} \
-				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${OSRELEASE}-${isoarch}-${kernel}-${__DATE}-${__SVNREV}
-		fi
-	done
 	case ${BRANCH} in
 		RELEASE|RC)
 			echo "=== This is a RELEASE or RC."
@@ -200,6 +193,75 @@ stage_builds() {
 			# FALLTHROUGH
 			;;
 	esac
+}
+
+create_iso_symlinks() {
+	echo "=== Creating symlinks for ISO-IMAGES..."
+	for image in ${releaseimages}; do
+		# FreeBSD-11.0-CURRENT-amd64-bootonly.iso
+		# FreeBSD-11.0-CURRENT-amd64-20140127-r261200-bootonly.iso
+		# FreeBSD-11.0-CURRENT-amd64-VT-20140127-r261200-bootonly.iso
+		if [ -e "${C}/R/${_discname}-${image}" ]; then
+			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/${_discname}-${image} \
+				${_ftpdir}/ISO-IMAGES/${REVISION}/${_discname}-${image}
+		fi
+	done
+	echo "=== Creating symlinks for CHECKSUM files..."
+	for hash in MD5 SHA256; do
+		# CHECKSUM.SHA256
+		if [ -e "${C}/R/CHECKSUM.${hash}" ]; then
+			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash} \
+				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${_sumsuffix}
+		elif [ -e "${C}/R/CHECKSUM.${hash}-${_sumsuffix}" ]; then
+			# CHECKSUM.SHA256-11.0-CURRENT-amd64-20140127-r261200
+			# CHECKSUM.SHA256-11.0-CURRENT-amd64-VT-20140127-r261200
+			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${_sumsuffix} \
+				${_ftpdir}/ISO-IMAGES/${REVISION}/CHECKSUM.${hash}-${_sumsuffix}
+		fi
+	done
+}
+
+stage_builds() {
+	setup_stageenv
+	local _ftpdir
+	local _discname
+	local _sumsuffix
+	local _snapsuffix
+	_ftpdir="${ftpdir}/${ftpsubdir}"
+	_discname="${__DISCNAME}"
+	_sumsuffix="${OSRELEASE}-${isoarch}"
+	_snapsuffix="${__DATE}-${__SVNREV}"
+	if [ "${skip}" -eq 1 ]; then
+		echo "=== Skipping ${rev}-${arch}-${kernel}-${type} staging"
+		return 0
+	fi
+	if [ ! -d ${C}/R ]; then
+		echo "=== Skipping ${rev}-${arch}-${kernel}-${type} staging"
+		echo "==== ${C}/R directory does not exist"
+		return 0
+	fi
+	case ${kernel} in
+		GENERIC*)
+			;;
+		*)
+			_discname="${_discname}-${kernel}"
+			_sumsuffix="${_sumsuffix}-${kernel}"
+			;;
+	esac
+	case ${type} in
+		snap)
+			_discname="${_discname}-${_snapsuffix}"
+			_sumsuffix="${_sumsuffix}-${_snapsuffix}"
+			;;
+		*)
+			;;
+	esac
+
+	create_dirs
+	stage_isos
+	create_dir_symlinks
+	create_iso_symlinks
+
 	return 0
 }
 
