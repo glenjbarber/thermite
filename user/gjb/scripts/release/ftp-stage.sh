@@ -316,7 +316,16 @@ main() {
 			for type in ${types}; do
 				if [ -e ${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf ]; then
 					echo "== Staging Release: ${rev}-${arch}-${kernel}-${type}"
-					stage_builds
+					# Skip staging arm builds
+					# automatically, some sanity checking
+					# in needed yet.
+					case ${arch} in
+						armv6)
+							;;
+						*)
+							stage_builds
+							;;
+					esac
 					case ${arch} in
 						i386|amd64)
 							echo "== Staging VM Images: ${rev}-${arch}-${kernel}-${type}"
