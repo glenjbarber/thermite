@@ -163,6 +163,7 @@ stage_isos() {
 		else
 			echo -n "=== Renameing ${oldname}.img.bz2 to "
 			echo "${newname}.img.bz2"
+			mv ${oldname}.img.bz2 ${newname}.img.bz2
 		fi
 		rm -f CHECKSUM.SHA256* CHECKSUM.MD5*
 		# CHECKSUM.SHA256-11.0-CURRENT-amd64-VT-20140127-r261200
