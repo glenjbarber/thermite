@@ -158,6 +158,7 @@ stage_isos() {
 		echo "=== Regenerating MD5 checksums"
 		md5 ${__DISCNAME}* > \
 			${C}/R/CHECKSUM.MD5-${_sumsuffix}
+		cd ${scriptdir}
 	fi
 
 	# Copy ISO images to FTP snapshots directory.
