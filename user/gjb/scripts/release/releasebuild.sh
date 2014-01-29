@@ -13,6 +13,8 @@ if [ "$#" -ne 1 ]; then
 	quick_usage
 fi
 
+mkdir -p ../chroots/ ../logs/ ../release/
+
 . $(realpath ${1})
 
 info() {
