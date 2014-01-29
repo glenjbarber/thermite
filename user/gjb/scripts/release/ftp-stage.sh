@@ -185,8 +185,10 @@ stage_isos() {
 }
 
 create_dirs() {
-	echo "=== Creating ${_ftpdir}/${path}/${OSRELEASE}..."
-	mkdir -p ${_ftpdir}/${path}/${OSRELEASE}/
+	if [ "X${arch}" != "Xarmv6" ]; then
+		echo "=== Creating ${_ftpdir}/${path}/${OSRELEASE}..."
+		mkdir -p ${_ftpdir}/${path}/${OSRELEASE}/
+	fi
 	echo "=== Creating ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}..."
 	mkdir -p ${_ftpdir}/${path}/ISO-IMAGES/${REVISION}/
 	echo "=== Creating ${_ftpdir}/ISO-IMAGES/${REVISION}..."
