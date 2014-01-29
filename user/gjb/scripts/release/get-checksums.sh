@@ -15,7 +15,7 @@ fi
 . $(dirname $(basename ${0}))/${1}
 
 get_vm_checksum() {
-	local _s="${r}-${a}-${t}"
+	local _s="${r}-${a}-${k}-${t}"
 	sumfiles="SHA256 MD5"
 	if [ -e ${scriptdir}/${_s}.conf ]; then
 		. ${scriptdir}/${_s}.conf
@@ -89,6 +89,7 @@ main() {
 	echo
 	for r in ${revs}; do
 		for a in ${archs}; do
+			for k in ${kernels}; do
 			for t in ${types}; do
 				case ${a} in
 					amd64|i386)
@@ -97,6 +98,7 @@ main() {
 					*)
 					;;
 				esac
+			done
 			done
 		done
 	done
