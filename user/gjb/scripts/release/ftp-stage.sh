@@ -161,6 +161,7 @@ stage_isos() {
 					${newname}-${_i}
 			done
 		else
+			oldname="${oldname}-${kernel}"
 			echo -n "=== Renameing ${oldname}.img.bz2 to "
 			echo "${newname}.img.bz2"
 			mv ${oldname}.img.bz2 ${newname}.img.bz2
