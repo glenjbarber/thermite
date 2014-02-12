@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-# $FreeBSD: scripts/remake-memstick.sh 323 2013-10-17 18:56:44Z gjb $
 # $relengid$
 #
 

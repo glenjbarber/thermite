@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-# $FreeBSD: scripts/releasebuild.sh 341 2013-10-17 21:34:00Z gjb $
 # $relengid$
 #
 

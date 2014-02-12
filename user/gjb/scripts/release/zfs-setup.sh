@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-# $FreeBSD: scripts/ftp-stage.sh 334 2013-10-17 21:04:30Z gjb $
 # $relengid$
 #
 
