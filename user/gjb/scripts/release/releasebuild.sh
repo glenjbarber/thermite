@@ -188,7 +188,7 @@ prebuild_setup() {
 	mkdir -p "${logdir}" "${srcdir}"
 	#svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
 	info "Checking out src/release to ${srcdir}"
-	svn co -q --force svn://svn.freebsd.org/base/user/gjb/release-embedded/release ${srcdir}
+	svn co -q --force svn://svn.freebsd.org/base/projects/release-embedded/release ${srcdir}
 	info "Reverting any changes to ${srcdir}/release.sh"
 	svn revert ${srcdir}/release.sh
 	info "Patching release.sh"
