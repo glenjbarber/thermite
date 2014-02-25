@@ -285,6 +285,7 @@ install_chroots() {
 	info "Installing ${_dest}"
 	env MAKEOBJDIRPREFIX=${_objdir} \
 		make -C ${_srcdir} \
+		__MAKE_CONF=/dev/null SRCCONF=/dev/null \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		DESTDIR=${_dest} \
 		installworld distribution 2>&1 >> \
@@ -331,12 +332,14 @@ build_chroots() {
 	info "Building ${_srcdir} make(1)"
 	env MAKEOBJDIRPREFIX=${_objdir} \
 		make -C ${_srcdir} ${WORLD_FLAGS} \
+		__MAKE_CONF=/dev/null SRCCONF=/dev/null \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		${__makecmd} 2>&1 >> \
 		${logdir}/${_build}.world.log
 	info "Building ${_srcdir} world"
 	env MAKEOBJDIRPREFIX=${_objdir} \
 		make -C ${_srcdir} ${WORLD_FLAGS} \
+		__MAKE_CONF=/dev/null SRCCONF=/dev/null \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		buildworld 2>&1 >> \
 		${logdir}/${_build}.world.log
