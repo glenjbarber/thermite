@@ -21,7 +21,7 @@ case `hostname -s` in
 	;;
 esac
 
-SVNROOT="svn://svn.FreeBSD.org"
+SVNROOT="svn://svn.FreeBSD.org/"
 DOCBRANCH="doc/head@rHEAD"
 PORTBRANCH="ports/head@rHEAD"
 WORLD_FLAGS="-j10"
