@@ -184,8 +184,8 @@ prebuild_setup() {
 	svn co -q --force svn://svn.freebsd.org/base/projects/release-embedded/release ${srcdir}
 	info "Reverting any changes to ${srcdir}/release.sh"
 	svn revert ${srcdir}/release.sh
-	info "Patching release.sh"
-	patch -s ${srcdir}/release.sh < ${scriptdir}/release.sh.diff || exit 1
+	#info "Patching release.sh"
+	#patch -s ${srcdir}/release.sh < ${scriptdir}/release.sh.diff || exit 1
 }
 
 # Email log output when a stage has completed
