@@ -354,7 +354,6 @@ main() {
 	zfs_bootstrap_done=
 	prebuild_setup
 	zfs_bootstrap
-	runall truncate_logs
 	runall build_chroots
 	runall install_chroots
 	runall build_release
