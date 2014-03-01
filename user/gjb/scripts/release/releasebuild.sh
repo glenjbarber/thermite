@@ -3,18 +3,10 @@
 # $relengid$
 #
 
-quick_usage() {
-	echo "$(basename ${0}) /path/to/configuration/file"
+usage() {
+	echo "$(basename ${0}) -c /path/to/configuration/file"
 	exit 1
 }
-
-if [ "$#" -ne 1 ]; then
-	quick_usage
-fi
-
-mkdir -p ../chroots/ ../logs/ ../release/
-
-. $(realpath ${1})
 
 info() {
 	out="${@}"
@@ -345,6 +337,20 @@ build_chroots() {
 }
 
 main() {
+	while getopts c: opt; do
+		case ${opt} in
+			c)
+				CONF=${OPTARG}
+				[ -e ${CONF} ] && . $(realpath ${CONF})
+				;;
+			\?)
+				usage
+				;;
+		esac
+	done
+	[ -z ${CONF} ] && usage
+	mkdir -p ../chroots/ ../logs/ ../release/
+	shift $(($OPTIND - 1))
 	zfs_bootstrap_done=
 	prebuild_setup
 	zfs_bootstrap
@@ -354,4 +360,4 @@ main() {
 	runall build_release
 }
 
-main
+main "$@"
