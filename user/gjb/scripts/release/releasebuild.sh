@@ -65,6 +65,7 @@ loop_kernels() {
 	unset kernel
 	verbose "loop_kernel() stop"
 }
+
 loop_types() {
 	verbose "loop_types() start"
 	for type in ${types}; do
@@ -195,16 +196,6 @@ prebuild_setup() {
 	patch -s ${srcdir}/release.sh < ${scriptdir}/release.sh.diff || exit 1
 }
 
-# Clear all log files.
-truncate_logs() {
-	for log in '.log' '.vm.log' '.world.log'; do
-		echo > ${logdir}/${rev}-${arch}-${type}${log}
-	done
-	for log in '.log'; do
-		echo > ${logdir}/${rev}-${arch}-${kernel}-${type}${log}
-	done
-}
-
 # Email log output when a stage has completed
 send_logmail() {
 	local _body
@@ -241,12 +232,18 @@ build_release() {
 			return 0
 			;;
 	esac
+	case ${kernel} in
+		GENERIC)
+			;;
+		*)
+			return 0
+			;;
+	esac
 	info "Building vm image: ${_build}"
-	printenv > ${logdir}/${_build}.vm.log
 	env -i /bin/sh ${scriptdir}/mk-vmimage.sh -c ${_conf} \
-		>> ${logdir}/${_build}.vm.log 2>&1
+		>> ${logdir}/${_build}.log 2>&1
 
-	send_logmail ${logdir}/${_build}.vm.log ${_build}
+	send_logmail ${logdir}/${_build}.log ${_build}
 	unset _build _conf
 }
 
@@ -289,7 +286,7 @@ install_chroots() {
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		DESTDIR=${_dest} \
 		installworld distribution 2>&1 >> \
-		${logdir}/${_build}.world.log
+		${logdir}/${_build}.log
 	unset _build _dest _objdir _srcdir
 }
 
@@ -327,7 +324,7 @@ build_chroots() {
 		info "SVN checkout ${SRCBRANCH} for ${_chrootarch} ${type}"
 		svn co -q ${SVNROOT}/${SRCBRANCH} \
 			${_srcdir} \
-			2>&1 >> ${logdir}/${_build}.world.log
+			2>&1 >> ${logdir}/${_build}.log
 	fi
 	info "Building ${_srcdir} make(1)"
 	env MAKEOBJDIRPREFIX=${_objdir} \
@@ -335,14 +332,14 @@ build_chroots() {
 		__MAKE_CONF=/dev/null SRCCONF=/dev/null \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		${__makecmd} 2>&1 >> \
-		${logdir}/${_build}.world.log
+		${logdir}/${_build}.log
 	info "Building ${_srcdir} world"
 	env MAKEOBJDIRPREFIX=${_objdir} \
 		make -C ${_srcdir} ${WORLD_FLAGS} \
 		__MAKE_CONF=/dev/null SRCCONF=/dev/null \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		buildworld 2>&1 >> \
-		${logdir}/${_build}.world.log
+		${logdir}/${_build}.log
 	eval chroot_${_chrootarch}_build_${rev}_${type}=1
 	unset _build _dest _objdir _srcdir
 }
