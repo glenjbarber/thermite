@@ -190,6 +190,7 @@ prebuild_setup() {
 
 # Email log output when a stage has completed
 send_logmail() {
+	[ -z "${emailgoesto}" ] && return 0
 	local _body
 	local _subject
 	_body="${1}"
