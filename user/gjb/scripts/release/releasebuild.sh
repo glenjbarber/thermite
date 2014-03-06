@@ -28,9 +28,11 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
+# Thermite is a pyrotechnic composition of shell script and zfs.
+# When executed, it generates a significant amount of heat.
 # Wrapper script for release.sh to automate mass release builds.
 #
-# $FreeBSD$
+# $FreeBSD: user/gjb/thermite/thermite.sh 262820 2014-03-06 02:48:54Z gjb $
 #
 
 usage() {
@@ -107,6 +109,9 @@ runall() {
 
 check_use_zfs() {
 	if [ -z ${use_zfs} ]; then
+		return 1
+	fi
+	if [ ! -c /dev/zfs ]; then
 		return 1
 	fi
 	return 0
@@ -209,13 +214,10 @@ prebuild_setup() {
 	info "Creating ${logdir}"
 	info "Creating ${srcdir}"
 	mkdir -p "${logdir}" "${srcdir}"
-	#svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
 	info "Checking out src/release to ${srcdir}"
-	svn co -q --force svn://svn.freebsd.org/base/projects/release-embedded/release ${srcdir}
+	svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
 	info "Reverting any changes to ${srcdir}/release.sh"
 	svn revert ${srcdir}/release.sh
-	#info "Patching release.sh"
-	#patch -s ${srcdir}/release.sh < ${scriptdir}/release.sh.diff || exit 1
 }
 
 # Email log output when a stage has completed
@@ -236,7 +238,7 @@ build_release() {
 	_conf="${scriptdir}/${_build}.conf"
 	[ ! -e ${_conf} ] && return 0
 	info "Building release: ${_build}"
-	printenv > ${logdir}/${_build}.log
+	printenv >> ${logdir}/${_build}.log
 	env -i /bin/sh ${srcdir}/release.sh -c ${_conf} \
 		>> ${logdir}/${_build}.log 2>&1
 
@@ -257,15 +259,14 @@ build_release() {
 	esac
 	case ${kernel} in
 		GENERIC)
+			info "Building vm image: ${_build}"
+			env -i /bin/sh ${scriptdir}/mk-vmimage.sh -c ${_conf} \
+				>> ${logdir}/${_build}.log 2>&1
 			;;
 		*)
 			return 0
 			;;
 	esac
-	info "Building vm image: ${_build}"
-	env -i /bin/sh ${scriptdir}/mk-vmimage.sh -c ${_conf} \
-		>> ${logdir}/${_build}.log 2>&1
-
 	send_logmail ${logdir}/${_build}.log ${_build}
 	unset _build _conf
 }
@@ -317,11 +318,14 @@ install_chroots() {
 build_chroots() {
 	source_config || return 0
 	if [ ${rev} -le 8 ]; then
-		info "This script does not support rev=${rev}"
+		info "This script does not support rev ${rev}"
 		return 0
 	fi
 	# Only build for amd64 and i386.
 	check_x86 || return 0
+	# Building stable/9 on head/ is particularly race-prone when
+	# building make(1) for the first time.  I have no idea why.
+	# Apply duct tape for now.
 	if [ ${rev} -lt 10 ]; then
 		__makecmd="make"
 	else
@@ -368,6 +372,7 @@ build_chroots() {
 }
 
 main() {
+	mkdir -p ../chroots/ ../logs/ ../release/
 	while getopts c: opt; do
 		case ${opt} in
 			c)
@@ -379,9 +384,8 @@ main() {
 				;;
 		esac
 	done
-	[ -z ${CONF} ] && usage
-	mkdir -p ../chroots/ ../logs/ ../release/
 	shift $(($OPTIND - 1))
+	[ -z ${CONF} ] && usage
 	zfs_bootstrap_done=
 	prebuild_setup
 	zfs_bootstrap
@@ -391,3 +395,4 @@ main() {
 }
 
 main "$@"
+
