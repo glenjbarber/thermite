@@ -35,5 +35,5 @@ NODOC=yes
 
 # Can't source files for these values, because we run with restricted
 # environment.
-_SVNREV="262915"
-DATE="20140308"
+_SVNREV="263202"
+DATE="20140315"
