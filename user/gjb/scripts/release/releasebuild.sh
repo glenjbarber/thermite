@@ -271,17 +271,6 @@ build_release() {
 	unset _build _conf
 }
 
-check_x86() {
-	case ${arch} in
-		amd64|i386)
-			return 0
-			;;
-		*)
-			return 1
-			;;
-	esac
-}
-
 # Install amd64/i386 "seed" chroots for all branches being built.
 install_chroots() {
 	source_config || return 0
@@ -321,8 +310,6 @@ build_chroots() {
 		info "This script does not support rev ${rev}"
 		return 0
 	fi
-	# Only build for amd64 and i386.
-	check_x86 || return 0
 	# Building stable/9 on head/ is particularly race-prone when
 	# building make(1) for the first time.  I have no idea why.
 	# Apply duct tape for now.
