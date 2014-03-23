@@ -117,6 +117,11 @@ check_use_zfs() {
 	return 0
 }
 
+truncate_logs() {
+	echo > ${logdir}/${rev}-${arch}-${kernel}-${type}.log
+	return 0
+}
+
 source_config() {
 	local configfile
 	configfile="${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf"
@@ -375,6 +380,7 @@ main() {
 	[ -z ${CONF} ] && usage
 	zfs_bootstrap_done=
 	prebuild_setup
+	runall truncate_logs
 	zfs_bootstrap
 	runall build_chroots
 	runall install_chroots
