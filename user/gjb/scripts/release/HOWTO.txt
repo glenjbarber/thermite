@@ -5,7 +5,7 @@
 o For a new build, bump the following variables accordingly (yes, I know they
   are duplicated):
 
-    - releng.subr:
+    - defaults.conf:
 	    _SVNREV	- svn rev to build
 	    DATE	- current date
 
