@@ -153,7 +153,12 @@ stage_isos() {
 	if [ "X${newname}" != "X${oldname}" ]; then
 		cd ${C}/R
 		if [ "X${arch}" != "Xarmv6" ]; then
-			for _i in ${releaseimages}; do
+			if [ ! -z ${WITH_COMPRESSED_IMAGES} ]; then
+				for _j in ${releaseimages}; do
+					_releaseimages="${j} ${j}.xz"
+				done
+			fi
+			for _i in ${_releaseimages}; do
 				echo -n "=== Renaming ${oldname}-${_i} to "
 				echo "${newname}-${_i}"
 				mv ${oldname}-${_i} \
@@ -231,6 +236,10 @@ create_iso_symlinks() {
 		if [ -e "${C}/R/${_discname}-${image}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/${_discname}-${image} \
 				${_ftpdir}/ISO-IMAGES/${REVISION}/${_discname}-${image}
+		fi
+		if [ -e "${C}/R/${_discname}-${image}.xz" ]; then
+			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/${_discname}-${image}.xz \
+				${_ftpdir}/ISO-IMAGES/${REVISION}/${_discname}-${image}.xz
 		fi
 	done
 	echo "=== Creating symlinks for CHECKSUM files..."
