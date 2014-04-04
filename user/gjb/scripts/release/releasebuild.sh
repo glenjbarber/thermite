@@ -220,9 +220,9 @@ prebuild_setup() {
 	info "Creating ${srcdir}"
 	mkdir -p "${logdir}" "${srcdir}"
 	info "Checking out src/release to ${srcdir}"
-	svn co -q --force svn://svn.freebsd.org/base/projects/release-embedded/release ${srcdir}
-	info "Reverting any changes to ${srcdir}/release.sh"
-	svn revert ${srcdir}/release.sh
+	svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
+	info "Reverting any changes to ${srcdir}"
+	svn revert -R ${srcdir}
 }
 
 # Email log output when a stage has completed
