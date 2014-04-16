@@ -81,7 +81,7 @@ truncate -s 20G ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.disk
 mddev=$(mdconfig -a -t vnode -f ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.disk)
 gpart create -s gpt /dev/${mddev}
 gpart add -t freebsd-boot -s 512k -l bootfs /dev/${mddev}
-gpart bootcode -b /boot/pmbr -p /boot/gptboot -i 1 /dev/${mddev}
+gpart bootcode -b ${CHROOTDIR}/boot/pmbr -p ${CHROOTDIR}/boot/gptboot -i 1 /dev/${mddev}
 gpart add -t freebsd-swap -s 1G -l swapfs /dev/${mddev}
 gpart add -t freebsd-ufs -l rootfs /dev/${mddev}
 newfs /dev/${mddev}p3
