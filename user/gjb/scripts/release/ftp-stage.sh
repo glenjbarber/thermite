@@ -123,9 +123,15 @@ setup_stageenv() {
 
 stage_isos() {
 	if [ "X${arch}" != "Xarmv6" ]; then
-		echo "=== Rsync ${C}/R/ftp to ${_ftpdir}/${path}/${OSRELEASE}..."
-		rsync -a --delete ${C}/R/ftp/* \
-			${_ftpdir}/${path}/${OSRELEASE}/
+		case ${kernel} in
+			GENERIC)
+				echo "=== Rsync ${C}/R/ftp to ${_ftpdir}/${path}/${OSRELEASE}..."
+				rsync -a --delete ${C}/R/ftp/* \
+					${_ftpdir}/${path}/${OSRELEASE}/
+				;;
+			*)
+				;;
+		esac
 	fi
 
 	# FreeBSD-11.0-CURRENT-amd64
