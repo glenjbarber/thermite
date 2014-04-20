@@ -124,7 +124,7 @@ setup_stageenv() {
 stage_isos() {
 	if [ "X${arch}" != "Xarmv6" ]; then
 		case ${kernel} in
-			GENERIC)
+			GENERIC*)
 				echo "=== Rsync ${C}/R/ftp to ${_ftpdir}/${path}/${OSRELEASE}..."
 				rsync -a --delete ${C}/R/ftp/* \
 					${_ftpdir}/${path}/${OSRELEASE}/
