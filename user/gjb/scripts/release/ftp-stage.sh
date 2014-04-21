@@ -164,6 +164,10 @@ stage_isos() {
 				echo "${newname}-${_i}"
 				mv ${oldname}-${_i} \
 					${newname}-${_i}
+				echo -n "=== Renaming ${oldname}-${_i}.xz to "
+				echo "${newname}-${_i}.xz"
+				mv ${oldname}-${_i}.xz \
+					${newname}-${_i}.xz
 			done
 		else
 			oldname="${oldname}-${kernel}"
@@ -237,6 +241,8 @@ create_iso_symlinks() {
 		if [ -e "${C}/R/${_discname}-${image}" ]; then
 			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/${_discname}-${image} \
 				${_ftpdir}/ISO-IMAGES/${REVISION}/${_discname}-${image}
+			ln -sf ../../${path}/ISO-IMAGES/${REVISION}/${_discname}-${image}.xz \
+				${_ftpdir}/ISO-IMAGES/${REVISION}/${_discname}-${image}.xz
 		fi
 	done
 	echo "=== Creating symlinks for CHECKSUM files..."
