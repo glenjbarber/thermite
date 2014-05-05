@@ -8,7 +8,19 @@ quick_usage() {
 	exit 1
 }
 
-if [ "$#" -ne 1 ]; then
+while getopts "d" arg; do
+	case ${arg} in
+		d)
+			delete_only=1
+			;;
+		*)
+			delete_only=
+			;;
+	esac
+done
+shift $(( ${OPTIND} - 1 ))
+
+if [ "$#" -lt 1 ]; then
 	quick_usage
 fi
 
@@ -109,6 +121,7 @@ zfs_teardown() {
 }
 
 zfs_setup() {
+	[ ! -z ${delete_only} ] && return 0
 	for r in ${revs}; do
 		for a in ${archs}; do
 			for k in ${kernels}; do
