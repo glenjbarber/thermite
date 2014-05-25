@@ -33,7 +33,7 @@ setup_stageenv() {
 	isoarch=
 	backpath=
 	skip=0
-	vmimages="qcow2 vmdk vhd"
+	vmimages="qcow2 vmdk vhd raw"
 	WITH_DVD=
 	REVISION=
 	BRANCH=
@@ -313,10 +313,6 @@ stage_vmimages() {
 	FTPPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
 	LATESTPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/Latest"
 	mkdir -p ${FTPPATH}
-	if [ -e "${C}/vmimage/${__DISCNAME}.disk" ]; then
-		# Hide the raw '.disk' file by renaming to a dot-file.
-		mv "${C}/vmimage/${__DISCNAME}.disk" "${C}/vmimage/.${__DISCNAME}.disk"
-	fi
 	oldname="${__DISCNAME}"
 	newname="${oldname}"
 	shasuffix=
