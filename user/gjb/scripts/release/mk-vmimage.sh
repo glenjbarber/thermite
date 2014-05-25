@@ -72,13 +72,13 @@ VM_IMAGE_NAME="$(uname -s)-${VM_IMAGE_NAME}${VM_TARGET_ARCH}"
 mkdir -p ${CHROOTDIR}/vmimage ${CHROOTDIR}/vmimage/mnt
 
 # This should only ever happen if the script is being run again after failure.
-if [ -e "${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.disk" ]; then
-	rm -f "${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.disk"
+if [ -e "${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.raw" ]; then
+	rm -f "${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.raw"
 fi
 
-touch ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.disk
-truncate -s 20G ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.disk
-mddev=$(mdconfig -a -t vnode -f ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.disk)
+touch ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.raw
+truncate -s 20G ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.raw
+mddev=$(mdconfig -a -t vnode -f ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.raw)
 gpart create -s gpt /dev/${mddev}
 gpart add -t freebsd-boot -s 512k -l bootfs /dev/${mddev}
 gpart bootcode -b ${CHROOTDIR}/boot/pmbr -p ${CHROOTDIR}/boot/gptboot -i 1 /dev/${mddev}
@@ -117,10 +117,11 @@ for f in ${diskformats}; do
 		*)
 			;;
 	esac
-	/usr/local/bin/qemu-img convert -O ${f} ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.disk \
+	/usr/local/bin/qemu-img convert -O ${f} ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.raw \
 		${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.${_f}
 	xz ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.${_f}
 done
+xz ${CHROOTDIR}/vmimage/${VM_IMAGE_NAME}.raw
 cd ${CHROOTDIR}/vmimage
 sha256 FreeBSD*.xz > CHECKSUM.SHA256
 md5 FreeBSD*.xz > CHECKSUM.MD5
