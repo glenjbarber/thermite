@@ -175,6 +175,10 @@ stage_isos() {
 			echo "${newname}.img.bz2"
 			mv ${oldname}.img.bz2 ${newname}.img.bz2
 		fi
+	fi
+
+	if [ "X${newname}" != "X${oldname}" ]; then
+		cd ${C}/R
 		rm -f CHECKSUM.SHA256* CHECKSUM.MD5*
 		# CHECKSUM.SHA256-11.0-CURRENT-amd64-VT-20140127-r261200
 		echo "=== Regenerating SHA256 checksums"
@@ -185,6 +189,12 @@ stage_isos() {
 		md5 ${__DISCNAME}* > \
 			${C}/R/CHECKSUM.MD5-${_sumsuffix}
 		cd ${scriptdir}
+	else
+		for h in SHA256 MD5; do
+			echo "=== Renaming ${h} checksums"
+			mv ${C}/R/CHECKSUM.${h} \
+				${C}/R/CHECKSUM.${h}-${_sumsuffix}
+		done
 	fi
 
 	# Copy ISO images to FTP snapshots directory.
