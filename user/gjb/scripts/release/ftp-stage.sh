@@ -118,6 +118,13 @@ setup_stageenv() {
 			fi
 			;;
 	esac
+	case ${kernel} in
+		VT)
+			releaseimages="${releaseimages} memstick-uefi"
+			;;
+		*)
+			;;
+	esac
 	__DISCNAME="$(make -C ${C}/usr/src/release TARGET=${TARGET} TARGET_ARCH=${TARGET_ARCH} -V OSRELEASE)"
 }
 
