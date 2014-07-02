@@ -49,9 +49,10 @@ MEMSTICK_IMAGE_NAME=$(make -C ${CHROOTDIR}/usr/src/release -V REVISION -V BRANCH
 MEMSTICK_IMAGE_NAME="$(uname -s)-${MEMSTICK_IMAGE_NAME}${MEMSTICK_ARCH}"
 MINI_MEMSTICK_IMAGE_NAME="${MEMSTICK_IMAGE_NAME}-mini-memstick.img"
 MEMSTICK_IMAGE_NAME="${MEMSTICK_IMAGE_NAME}-memstick.img"
+WITH_COMPRESSED_IMAGES="$(make -C ${CHROOTDIR}/usr/src/release -V WITH_COMPRESSED_IMAGES)"
 
 cd ${CHROOTDIR}/R && (
-rm -f FreeBSD*memstick.img || exit 1
+rm -f FreeBSD*memstick.img* || exit 1
 rm -f CHECKSUM.* || exit 1
 /bin/sh ${CHROOTDIR}/usr/src/release/${MEMSTICK_ARCH}/make-memstick.sh \
 	${CHROOTDIR}/usr/obj/usr/src/release/release \
@@ -62,6 +63,11 @@ rm -f CHECKSUM.* || exit 1
 )
 
 cd ${CHROOTDIR}/R
+if [ -z "${WITH_COMPRESSED_IMAGES}" ]; then
+	for _i in ${MINI_MEMSTICK_IMAGE_NAME} ${MEMSTICK_IMAGE_NAME}; do
+		/usr/bin/xz -k ${_i}
+	done
+fi
 sha256 FreeBSD* > CHECKSUM.SHA256
 md5 FreeBSD* > CHECKSUM.MD5
 exit 0
