@@ -228,17 +228,6 @@ create_dir_symlinks() {
 		echo "==== ${backpath}/${OSRELEASE} -> ${path}/${OSRELEASE}"
 		ln -sf ${backpath}/${OSRELEASE} ${_ftpdir}/${backpath}/${OSRELEASE}
 	fi
-	case ${BRANCH} in
-		RELEASE|RC)
-			echo "=== This is a RELEASE or RC."
-			echo "=== Creating packages symlink for sysinstall(8)..."
-			ln -sf ../../../../ports/${isoarch}/packages-${REVISION}-release \
-				${_ftpdir}/${path}/${OSRELEASE}/packages
-			;;
-		*)
-			# FALLTHROUGH
-			;;
-	esac
 }
 
 create_iso_symlinks() {
