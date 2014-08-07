@@ -118,6 +118,7 @@ check_use_zfs() {
 }
 
 truncate_logs() {
+	source_config || return 0
 	echo > ${logdir}/${rev}-${arch}-${kernel}-${type}.log
 	return 0
 }
