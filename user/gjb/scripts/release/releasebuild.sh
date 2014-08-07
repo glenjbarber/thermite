@@ -32,7 +32,7 @@
 # When executed, it generates a significant amount of heat.
 # Wrapper script for release.sh to automate mass release builds.
 #
-# $FreeBSD: user/gjb/thermite/thermite.sh 262820 2014-03-06 02:48:54Z gjb $
+# $FreeBSD$
 #
 
 usage() {
