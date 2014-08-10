@@ -84,7 +84,7 @@ gpart add -t freebsd-boot -s 512k -l bootfs /dev/${mddev}
 gpart bootcode -b ${CHROOTDIR}/boot/pmbr -p ${CHROOTDIR}/boot/gptboot -i 1 /dev/${mddev}
 gpart add -t freebsd-swap -s 1G -l swapfs /dev/${mddev}
 gpart add -t freebsd-ufs -l rootfs /dev/${mddev}
-newfs /dev/${mddev}p3
+newfs -j /dev/${mddev}p3
 mount /dev/${mddev}p3 ${CHROOTDIR}/vmimage/mnt
 
 # Errors here are ok, 'set -e' is re-enabled below again.
