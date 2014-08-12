@@ -92,6 +92,7 @@ set +e
 mount -t devfs devfs ${CHROOTDIR}/dev
 chroot ${CHROOTDIR} make -s -C /usr/src DESTDIR=/vmimage/mnt \
 	installworld installkernel distribution
+chroot ${CHROOTDIR} /usr/bin/newaliases
 echo "# Custom /etc/fstab for FreeBSD VM images" \
 	> ${CHROOTDIR}/vmimage/mnt/etc/fstab
 echo "/dev/gpt/rootfs	/	ufs	rw	2	2" \
