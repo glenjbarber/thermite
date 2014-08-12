@@ -28,6 +28,7 @@ case `hostname -s` in
 esac
 
 setup_stageenv() {
+	export FTP_STAGING=1
 	path=
 	C=
 	isoarch=
