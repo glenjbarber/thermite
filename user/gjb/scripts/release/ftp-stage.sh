@@ -18,7 +18,7 @@ case `hostname -s` in
 	snap)
 		relengdir="/snap/releng"
 		;;
-	bake | grind)
+	grind|releng1|releng2)
 		relengdir="/releng"
 		;;
 	*)
