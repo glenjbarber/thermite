@@ -324,8 +324,8 @@ stage_vmimages() {
 		echo "=== Skipping ${rev}-${arch}-${kernel}-${type} staging"
 		return 0
 	fi
-	FTPPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
-	LATESTPATH="${ftpdir}/snapshots/VM-IMAGES/${OSRELEASE}/${arch}/Latest"
+	FTPPATH="${ftpdir}/${ftpsubdir}/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
+	LATESTPATH="${ftpdir}/${ftpsubdir}/VM-IMAGES/${OSRELEASE}/${arch}/Latest"
 	mkdir -p ${FTPPATH}
 	oldname="${__DISCNAME}"
 	newname="${oldname}"
