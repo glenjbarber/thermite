@@ -352,8 +352,25 @@ stage_vmimages() {
 		cp -p ${C}/vmimage/${__DISCNAME}*.${image}.xz \
 			${FTPPATH}
 	done
-	unlink ${LATESTPATH}
-	ln -sf ${__DATE} ${LATESTPATH}
+	if [ -L ${LATESTPATH} ]; then
+		unlink ${LATESTPATH}
+	fi
+	mkdir -p ${LATESTPATH}
+	(cd ${LATESTPATH}
+	for image in ${vmimages}; do
+		if [ -L ${oldname}.${image}.xz ]; then
+			unlink ${oldname}.${image}.xz
+		fi
+		ln -s ../${__DATE}/${newname}.${image}.xz \
+			${oldname}.${image}.xz
+	done
+	for hash in MD5 SHA256; do
+		if [ -L CHECKSUM.${hash} ]; then
+			unlink CHECKSUM.${hash}
+		fi
+		ln -s ../${__DATE}/CHECKSUM.${hash}-${shasuffix} \
+			CHECKSUM.${hash}
+	done)
 	unset newname oldname shasuffix
 	return 0
 }
