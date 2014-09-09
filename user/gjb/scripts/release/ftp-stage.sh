@@ -121,7 +121,14 @@ setup_stageenv() {
 	esac
 	case ${kernel} in
 		VT)
-			releaseimages="${releaseimages} memstick-uefi.img"
+			releaseimages="${releaseimages} uefi-memstick.img"
+			;;
+		*)
+			;;
+	esac
+	case ${rev} in
+		10)
+			releaseimages="${releaseimages} uefi-memstick.img"
 			;;
 		*)
 			;;
