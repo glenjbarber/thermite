@@ -161,7 +161,6 @@ create_vmimage_mkimg() {
 }
 
 main() {
-	createcmd=
 	while getopts c: opt; do
 		case ${opt} in
 			c)
