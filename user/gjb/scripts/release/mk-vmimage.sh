@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $relengid$
+# $FreeBSD$
 #
 
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
