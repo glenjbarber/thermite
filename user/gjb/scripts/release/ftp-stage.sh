@@ -105,7 +105,8 @@ setup_stageenv() {
 		skip=1
 	fi
 
-	. "${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf"
+	(cd "${scriptdir}" && \
+	. "${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf")
 	case ${arch} in
 		armv6)
 			TARGET="${XDEV}"
@@ -185,10 +186,17 @@ stage_isos() {
 					${newname}-${_i}.xz
 			done
 		else
-			oldname="${oldname}-${kernel}"
-			echo -n "=== Renaming ${oldname}.img.bz2 to "
-			echo "${newname}.img.bz2"
-			mv ${oldname}.img.bz2 ${newname}.img.bz2
+			case ${type} in
+				snap)
+					oldname="${oldname}-${kernel}"
+					echo -n "=== Renaming ${oldname}.img.bz2 to "
+					echo "${newname}.img.bz2"
+					mv ${oldname}.img.bz2 ${newname}.img.bz2
+					;;
+				*)
+					# No need to rename 'release' type images.
+					;;
+			esac
 		fi
 	fi
 
