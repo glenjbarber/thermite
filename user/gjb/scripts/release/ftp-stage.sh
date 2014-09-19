@@ -105,8 +105,7 @@ setup_stageenv() {
 		skip=1
 	fi
 
-	(cd "${scriptdir}" && \
-	. "${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf")
+	. "${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf"
 	case ${arch} in
 		armv6)
 			TARGET="${XDEV}"
