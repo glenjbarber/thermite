@@ -42,7 +42,7 @@ usage() {
 
 info() {
 	out="${@}"
-	printf "INFO:\t${out}\n" >/dev/stdout
+	printf "$(date +%Y%m%d-%H:%M:%S)\tINFO:\t${out}\n" >/dev/stdout
 	unset out
 }
 
@@ -51,7 +51,7 @@ verbose() {
 		return 0
 	fi
 	out="${@}"
-	printf "DEBUG:\t${out}\n" >/dev/stdout
+	printf "$(date +%Y%m%d-%H:%M:%S)\tDEBUG:\t${out}\n" >/dev/stdout
 	unset out
 }
 
