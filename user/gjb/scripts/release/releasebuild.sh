@@ -221,7 +221,7 @@ prebuild_setup() {
 	info "Creating ${srcdir}"
 	mkdir -p "${logdir}" "${srcdir}"
 	info "Checking out src/release to ${srcdir}"
-	svn co -q --force svn://svn.freebsd.org/base/head/release ${srcdir}
+	svn co -q --force svn://svn.freebsd.org/base/${releasesrc} ${srcdir}
 	info "Reverting any changes to ${srcdir}"
 	svn revert -R ${srcdir}
 }
