@@ -269,6 +269,9 @@ build_vmimage() {
 	_conf="${scriptdir}/${_build}.conf"
 	source_config || return 0
 
+	if [ ${rev} -gt 9 ]; then
+		return 0
+	fi
 	case ${arch} in
 		amd64|i386)
 			# continue
