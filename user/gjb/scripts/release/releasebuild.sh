@@ -264,6 +264,38 @@ build_release() {
 	unset _build _conf
 }
 
+build_vm_azure() {
+	_build="${rev}-${arch}-${kernel}-${type}"
+	_conf="${scriptdir}/${_build}.conf"
+	source_config || return 0
+
+	if [ ${rev} -le 9 ]; then
+		return 0
+	fi
+	case ${arch} in
+		amd64|i386)
+			# continue
+			;;
+		*)
+			return 0
+			;;
+	esac
+	case ${kernel} in
+		GENERIC)
+			info "Building Azure image: ${_build}"
+			env -i chroot ${CHROOTDIR} /usr/bin/make \
+				-C /usr/src/release \
+				TARGET=${TARGET} TARGET_ARCH=${TARGET_ARCH} \
+				vm-azure >> ${logdir}/${_build}.log 2>&1
+			;;
+		*)
+			return 0
+			;;
+	esac
+	send_logmail ${logdir}/${_build}.log ${_build}
+	unset _build _conf
+}
+
 build_vmimage() {
 	_build="${rev}-${arch}-${kernel}-${type}"
 	_conf="${scriptdir}/${_build}.conf"
@@ -404,6 +436,7 @@ main() {
 	runall install_chroots
 	runall build_release
 	runall build_vmimage
+	runall build_vm_azure
 }
 
 main "$@"
