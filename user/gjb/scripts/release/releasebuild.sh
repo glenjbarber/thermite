@@ -296,36 +296,6 @@ build_vm_azure() {
 	unset _build _conf
 }
 
-build_vmimage() {
-	_build="${rev}-${arch}-${kernel}-${type}"
-	_conf="${scriptdir}/${_build}.conf"
-	source_config || return 0
-
-	if [ ${rev} -gt 9 ]; then
-		return 0
-	fi
-	case ${arch} in
-		amd64|i386)
-			# continue
-			;;
-		*)
-			return 0
-			;;
-	esac
-	case ${kernel} in
-		GENERIC)
-			info "Building vm image: ${_build}"
-			env -i /bin/sh ${scriptdir}/mk-vmimage.sh -c ${_conf} \
-				>> ${logdir}/${_build}.log 2>&1
-			;;
-		*)
-			return 0
-			;;
-	esac
-	send_logmail ${logdir}/${_build}.log ${_build}
-	unset _build _conf
-}
-
 # Install amd64/i386 "seed" chroots for all branches being built.
 install_chroots() {
 	source_config || return 0
@@ -435,7 +405,6 @@ main() {
 	runall build_chroots
 	runall install_chroots
 	runall build_release
-	runall build_vmimage
 	runall build_vm_azure
 }
 
