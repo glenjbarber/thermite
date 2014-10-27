@@ -3,29 +3,10 @@
 # $relengid$
 #
 
-quick_usage() {
-	echo "$(basename ${0}) /path/to/configuration/file"
+usage() {
+	echo "$(basename ${0}) -c /path/to/configuration/file"
 	exit 1
 }
-
-if [ "$#" -ne 1 ]; then
-	quick_usage
-fi
-
-. $(realpath ${1})
-
-case `hostname -s` in
-	snap)
-		relengdir="/snap/releng"
-		;;
-	grind|releng1|releng2)
-		relengdir="/releng"
-		;;
-	*)
-		echo "relengdir not set"
-		exit 1
-		;;
-esac
 
 setup_stageenv() {
 	export FTP_STAGING=1
@@ -404,6 +385,37 @@ dirperm_fixup() {
 }
 
 main() {
+	FTPCONF=
+
+	while getopts "c:" opt; do
+		case ${opt} in
+			c)
+				FTPCONF="${OPTARG}"
+				;;
+			*)
+				;;
+		esac
+	done
+
+	if [ -z "${FTPCONF}" ]; then
+		echo "Build configuration file is required."
+		exit 1
+	fi
+
+	FTPCONF="$(realpath ${FTPCONF})"
+
+	if [ ! -f "${FTPCONF}" ]; then
+		echo "Build configuration is not a regular file."
+		exit 1
+	fi
+
+	. "${FTPCONF}"
+
+	if [ -z "${relengdir}" ]; then
+		echo "'relengdir' must be set in the build configuration."
+		exit 1
+	fi
+
 	for rev in ${revs}; do
 		for arch in ${archs}; do
 			for kernel in ${kernels}; do
@@ -430,4 +442,4 @@ main() {
 	#echo "${ftpdir}/ ftp-master.freebsd.org:/archive/tmp/releases'"
 }
 
-main
+main "$@"
