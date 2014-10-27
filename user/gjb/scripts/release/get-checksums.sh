@@ -3,16 +3,10 @@
 # $relengid$
 #
 
-quick_usage() {
-	echo "$(basename ${0}) /path/to/configuration/file"
+usage() {
+	echo "$(basename ${0}) -c /path/to/configuration/file"
 	exit 1
 }
-
-if [ "$#" -ne 1 ]; then
-	quick_usage
-fi
-
-. $(dirname $(basename ${0}))/${1}
 
 get_vm_checksum() {
 	local _s="${r}-${a}-${k}-${t}"
@@ -74,6 +68,33 @@ get_iso_checksum() {
 }
 
 main() {
+	export __BUILDCONFDIR="$(dirname $(realpath ${0}))"
+	CSCONF=
+
+	while getopts "c:" opt; do
+		case ${opt} in
+			c)
+				CSCONF="${OPTARG}"
+				;;
+			*)
+				;;
+		esac
+	done
+
+	if [ -z "${CSCONF}" ]; then
+		echo "Build configuration file is required."
+		exit 1
+	fi
+
+	CSCONF="$(realpath ${CSCONF})"
+
+	if [ ! -f "${CSCONF}" ]; then
+		echo "Build configuration is not a regular file."
+		exit 1
+	fi
+
+	. "${CSCONF}"
+
 	echo "== ISO CHECKSUMS =="
 	echo
 	for r in ${revs}; do
