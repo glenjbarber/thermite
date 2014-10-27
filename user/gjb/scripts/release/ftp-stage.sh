@@ -156,6 +156,11 @@ stage_isos() {
 		cd ${C}/R
 		if [ "X${arch}" != "Xarmv6" ]; then
 			for _i in ${releaseimages}; do
+				if [ ! -s ${_i} ]; then
+					rm ${oldname}-${_i} \
+						${oldname}-${_i}.xz
+					empty_removed=1
+				fi
 				echo -n "=== Renaming ${oldname}-${_i} to "
 				echo "${newname}-${_i}"
 				mv ${oldname}-${_i} \
@@ -180,7 +185,7 @@ stage_isos() {
 		fi
 	fi
 
-	if [ "X${newname}" != "X${oldname}" ]; then
+	if [ "X${newname}" != "X${oldname}" -o ! -z "${empty_removed}" ]; then
 		cd ${C}/R
 		rm -f CHECKSUM.SHA256* CHECKSUM.MD5*
 		# CHECKSUM.SHA256-11.0-CURRENT-amd64-VT-20140127-r261200
