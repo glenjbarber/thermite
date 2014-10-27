@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $relengid$
+# $FreeBSD$
 #
 
 usage() {
@@ -125,5 +125,4 @@ main() {
 	done
 }
 
-main
-
+main "$@"
