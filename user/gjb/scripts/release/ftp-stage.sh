@@ -62,19 +62,6 @@ setup_stageenv() {
 			;;
 	esac
 
-	# Set the ftp subdir to releases/ or snapshots/:
-	case ${type} in
-		snap)
-			ftpsubdir="snapshots"
-			;;
-		release)
-			ftpsubdir="releases"
-			;;
-		*)
-			ftpsubdir="snapshots"
-			;;
-	esac
-
 	REVISION=$(make -C ${C}/usr/src/release -V REVISION)
 	BRANCH=$(make -C ${C}/usr/src/release -V BRANCH)
 	VMIMAGES="$(make -C ${C}/usr/src/release -V VMFORMATS)"
@@ -114,6 +101,19 @@ setup_stageenv() {
 		*)
 			;;
 	esac
+	# Set the ftp subdir to releases/ or snapshots/:
+	case ${type} in
+		snap)
+			ftpsubdir="snapshots"
+			;;
+		release)
+			ftpsubdir="releases"
+			;;
+		*)
+			ftpsubdir="snapshots"
+			;;
+	esac
+
 	__DISCNAME="$(make -C ${C}/usr/src/release TARGET=${TARGET} TARGET_ARCH=${TARGET_ARCH} -V OSRELEASE)"
 }
 
