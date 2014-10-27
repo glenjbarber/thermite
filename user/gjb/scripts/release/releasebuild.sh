@@ -247,8 +247,9 @@ build_release() {
 	_conf="${scriptdir}/${_build}.conf"
 	source_config || return 0
 	info "Building release: ${_build}"
-	printenv >> ${logdir}/${_build}.log
-	env -i /bin/sh ${srcdir}/release.sh -c ${_conf} \
+	set >> ${logdir}/${_build}.log
+	env -i __BUILDCONFDIR="${__BUILDCONFDIR}" \
+		/bin/sh ${srcdir}/release.sh -c ${_conf} \
 		>> ${logdir}/${_build}.log 2>&1
 
 	send_logmail ${logdir}/${_build}.log ${_build}
@@ -286,7 +287,8 @@ build_vm_azure() {
 	case ${kernel} in
 		GENERIC)
 			info "Building Azure image: ${_build}"
-			env -i chroot ${CHROOTDIR} /usr/bin/make \
+			env -i __BUILDCONFDIR="${__BUILDCONFDIR}" \
+				chroot ${CHROOTDIR} /usr/bin/make \
 				-C /usr/src/release \
 				TARGET=${TARGET} TARGET_ARCH=${TARGET_ARCH} \
 				vm-azure >> ${logdir}/${_build}.log 2>&1
