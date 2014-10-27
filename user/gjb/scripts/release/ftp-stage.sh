@@ -385,6 +385,7 @@ dirperm_fixup() {
 }
 
 main() {
+	export __BUILDCONFDIR="$(dirname $(realpath ${0}))"
 	FTPCONF=
 
 	while getopts "c:" opt; do

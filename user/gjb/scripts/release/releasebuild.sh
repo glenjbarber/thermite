@@ -384,6 +384,7 @@ build_chroots() {
 }
 
 main() {
+	export __BUILDCONFDIR="$(dirname $(realpath ${0}))"
 	mkdir -p ../chroots/ ../logs/ ../release/
 	while getopts c: opt; do
 		case ${opt} in
