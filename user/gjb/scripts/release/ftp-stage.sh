@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $relengid$
+# $FreeBSD$
 #
 
 usage() {

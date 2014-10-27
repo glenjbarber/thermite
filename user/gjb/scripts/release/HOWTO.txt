@@ -1,5 +1,5 @@
 #
-# $relengid$
+# $FreeBSD$
 #
 
 o For a new build, bump the following variables accordingly (yes, I know they

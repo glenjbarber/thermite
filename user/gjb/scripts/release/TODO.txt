@@ -1,5 +1,5 @@
 #
-# $relengid$
+# $FreeBSD$
 #
 - Experiment with ways to reduce build times:
   o One possible solution is to spawn child make(1) processes
