@@ -224,7 +224,8 @@ prebuild_setup() {
 	info "Creating ${chroots}"
 	mkdir -p ${chroots}
 	info "Checking out src/release to ${srcdir}"
-	svn co -q --force svn://svn.freebsd.org/base/${releasesrc} ${srcdir}
+	svn co -q --force svn://svn.freebsd.org/base/${releasesrc}/release \
+		${srcdir}
 	info "Reverting any changes to ${srcdir}"
 	svn revert -R ${srcdir}
 }
@@ -389,6 +390,7 @@ build_chroots() {
 }
 
 main() {
+	releasesrc="head"
 	export __BUILDCONFDIR="$(dirname $(realpath ${0}))"
 
 	while getopts "c:d" opt; do
