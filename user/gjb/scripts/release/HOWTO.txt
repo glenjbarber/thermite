@@ -2,29 +2,10 @@
 # $FreeBSD$
 #
 
-o For a new build, bump the following variables accordingly (yes, I know they
-  are duplicated):
+o For a new build, run 'setrev.sh -b <branch>'.
 
-    - defaults.conf:
-	    _SVNREV	- svn rev to build
-	    DATE	- current date
+o Run 'releasebuild.sh -c builds-{rev}.conf', which handles
+  the builds from start to finish.
 
-    - main.conf
-	    BUILDSVNREV	- svn rev to build
-	    BUILDDATE	- current date
-	    stables	- set to stable/N branch numbers (or empty)
-	    heads	- set to head/ branch number (or empty)
-	    types	- set to 'snap', 'release', or 'snap release'
-	    archs	- set to architectures to build
-	* for 'stables', 'heads', 'types', and 'archs', build depends on the
-	  'rev'-'arch'-'type'.conf file existence; to disable a particular
-	  build, rename (for example) 10-amd64-snap.conf to
-	  10-amd64-snap.conf-disabled.
-
-
-o Run 'releasebuild.sh /path/to/main.conf', which handles the builds from
-  start to finish (or should).
-
-
-o When build is done, run 'ftp-stage.sh' to stage resulting images to
-  hierarchy that matches ftp-master.
+o When build is done, run 'ftp-stage.sh -c builds-{rev}.conf'
+  to stage resulting images to hierarchy that matches ftp-master.
