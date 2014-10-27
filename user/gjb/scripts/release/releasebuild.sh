@@ -218,8 +218,11 @@ zfs_bootstrap() {
 
 prebuild_setup() {
 	info "Creating ${logdir}"
+	mkdir -p ${logdir}
 	info "Creating ${srcdir}"
-	mkdir -p "${logdir}" "${srcdir}"
+	mkdir -p ${srcdir}
+	info "Creating ${chroots}"
+	mkdir -p ${chroots}
 	info "Checking out src/release to ${srcdir}"
 	svn co -q --force svn://svn.freebsd.org/base/${releasesrc} ${srcdir}
 	info "Reverting any changes to ${srcdir}"
@@ -385,12 +388,15 @@ build_chroots() {
 
 main() {
 	export __BUILDCONFDIR="$(dirname $(realpath ${0}))"
-	mkdir -p ../chroots/ ../logs/ ../release/
-	while getopts c: opt; do
+
+	while getopts "c:d" opt; do
 		case ${opt} in
 			c)
 				CONF=${OPTARG}
 				[ -e ${CONF} ] && . $(realpath ${CONF})
+				;;
+			d)
+				debug=1
 				;;
 			\?)
 				usage
