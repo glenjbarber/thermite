@@ -34,7 +34,6 @@ setup_stageenv() {
 	isoarch=
 	backpath=
 	skip=0
-	vmimages="qcow2 vmdk vhd raw"
 	WITH_DVD=
 	REVISION=
 	BRANCH=
@@ -97,6 +96,7 @@ setup_stageenv() {
 
 	REVISION=$(make -C ${C}/usr/src/release -V REVISION)
 	BRANCH=$(make -C ${C}/usr/src/release -V BRANCH)
+	VMIMAGES="$(make -C ${C}/usr/src/release -V VMFORMATS)"
 	OSRELEASE="${REVISION}-${BRANCH}"
 	__DATE="${BUILDDATE}"
 	__SVNREV="r${BUILDSVNREV}"
@@ -327,10 +327,11 @@ stage_builds() {
 
 stage_vmimages() {
 	setup_stageenv
-	if [ "${skip}" -eq 1 ] || [ ! -d ${C}/vmimage ]; then
+	if [ "${skip}" -eq 1 ] || [ ! -d ${C}/R/vmimages ]; then
 		echo "=== Skipping ${rev}-${arch}-${kernel}-${type} staging"
 		return 0
 	fi
+	VMIMAGESPATH="${C}/R/vmimages"
 	FTPPATH="${ftpdir}/${ftpsubdir}/VM-IMAGES/${OSRELEASE}/${arch}/${__DATE}"
 	LATESTPATH="${ftpdir}/${ftpsubdir}/VM-IMAGES/${OSRELEASE}/${arch}/Latest"
 	mkdir -p ${FTPPATH}
@@ -349,13 +350,13 @@ stage_vmimages() {
 		esac
 		newname="${newname}-${__DATE}-${__SVNREV}"
 		shasuffix="${shasuffix}${__DATE}-${__SVNREV}"
-		for image in ${vmimages}; do
-			mv ${C}/vmimage/${__DISCNAME}*.${image}.xz \
-				${C}/vmimage/${newname}.${image}.xz
+		for image in ${VMIMAGES}; do
+			mv ${VMIMAGESPATH}/${__DISCNAME}*.${image}.xz \
+				${VMIMAGESPATH}/${newname}.${image}.xz
 		done
 		# Remove old checksums.
-		rm -f ${C}/vmimage/CHECKSUM.*
-		(cd ${C}/vmimage &&
+		rm -f ${VMIMAGESPATH}/CHECKSUM.*
+		(cd ${VMIMAGESPATH} &&
 			sha256 ${__DISCNAME}* \
 				> CHECKSUM.SHA256-${shasuffix}
 			md5 ${__DISCNAME}* \
@@ -365,11 +366,11 @@ stage_vmimages() {
 		*)
 			;;
 	esac
-	cp -p ${C}/vmimage/CHECKSUM* \
+	cp -p ${VMIMAGESPATH}/CHECKSUM* \
 		${FTPPATH}
 
-	for image in ${vmimages}; do
-		cp -p ${C}/vmimage/${__DISCNAME}*.${image}.xz \
+	for image in ${VMIMAGES}; do
+		cp -p ${VMIMAGESPATH}/${__DISCNAME}*.${image}.xz \
 			${FTPPATH}
 	done
 	if [ -L ${LATESTPATH} ]; then
@@ -377,7 +378,7 @@ stage_vmimages() {
 	fi
 	mkdir -p ${LATESTPATH}
 	(cd ${LATESTPATH}
-	for image in ${vmimages}; do
+	for image in ${VMIMAGES}; do
 		if [ -L ${oldname}.${image}.xz ]; then
 			unlink ${oldname}.${image}.xz
 		fi
@@ -391,7 +392,7 @@ stage_vmimages() {
 		ln -s ../${__DATE}/CHECKSUM.${hash}-${shasuffix} \
 			CHECKSUM.${hash}
 	done)
-	unset newname oldname shasuffix
+	unset newname oldname shasuffix VMIMAGESPATH
 	return 0
 }
 
