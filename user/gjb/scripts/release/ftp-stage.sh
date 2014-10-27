@@ -400,7 +400,7 @@ main() {
 
 	if [ -z "${FTPCONF}" ]; then
 		echo "Build configuration file is required."
-		exit 1
+		usage
 	fi
 
 	FTPCONF="$(realpath ${FTPCONF})"

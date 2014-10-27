@@ -83,7 +83,7 @@ main() {
 
 	if [ -z "${CSCONF}" ]; then
 		echo "Build configuration file is required."
-		exit 1
+		usage
 	fi
 
 	CSCONF="$(realpath ${CSCONF})"
