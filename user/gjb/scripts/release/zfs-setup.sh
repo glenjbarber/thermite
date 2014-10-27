@@ -3,35 +3,10 @@
 # $relengid$
 #
 
-quick_usage() {
-	echo "$(basename ${0}) /path/to/configuration/file"
+usage() {
+	echo "$(basename ${0}) [-d] -c /path/to/configuration/file"
 	exit 1
 }
-
-while getopts "d" arg; do
-	case ${arg} in
-		d)
-			delete_only=1
-			;;
-		*)
-			delete_only=
-			;;
-	esac
-done
-shift $(( ${OPTIND} - 1 ))
-
-if [ "$#" -lt 1 ]; then
-	quick_usage
-fi
-
-. $(dirname $(basename ${0}))/${1}
-
-if [ ${use_zfs} -eq 0 ]; then
-	echo "== use_zfs is set to '0'; skipping." >/dev/stdout
-	exit 0
-fi
-
-pfx="==="
 
 zfs_teardown() {
 	for r in ${revs}; do
@@ -140,7 +115,47 @@ zfs_setup() {
 	return 0
 }
 
-zfs_teardown
-zfs_setup
-exit 0
+main() {
+	export __BUILDCONFDIR="$(dirname $(realpath ${0}))"
+	CSCONF=
 
+	while getopts "c:d" opt; do
+		case ${opt} in
+			c)
+				CSCONF="${OPTARG}"
+				;;
+			d)
+				delete_only=1
+				;;
+			*)
+				;;
+		esac
+	done
+	shift $(( ${OPTIND} - 1 ))
+
+	if [ -z "${CSCONF}" ]; then
+		echo "Build configuration file is required."
+		usage
+	fi
+
+	CSCONF="$(realpath ${CSCONF})"
+
+	if [ ! -f "${CSCONF}" ]; then
+		echo "Build configuration is not a regular file."
+		exit 1
+	fi
+
+	. "${CSCONF}"
+
+	if [ ${use_zfs} -eq 0 ]; then
+		echo "== use_zfs is set to '0'; skipping." >/dev/stdout
+		exit 0
+	fi
+
+	pfx="==="
+
+	zfs_teardown
+	zfs_setup
+}
+
+main "$@"
