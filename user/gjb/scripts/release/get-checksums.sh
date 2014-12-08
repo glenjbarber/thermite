@@ -16,7 +16,7 @@ get_vm_checksum() {
 	else
 		return 0
 	fi
-	if [ ! -e ${CHROOTDIR}/vmimage/ ]; then
+	if [ ! -e ${CHROOTDIR}/R/vmimages/ ]; then
 		return 0
 	fi
 	__REVISION=$(make -C ${CHROOTDIR}/usr/src/release -V REVISION)
@@ -29,7 +29,7 @@ get_vm_checksum() {
 			*)
 				;;
 		esac
-		cat ${CHROOTDIR}/vmimage/CHECKSUM.${_f}* | \
+		cat ${CHROOTDIR}/R/vmimages/CHECKSUM.${_f}* | \
 			sed -e 's/^/        /'
 		echo
 	done
