@@ -55,7 +55,7 @@ cd ${CHROOTDIR}/R && (
 rm -f FreeBSD*memstick.img* || exit 1
 rm -f CHECKSUM.* || exit 1
 /bin/sh ${CHROOTDIR}/usr/src/release/${MEMSTICK_ARCH}/make-memstick.sh \
-	${CHROOTDIR}/usr/obj/usr/src/release/release \
+	${CHROOTDIR}/usr/obj/usr/src/release/disc1 \
 	${CHROOTDIR}/R/${MEMSTICK_IMAGE_NAME}
 /bin/sh ${CHROOTDIR}/usr/src/release/${MEMSTICK_ARCH}/make-memstick.sh \
 	${CHROOTDIR}/usr/obj/usr/src/release/bootonly \
