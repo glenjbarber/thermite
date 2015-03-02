@@ -168,10 +168,19 @@ stage_isos() {
 		else
 			case ${type} in
 				snap)
+					case ${rev} in
+						11)
+							_ext="xz"
+							;;
+						*)
+							_ext="bz2"
+							;;
+					esac
 					oldname="${oldname}-${kernel}"
-					echo -n "=== Renaming ${oldname}.img.bz2 to "
-					echo "${newname}.img.bz2"
-					mv ${oldname}.img.bz2 ${newname}.img.bz2
+					echo -n "=== Renaming ${oldname}.img.${_ext} to "
+					echo "${newname}.img.${_ext}"
+					mv ${oldname}.img.${_ext} \
+						${newname}.img.${_ext}
 					;;
 				*)
 					# No need to rename 'release' type images.
