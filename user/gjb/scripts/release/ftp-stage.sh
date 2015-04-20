@@ -42,6 +42,10 @@ setup_stageenv() {
 			isoarch="arm-armv6"
 			path="arm/armv6"
 			;;
+		arm64)
+			isoarch="arm64-aarch64"
+			path="arm64/aarch64"
+			;;
 		sparc64)
 			isoarch="${arch}"
 			path="${arch}/${arch}"
