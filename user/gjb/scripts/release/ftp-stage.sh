@@ -42,7 +42,7 @@ setup_stageenv() {
 			isoarch="arm-armv6"
 			path="arm/armv6"
 			;;
-		arm64)
+		aarch64)
 			isoarch="arm64-aarch64"
 			path="arm64/aarch64"
 			;;
@@ -438,7 +438,7 @@ main() {
 					echo "== Staging Release: ${rev}-${arch}-${kernel}-${type}"
 					stage_builds
 					case ${arch} in
-						i386|amd64)
+						i386|amd64|aarch64)
 							echo "== Staging VM Images: ${rev}-${arch}-${kernel}-${type}"
 							stage_vmimages
 							;;
