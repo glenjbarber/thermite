@@ -113,7 +113,7 @@ main() {
 			for k in ${kernels}; do
 			for t in ${types}; do
 				case ${a} in
-					amd64|i386)
+					amd64|i386|aarch64)
 						get_vm_checksum
 						;;
 					*)
