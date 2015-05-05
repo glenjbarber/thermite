@@ -24,7 +24,7 @@ zfs_teardown() {
 							>/dev/stdout
 						echo " ${zfs_parent}/${s}-src" \
 							>/dev/stdout
-						zfs destroy ${zfs_parent}/${s}-src
+						zfs destroy -f ${zfs_parent}/${s}-src
 					fi
 					zfs list ${zfs_parent}/${s}-ports >/dev/null 2>&1
 					rc=$?
@@ -33,7 +33,7 @@ zfs_teardown() {
 							>/dev/stdout
 						echo " ${zfs_parent}/${s}-ports" \
 							>/dev/stdout
-						zfs destroy ${zfs_parent}/${s}-ports
+						zfs destroy -f ${zfs_parent}/${s}-ports
 					fi
 					zfs list ${zfs_parent}/${s}-doc >/dev/null 2>&1
 					rc=$?
@@ -42,7 +42,7 @@ zfs_teardown() {
 							>/dev/stdout
 						echo " ${zfs_parent}/${s}-doc" \
 							>/dev/stdout
-						zfs destroy ${zfs_parent}/${s}-doc
+						zfs destroy -f ${zfs_parent}/${s}-doc
 					fi
 					zfs list ${zfs_parent}/${c}-chroot >/dev/null 2>&1
 					rc=$?
@@ -51,7 +51,7 @@ zfs_teardown() {
 							>/dev/stdout
 						echo " ${zfs_parent}/${c}-chroot" \
 							>/dev/stdout
-						zfs destroy ${zfs_parent}/${c}-chroot
+						zfs destroy -f ${zfs_parent}/${c}-chroot
 					fi
 					zfs list ${zfs_parent}/${s} >/dev/null 2>&1
 					rc=$?
@@ -60,7 +60,7 @@ zfs_teardown() {
 							>/dev/stdout
 						echo " ${zfs_parent}/${s}" \
 							>/dev/stdout
-						zfs destroy ${zfs_parent}/${s}
+						zfs destroy -f ${zfs_parent}/${s}
 					fi
 				fi
 			done
@@ -78,7 +78,7 @@ zfs_teardown() {
 						>/dev/stdout
 					echo " ${zfs_parent}/${r}-${i}-${t}@clone" \
 						>/dev/stdout
-					zfs destroy ${zfs_parent}/${r}-${i}-${t}@clone
+					zfs destroy -f ${zfs_parent}/${r}-${i}-${t}@clone
 				fi
 				zfs list ${zfs_parent}/${r}-${i}-${t} >/dev/null 2>&1
 				rc=$?
@@ -87,7 +87,7 @@ zfs_teardown() {
 						>/dev/stdout
 					echo " ${zfs_parent}/${r}-${i}-${t}" \
 						>/dev/stdout
-					zfs destroy ${zfs_parent}/${r}-${i}-${t}
+					zfs destroy -f ${zfs_parent}/${r}-${i}-${t}
 				fi
 			done
 		done
