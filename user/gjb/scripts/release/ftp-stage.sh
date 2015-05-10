@@ -19,6 +19,7 @@ setup_stageenv() {
 	REVISION=
 	BRANCH=
 	OSRELEASE=
+	BOARDNAME=
 	__DATE=
 	__SVNREV=
 
@@ -156,7 +157,8 @@ stage_isos() {
 	case ${type} in
 		snap)
 			# FreeBSD-11.0-CURRENT-20140127-r261200
-			newname="${newname}-${__DATE}-${__SVNREV}"
+			snapsuffix="-${__DATE}-${__SVNREV}"
+			newname="${oldname}${snapsuffix}"
 			;;
 		*)
 			;;
@@ -164,7 +166,7 @@ stage_isos() {
 
 	# If the resulting image name has changed (non-GENERIC kernel, or this
 	# is a snapshot build, rename the ISOs, and regenerate the hashes.
-	if [ "X${newname}" != "X${oldname}" ]; then
+	if [ "X${newname}${snapsuffix}" != "X${oldname}" ]; then
 		cd ${C}/R
 		if [ "X${arch}" != "Xarmv6" ]; then
 			for _i in ${releaseimages}; do
@@ -189,7 +191,8 @@ stage_isos() {
 							;;
 					esac
 					if [ ! -z "${BOARDNAME}" ]; then
-						oldname="${oldname}-${BOARDNAME}"
+						oldname="${__DISCNAME}-${KERNEL}"
+						newname="${__DISCNAME}-${BOARDNAME}${snapsuffix}"
 					else
 						oldname="${oldname}-${kernel}"
 					fi
@@ -210,11 +213,11 @@ stage_isos() {
 		rm -f CHECKSUM.SHA256* CHECKSUM.MD5*
 		# CHECKSUM.SHA256-11.0-CURRENT-amd64-VT-20140127-r261200
 		echo "=== Regenerating SHA256 checksums"
-		sha256 ${__DISCNAME}* > \
+		sha256 FreeBSD* > \
 			${C}/R/CHECKSUM.SHA256-${_sumsuffix}
 		# CHECKSUM.MD5-11.0-CURRENT-amd64-VT-20140127-r261200
 		echo "=== Regenerating MD5 checksums"
-		md5 ${__DISCNAME}* > \
+		md5 FreeBSD* > \
 			${C}/R/CHECKSUM.MD5-${_sumsuffix}
 		cd ${scriptdir}
 	else
