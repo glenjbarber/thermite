@@ -82,7 +82,7 @@ setup_stageenv() {
 		armv6)
 			case ${rev} in
 				11)
-					TARGET="${EMBEDDED_ARCH}"
+					TARGET="${EMBEDDED_TARGET}"
 					TARGET_ARCH="${EMBEDDED_TARGET_ARCH}"
 					;;
 				*)
