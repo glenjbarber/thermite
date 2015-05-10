@@ -188,7 +188,11 @@ stage_isos() {
 							_ext="bz2"
 							;;
 					esac
-					oldname="${oldname}-${kernel}"
+					if [ ! -z "${BOARDNAME}" ]; then
+						oldname="${oldname}-${BOARDNAME}"
+					else
+						oldname="${oldname}-${kernel}"
+					fi
 					echo -n "=== Renaming ${oldname}.img.${_ext} to "
 					echo "${newname}.img.${_ext}"
 					mv ${oldname}.img.${_ext} \
