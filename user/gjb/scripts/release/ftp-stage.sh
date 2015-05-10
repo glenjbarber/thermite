@@ -80,8 +80,16 @@ setup_stageenv() {
 	. "${scriptdir}/${rev}-${arch}-${kernel}-${type}.conf"
 	case ${arch} in
 		armv6)
-			TARGET="${XDEV}"
-			TARGET_ARCH="${XDEV_ARCH}"
+			case ${rev} in
+				11)
+					TARGET="${EMBEDDED_ARCH}"
+					TARGET_ARCH="${EMBEDDED_TARGET_ARCH}"
+					;;
+				*)
+					TARGET="${XDEV_ARCH}"
+					TARGET_ARCH="${XDEV_ARCH}"
+					;;
+			esac
 			;;
 		*)
 			releaseimages="$(make -C ${C}/usr/src/release WITH_DVD=${WITH_DVD} -V IMAGES)"
