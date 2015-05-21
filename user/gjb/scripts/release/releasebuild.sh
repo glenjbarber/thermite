@@ -272,6 +272,39 @@ build_release() {
 	unset _build _conf
 }
 
+# Upload AWS EC2 AMI images.
+build_ec2_ami() {
+	_build="${rev}-${arch}-${kernel}-${type}"
+	_conf="${scriptdir}/${_build}.conf"
+	source_config || return 0
+	case ${arch} in
+		amd64|i386)
+			;;
+		*)
+			return 0
+			;;
+	esac
+	info "Building EC2 AMI for build: ${_build}"
+	if [ ! -e "${CHROOTDIR}/${AWSKEYFILE}" ]; then
+		cp -p ${AWSKEYFILE} ${CHROOTDIR}/${AWSKEYFILE}
+		if [ $? -ne 0 ]; then
+			info "Amazon EC2 key file not found."
+			return 0
+		fi
+	fi
+	if [ -z "${AWSREGION}" -o -z "${AWSBUCKET}" -o "${AWSKEYFILE}" ]; then
+		return 0
+	fi
+	chroot ${CHROOTDIR} make -C /usr/src \
+		AWSREGION=${AWSREGION} \
+		AWSBUCKET=${AWSBUCKET} \
+		AWSKEYFILE=${AWSKEYFILE} \
+		EC2PUBLIC=${EC2PUBLIC} ec2ami \
+		>> ${logdir}/${_build}.log
+	unset _build _conf AWSREGION AWSBUCKET AWSKEYFILE EC2PUBLIC
+	return 0
+} # build_ec2_ami()
+
 # Install amd64/i386 "seed" chroots for all branches being built.
 install_chroots() {
 	source_config || return 0
@@ -386,6 +419,7 @@ main() {
 	runall build_chroots
 	runall install_chroots
 	runall build_release
+	runall build_ec2_ami
 }
 
 main "$@"
