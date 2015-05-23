@@ -255,18 +255,6 @@ build_release() {
 
 	send_logmail ${logdir}/${_build}.log ${_build}
 
-	# Recreate the memstick.img for i386 while here.
-	case ${arch} in
-		i386)
-			/bin/sh ${scriptdir}/remake-memstick.sh \
-				-c ${_conf} >> ${logdir}/${_build}.log
-			;;
-		*)
-			ls -1 ${CHROOTDIR}/R/* >> ${logdir}/${_build}.log
-			send_logmail ${logdir}/${_build}.log ${_build}
-			return 0
-			;;
-	esac
 	ls -1 ${CHROOTDIR}/R/* >> ${logdir}/${_build}.log
 	send_logmail ${logdir}/${_build}.log ${_build}
 	unset _build _conf
