@@ -250,12 +250,15 @@ ftp_stage() {
 
 	load_stage_env
 	info "Staging for ftp: ${build}"
+	[ ! -z "${EMBEDDEDBUILD}" ] && export EMBEDDEDBUILD
+	[ ! -z "${BOARDNAME}" ] && export BOARDNAME
 	chroot ${CHROOTDIR} make -C /usr/src/release \
 		-f Makefile.mirrors \
 		TARGET=${TARGET} TARGET_ARCH=${TARGET_ARCH} \
 		KERNCONF=${KERNEL} \
 		ftp-stage >> ${logdir}/${_build}.log 2>&1
 
+	unset BOARDNAME EMBEDDEDBUILD
 	return 0
 }
 
