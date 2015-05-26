@@ -270,6 +270,7 @@ build_release() {
 		/bin/sh ${srcdir}/release.sh -c ${_conf} \
 		>> ${logdir}/${_build}.log 2>&1
 
+	ftp_stage
 	ls -1 ${CHROOTDIR}/R/* >> ${logdir}/${_build}.log
 	send_logmail ${logdir}/${_build}.log ${_build}
 	unset _build _conf
