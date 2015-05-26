@@ -262,6 +262,8 @@ ftp_stage() {
 		KERNCONF=${KERNEL} \
 		ftp-stage >> ${logdir}/${_build}.log 2>&1
 
+	rsync -avH ${CHROOTDIR}/R/ftp-stage/${type}/* \
+		${ftpdir}/${type}/
 	unset BOARDNAME BUILDDATE EMBEDDEDBUILD SVNREVISION
 	unset _build _conf
 	return 0
