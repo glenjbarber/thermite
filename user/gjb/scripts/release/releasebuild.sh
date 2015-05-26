@@ -252,13 +252,17 @@ ftp_stage() {
 	info "Staging for ftp: ${build}"
 	[ ! -z "${EMBEDDEDBUILD}" ] && export EMBEDDEDBUILD
 	[ ! -z "${BOARDNAME}" ] && export BOARDNAME
+	[ -e "${scriptdir}/svnrev_src" ] && \
+		export SVNREVISION="r$(cat ${scriptdir}/svnrev_src)"
+	[ -e "${scriptdir}/builddate" ] && \
+		export BUILDDATE="$(cat ${scriptdir}/builddate)"
 	chroot ${CHROOTDIR} make -C /usr/src/release \
 		-f Makefile.mirrors \
 		TARGET=${TARGET} TARGET_ARCH=${TARGET_ARCH} \
 		KERNCONF=${KERNEL} \
 		ftp-stage >> ${logdir}/${_build}.log 2>&1
 
-	unset BOARDNAME EMBEDDEDBUILD
+	unset BOARDNAME BUILDDATE EMBEDDEDBUILD SVNREVISION
 	return 0
 }
 
