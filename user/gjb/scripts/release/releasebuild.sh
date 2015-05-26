@@ -253,7 +253,7 @@ ftp_stage() {
 	[ ! -z "${EMBEDDEDBUILD}" ] && export EMBEDDEDBUILD
 	[ ! -z "${BOARDNAME}" ] && export BOARDNAME
 	[ -e "${scriptdir}/svnrev_src" ] && \
-		export SVNREVISION="r$(cat ${scriptdir}/svnrev_src)"
+		export SVNREVISION="$(cat ${scriptdir}/svnrev_src)"
 	[ -e "${scriptdir}/builddate" ] && \
 		export BUILDDATE="$(cat ${scriptdir}/builddate)"
 	chroot ${CHROOTDIR} make -C /usr/src/release \
