@@ -242,6 +242,23 @@ send_logmail() {
 	return 0
 }
 
+# Stage builds for ftp propagation.
+ftp_stage() {
+	_build="${rev}-${arch}-${kernel}-${type}"
+	_conf="${scriptdir}/${_build}.conf"
+	source_config || return 0
+
+	load_stage_env
+	info "Staging for ftp: ${build}"
+	chroot ${CHROOTDIR} make -C /usr/src/release \
+		-f Makefile.mirrors \
+		TARGET=${TARGET} TARGET_ARCH=${TARGET_ARCH} \
+		KERNCONF=${KERNEL} \
+		ftp-stage >> ${logdir}/${_build}.log 2>&1
+
+	return 0
+}
+
 # Run the release builds.
 build_release() {
 	_build="${rev}-${arch}-${kernel}-${type}"
@@ -252,8 +269,6 @@ build_release() {
 	env -i __BUILDCONFDIR="${__BUILDCONFDIR}" \
 		/bin/sh ${srcdir}/release.sh -c ${_conf} \
 		>> ${logdir}/${_build}.log 2>&1
-
-	send_logmail ${logdir}/${_build}.log ${_build}
 
 	ls -1 ${CHROOTDIR}/R/* >> ${logdir}/${_build}.log
 	send_logmail ${logdir}/${_build}.log ${_build}
