@@ -281,7 +281,7 @@ build_ec2_ami() {
 	_conf="${scriptdir}/${_build}.conf"
 	source_config || return 0
 	case ${arch} in
-		amd64|i386)
+		amd64)
 			;;
 		*)
 			return 0
