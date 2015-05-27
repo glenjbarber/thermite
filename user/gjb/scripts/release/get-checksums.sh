@@ -29,7 +29,7 @@ get_vm_checksum() {
 			*)
 				;;
 		esac
-		cat ${CHROOTDIR}/R/ftp-stage/VM-IMAGES/${__REVISION}/${__BRANCH}/${TARGET_ARCH}/CHECKSUM.${_f}* | \
+		cat ${CHROOTDIR}/R/ftp-stage/${t}/VM-IMAGES/${__REVISION}/${__BRANCH}/${TARGET_ARCH}/CHECKSUM.${_f}* | \
 			sed -e 's/^/        /'
 		echo
 	done
@@ -63,7 +63,7 @@ get_iso_checksum() {
 			*)
 				;;
 		esac
-		cat ${CHROOTDIR}/R/ftp-stage/${TARGET}/${TARGET_ARCH}/CHECKSUM.${_f}* | \
+		cat ${CHROOTDIR}/R/ftp-stage/${t}/${TARGET}/${TARGET_ARCH}/CHECKSUM.${_f}* | \
 			sed -e 's/^/        /'
 		echo
 	done
