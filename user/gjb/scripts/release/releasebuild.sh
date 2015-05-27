@@ -314,7 +314,7 @@ build_ec2_ami() {
 			return 0
 		fi
 	fi
-	if [ -z "${AWSREGION}" -o -z "${AWSBUCKET}" -o "${AWSKEYFILE}" ]; then
+	if [ -z "${AWSREGION}" -o -z "${AWSBUCKET}" -o -z "${AWSKEYFILE}" ]; then
 		return 0
 	fi
 	chroot ${CHROOTDIR} make -C /usr/src/release \
