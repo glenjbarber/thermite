@@ -262,6 +262,13 @@ ftp_stage() {
 		KERNCONF=${KERNEL} \
 		ftp-stage >> ${logdir}/${_build}.log 2>&1
 
+	if [ -z "${ftpdir}" ]; then
+		info "FTP directory (ftpdir) not set."
+		info "Refusing to rsync(1) to the stage area."
+		return 0
+	fi
+
+	mkdir -p "${ftpdir}"
 	rsync -avH ${CHROOTDIR}/R/ftp-stage/${type}/* \
 		${ftpdir}/${type}/
 	unset BOARDNAME BUILDDATE EMBEDDEDBUILD SVNREVISION
