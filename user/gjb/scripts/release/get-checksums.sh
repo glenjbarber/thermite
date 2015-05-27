@@ -16,7 +16,7 @@ get_vm_checksum() {
 	else
 		return 0
 	fi
-	if [ ! -e ${CHROOTDIR}/R/vmimages/ ]; then
+	if [ ! -e "${CHROOTDIR}/R/ftp-stage/VM-IMAGES" ]; then
 		return 0
 	fi
 	__REVISION=$(make -C ${CHROOTDIR}/usr/src/release -V REVISION)
@@ -29,7 +29,7 @@ get_vm_checksum() {
 			*)
 				;;
 		esac
-		cat ${CHROOTDIR}/R/vmimages/CHECKSUM.${_f}* | \
+		cat ${CHROOTDIR}/R/ftp-stage/VM-IMAGES/${__REVISION}/${__BRANCH}/${TARGET_ARCH}/CHECKSUM.${_f}* | \
 			sed -e 's/^/        /'
 		echo
 	done
@@ -51,6 +51,10 @@ get_iso_checksum() {
 	fi
 	__REVISION=$(make -C ${CHROOTDIR}/usr/src/release -V REVISION)
 	__BRANCH=$(make -C ${CHROOTDIR}/usr/src/release -V BRANCH)
+	if [ ! -z "${EMBEDDEDBUILD}" ]; then
+		TARGET="${EMBEDDED_TARGET}"
+		TARGET_ARCH="${EMBEDDED_TARGET_ARCH}"
+	fi
 	for _f in ${sumfiles}; do
 		case ${_f} in
 			SHA256)
@@ -59,10 +63,11 @@ get_iso_checksum() {
 			*)
 				;;
 		esac
-		cat ${CHROOTDIR}/R/CHECKSUM.${_f}* | \
+		cat ${CHROOTDIR}/R/ftp-stage/${TARGET}/${TARGET_ARCH}/CHECKSUM.${_f}* | \
 			sed -e 's/^/        /'
 		echo
 	done
+	unset EMBEDDEDBUILD
 	echo
 	return 0
 }
