@@ -79,8 +79,7 @@ get_iso_checksum() {
 			*)
 				;;
 		esac
-		cat
-		${CHROOTDIR}/R/ftp-stage/${type}/${TARGET}/${TARGET_ARCH}/ISO-IMAGES/${__REVISION}/CHECKSUM.${_f}* | \
+		cat ${CHROOTDIR}/R/ftp-stage/${type}/${TARGET}/${TARGET_ARCH}/ISO-IMAGES/${__REVISION}/CHECKSUM.${_f}* | \
 			sed -e 's/^/        /'
 		echo
 	done
