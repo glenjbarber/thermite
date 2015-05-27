@@ -322,7 +322,7 @@ build_ec2_ami() {
 		AWSBUCKET=${AWSBUCKET} \
 		AWSKEYFILE=${AWSKEYFILE} \
 		EC2PUBLIC=${EC2PUBLIC} ec2ami \
-		>> ${logdir}/${_build}.log
+		>> ${logdir}/${_build}.log 2>&1
 	unset _build _conf AWSREGION AWSBUCKET AWSKEYFILE EC2PUBLIC
 	return 0
 } # build_ec2_ami()
