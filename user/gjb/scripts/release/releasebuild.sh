@@ -247,6 +247,7 @@ ftp_stage() {
 	_build="${rev}-${arch}-${kernel}-${type}"
 	_conf="${scriptdir}/${_build}.conf"
 	source_config || return 0
+	[ -z "${EVERYTHINGISFINE}" ] && return 0
 
 	load_stage_env
 	info "Staging for ftp: ${_build}"
