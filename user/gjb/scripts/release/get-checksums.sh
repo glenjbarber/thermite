@@ -37,7 +37,7 @@ get_vm_checksum() {
 			*)
 				;;
 		esac
-		cat ${CHROOTDIR}/R/ftp-stage/${type}/VM-IMAGES/${__REVISION}/${__BRANCH}/${TARGET_ARCH}/Latest/CHECKSUM.${_f}* | \
+		cat ${CHROOTDIR}/R/ftp-stage/${type}/VM-IMAGES/${__REVISION}-${__BRANCH}/${TARGET_ARCH}/Latest/CHECKSUM.${_f}* | \
 			sed -e 's/^/        /'
 		echo
 	done
