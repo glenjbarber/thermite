@@ -268,7 +268,7 @@ ftp_stage() {
 		return 0
 	fi
 
-	mkdir -p "${ftpdir}"
+	mkdir -p "${ftpdir}/${type}"
 	rsync -avH ${CHROOTDIR}/R/ftp-stage/${type}/* \
 		${ftpdir}/${type}/
 	unset BOARDNAME BUILDDATE EMBEDDEDBUILD SVNREVISION
