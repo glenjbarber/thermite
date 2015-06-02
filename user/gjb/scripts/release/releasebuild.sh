@@ -364,8 +364,8 @@ install_chroots() {
 		__MAKE_CONF=/dev/null SRCCONF=/dev/null \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
 		DESTDIR=${_dest} \
-		installworld distribution 2>&1 >> \
-		${logdir}/${_build}.log
+		installworld distribution >> \
+		${logdir}/${_build}.log 2>&1
 	unset _build _dest _objdir _srcdir
 }
 
@@ -404,22 +404,22 @@ build_chroots() {
 		info "SVN checkout ${SRCBRANCH} for ${_chrootarch} ${type}"
 		svn co -q ${SVNROOT}/${SRCBRANCH} \
 			${_srcdir} \
-			2>&1 >> ${logdir}/${_build}.log
+			>> ${logdir}/${_build}.log 2>&1
 	fi
 	info "Building ${_srcdir} make(1)"
 	env MAKEOBJDIRPREFIX=${_objdir} \
 		make -C ${_srcdir} ${WORLD_FLAGS} \
 		__MAKE_CONF=/dev/null SRCCONF=/dev/null \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
-		${__makecmd} 2>&1 >> \
-		${logdir}/${_build}.log
+		${__makecmd} >> \
+		${logdir}/${_build}.log 2>&1
 	info "Building ${_srcdir} world"
 	env MAKEOBJDIRPREFIX=${_objdir} \
 		make -C ${_srcdir} ${WORLD_FLAGS} \
 		__MAKE_CONF=/dev/null SRCCONF=/dev/null \
 		TARGET=${_chrootarch} TARGET_ARCH=${_chrootarch} \
-		buildworld 2>&1 >> \
-		${logdir}/${_build}.log
+		buildworld >> \
+		${logdir}/${_build}.log 2>&1
 	eval chroot_${_chrootarch}_build_${rev}_${type}=1
 	unset _build _dest _objdir _srcdir
 }
