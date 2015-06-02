@@ -325,6 +325,7 @@ build_ec2_ami() {
 	if [ -z "${AWSREGION}" -o -z "${AWSBUCKET}" -o -z "${AWSKEYFILE}" ]; then
 		return 0
 	fi
+	mount -t devfs devfs ${CHROOTDIR}/dev
 	chroot ${CHROOTDIR} make -C /usr/src/release \
 		AWSREGION=${AWSREGION} \
 		AWSBUCKET=${AWSBUCKET} \
@@ -332,6 +333,7 @@ build_ec2_ami() {
 		EC2PUBLIC=${EC2PUBLIC} ec2ami \
 		>> ${logdir}/${_build}.log 2>&1
 	unset _build _conf AWSREGION AWSBUCKET AWSKEYFILE EC2PUBLIC
+	umount ${CHROOTDIR}/dev
 	return 0
 } # build_ec2_ami()
 
