@@ -303,7 +303,7 @@ build_release() {
 }
 
 # Upload AWS EC2 AMI images.
-build_ec2_ami() {
+upload_ec2_ami() {
 	_build="${rev}-${arch}-${kernel}-${type}"
 	_conf="${scriptdir}/${_build}.conf"
 	source_config || return 0
@@ -335,7 +335,7 @@ build_ec2_ami() {
 	unset _build _conf AWSREGION AWSBUCKET AWSKEYFILE EC2PUBLIC
 	umount ${CHROOTDIR}/dev
 	return 0
-} # build_ec2_ami()
+} # upload_ec2_ami()
 
 # Install amd64/i386 "seed" chroots for all branches being built.
 install_chroots() {
@@ -451,7 +451,7 @@ main() {
 	runall build_chroots
 	runall install_chroots
 	runall build_release
-	runall build_ec2_ami
+	runall upload_ec2_ami
 }
 
 main "$@"
