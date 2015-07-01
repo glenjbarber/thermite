@@ -426,7 +426,7 @@ upload_gce_image() {
 			return 0
 		fi
 		mkdir -p ${CHROOTDIR}/${GCE_CONFIG_LOC}
-		tar -xzvf ${GCE_CONFIG_PKG} -C ${CHROOTDIR}/${GCE_CONFIG_LOC}
+		tar -xzf ${GCE_CONFIG_PKG} -C ${CHROOTDIR}/${GCE_CONFIG_LOC}
 	fi
 	mount -t devfs devfs ${CHROOTDIR}/dev
 	chroot ${CHROOTDIR} make -C /usr/src/release \
