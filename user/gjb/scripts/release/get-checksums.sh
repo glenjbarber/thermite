@@ -38,7 +38,7 @@ get_vm_checksum() {
 				;;
 		esac
 		cat ${CHROOTDIR}/R/ftp-stage/${type}/VM-IMAGES/${__REVISION}-${__BRANCH}/${TARGET_ARCH}/Latest/CHECKSUM.${_f}* | \
-			sed -e 's/^/        /'
+			sed -e 's/^/  /'
 		echo
 	done
 	echo
@@ -80,7 +80,7 @@ get_iso_checksum() {
 				;;
 		esac
 		cat ${CHROOTDIR}/R/ftp-stage/${type}/${TARGET}/${TARGET_ARCH}/ISO-IMAGES/${__REVISION}/CHECKSUM.${_f}* | \
-			sed -e 's/^/        /'
+			sed -e 's/^/  /'
 		echo
 	done
 	unset EMBEDDEDBUILD
