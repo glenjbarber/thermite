@@ -1,0 +1,259 @@
+.\"
+.Dd July 4, 2015
+.Dt thermite.sh 8
+.Os
+.Sh NAME
+.Nm thermite.sh
+.Nd Build utility used by the
+.Fx
+Release Engineering Team
+.Sh SYNOPSIS
+.Nm
+.Op Fl d
+.Fl c Ar thermite.conf
+.Sh DESCRIPTION
+The
+.Nm
+utility is a wrapper script for
+.Fa release.sh .
+.Pp
+The
+.Nm
+utility requires a configuration file for use, and will display usage details
+and exit if
+.Fl c
+is not specified, or if the specified
+.Ar thermite.conf
+file does not exist.
+.Pp
+All information output from
+.Nm
+is written to
+.Xr stdout 4 .
+All output produced otherwise is written to the build log file.
+.Pp
+Additional debugging information will be printed when
+.Fl d
+is used.
+.Sh ENVIRONMENT
+By design,
+.Nm
+intentionally ignores environment variables set by the user that affect
+.Fa release.sh .
+.Sh CONFIGURATION
+See
+.Xr thermite.conf 5 .
+.Sh TARGET BUILD CONFIGURATION
+The initial versions of
+.Nm
+were designed to iterate through multiple
+.Fx
+branches
+.Pq such as -CURRENT, and multiple -STABLE branches .
+.Pp
+While this is no longer the actual use case, primarily because of the length
+of time for all architectures for all supported branches to complete, this was
+the major influence for the target build configuration file naming convention.
+.Pp
+The expected naming for target build configuration files is:
+.Pp
+.Bl -tag -offset indent -compact
+.It Va REVISION-ARCH-KERNEL-TYPE.conf
+.El
+.Pp
+The values of
+.Va REVISION ,
+.Va ARCH ,
+.Va KERNEL ,
+and
+.Va TYPE
+are taken from the
+.Va revs ,
+.Va archs ,
+.Va kernels ,
+and
+.Va types
+defined in
+.Xr thermite.conf 5 ,
+and used by
+.Fn source_config
+.Pq described below .
+.Sh NOTES
+For
+.Fx
+Release Engineering Team use, the
+.Fa setrev.sh
+script must be run first, otherwise
+.Nm
+will exit if either the
+.Fa svnrev_src
+or
+.Fa builddate
+files do not exist.
+.Sh FUNCTIONS
+The functions within
+.Nm
+are classified as either
+.Dq operative ,
+.Dq helper ,
+or
+.Dq extras .
+.Pp
+The operative functions are:
+.Pp
+.Bl -tag -offset indent
+.It Fn main
+Sets the
+.Va releasesrc
+variable to
+.Dq head ,
+parses the options provided, ensuring
+.Fl c
+and
+.Ar thermite.conf
+are specified, and sources the configuration file.
+.Pp
+Then
+.Fn main
+runs, in this order the
+.Fn prebuild_setup ,
+.Fn zfs_bootstrap ,
+.Fn build_chroots ,
+.Fn install_chroots ,
+.Fn build_release ,
+.Fn upload_ec2_ami ,
+.Fn upload_azure_image ,
+.Fn upload_gce_image ,
+and
+.Fn upload_vagrant_image
+functions.
+.Pp
+All functions except
+.Fn prebuild_setup
+and
+.Fn zfs_bootstrap
+are invoked through
+.Fn runall ,
+documented below.
+.Pp
+The
+.Fn main
+function itself provides no direct functionality.
+.It Fn prebuild_setup
+.\" NODOC
+.It Fn zfs_bootstrap
+.\" NODOC
+.It Fn zfs_create_tree
+.\" NODOC
+.It Fn zfs_mount_tree
+.\" NODOC
+.It Fn source_config
+Evaluates the existence of the build target configuration file.
+If the file exists, the file is sourced by
+.Xr sh 1
+to set the build target configuration variables.
+.It Fn build_chroots
+.\" NODOC
+.It Fn install_chroots
+.\" NODOC
+.It Fn build_release
+.\" NODOC
+.El
+.Pp
+The helper functions are:
+.Pp
+.Bl -tag -offset indent
+.It Fn info
+Prints build status information to
+.Xr stdout 4 .
+.It Fn verbose
+If the
+.Fl d
+flag is specified at runtime,
+.Fn verbose
+prints additional output for debugging to
+.Xr stdout 4 .
+.It Fn runall
+.\" NODOC
+.It Fn loop_revs
+.\" NODOC
+.It Fn loop_archs
+.\" NODOC
+.It Fn loop_kernels
+.\" NODOC
+.It Fn loop_types
+.\" NODOC
+.It Fn runcmd
+.\" NODOC
+.El
+.Pp
+The extras functions are:
+.Pp
+.Bl -tag -offset indent
+.It Fn ftp_stage
+Copies the final build results into a directory hierarchy that matches the
+public FTP mirrors.
+The
+.Fn ftp_stage
+will
+.Fn return 0
+in various cases, in particular to catch error conditions that are non-fatal,
+such as a non-existent build target configuration file.
+.Pp
+The
+.Fn ftp_stage
+function invokes the
+.Va ftp-stage
+target in
+.Fa src/release/Makefile.mirrors
+in the build
+.Xr chroot 8 ,
+however the special configuration variable
+.Va EVERYTHINGISFINE
+must be set.
+.It Fn upload_azure_image
+Invokes the
+.Va azure-upload
+target in
+.Fa src/release
+within the build
+.Xr chroot 8 .
+.It Fn upload_ec2_image
+Invokes the
+.Va ec2ami
+target in
+.Fa src/release
+within the build
+.Xr chroot 8 .
+.It Fn upload_gce_image
+Invokes the
+.Va gce-upload
+target in
+.Fa src/release
+within the build
+.Xr chroot 8 .
+.It Fn upload_vagrant_image
+Invokes the
+.Va vagrant-upload
+target in
+.Fa src/release
+within the build
+.Xr chroot 8 .
+.El
+.Pp
+.Sh SEE ALSO
+.Xr thermite.conf 5 ,
+.Xr build 7 ,
+.Xr release 7 ,
+.Xr releasebuild 7 ,
+.Xr setrev.sh 8
+.Sh AUTHORS
+The
+.Nm
+utility and this manual page were written by
+.An Glen Barber Aq gjb@FreeBSD.org
+for the
+.Fx
+Release Engineering Team, under sponsorship from the
+.Fx
+Foundation.
