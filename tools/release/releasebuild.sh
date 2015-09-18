@@ -233,12 +233,14 @@ prebuild_setup() {
 # Email log output when a stage has completed
 send_logmail() {
 	[ -z "${emailgoesto}" ] && return 0
+	[ -z "${emailsentfrom}" ] && return 0
 	local _body
 	local _subject
-	_body="${1}"
 	_subject="${2}"
-	tail -n 50 "${_body}" | \
-		mail -s "${_subject} done" ${emailgoesto}
+	_body="$(tail -n 50 ${1})"
+
+	printf "From: ${emailsentfrom}\nTo: ${emailgoesto}\nSubject: ${_subject}\n\n${_body}\n\n" \
+		| /usr/sbin/sendmail -oi -f ${emailsentfrom} ${emailgoesto}
 	return 0
 }
 
