@@ -1,0 +1,92 @@
+# $Id$
+To:	freebsd-snapshots@FreeBSD.org
+Subject: New FreeBSD snapshots available: stable/10 (YYYYMMDD rNNNNNN)
+
+New FreeBSD development branch installation ISOs and virtual machine
+disk images have been uploaded to the FTP mirrors.
+
+As with any development branch, the installation snapshots are not
+intended for use on production systems.  We do, however, encourage
+testing on non-production systems as much as possible.
+
+Please also consider installing the sysutils/panicmail port, which can
+help in providing FreeBSD developers the necessary information regarding
+system crashes.
+
+Checksums for the installation ISOs and the VM disk images follow at
+the end of this email.
+
+=== Installation ISOs ===
+
+Installation images are available for:
+
+o 10.2-STABLE amd64 GENERIC
+o 10.2-STABLE i386 GENERIC
+o 10.2-STABLE ia64 GENERIC
+o 10.2-STABLE powerpc GENERIC
+o 10.2-STABLE powerpc64 GENERIC64
+o 10.2-STABLE sparc64 GENERIC
+o 10.2-STABLE armv6 BEAGLEBONE
+o 10.2-STABLE armv6 CUBOX-HUMMINGBOARD
+o 10.2-STABLE armv6 GUMSTIX
+o 10.2-STABLE armv6 RPI-B
+o 10.2-STABLE armv6 PANDABOARD
+o 10.2-STABLE armv6 WANDBOARD
+
+Snapshots may be downloaded from the corresponding architecture
+directory from:
+
+    ftp://ftp.freebsd.org/pub/FreeBSD/snapshots/ISO-IMAGES/
+
+Please be patient if your local FTP mirror has not yet caught
+up with the changes.
+
+Problems, bug reports, or regression reports should be reported
+through the Bugzilla PR system or the appropriate mailing list,
+such as -current@ or -stable@ .
+
+=== Virtual Machine Disk Images ===
+ 
+VM disk images are available for the amd64 and i386 architectures:
+
+o 10.2-STABLE amd64
+o 10.2-STABLE i386
+
+Disk images may be downloaded from the following URL (or any of the
+FreeBSD FTP mirrors):
+
+    ftp://ftp.freebsd.org/pub/FreeBSD/snapshots/VM-IMAGES/
+
+Images are available in the following disk image formats:
+
+    ~ RAW disk image
+    ~ QCOW2 (qemu)
+    ~ VMDK (qemu, VirtualBox, VMWare)
+    ~ VHD (qemu, xen)
+
+The partition layout is:
+
+    ~ 512k - freebsd-boot GPT partition type (bootfs GPT label)
+    ~ 1GB  - freebsd-swap GPT partition type (swapfs GPT label)
+    ~ ~17GB - freebsd-ufs GPT partition type (rootfs GPT label)
+
+=== Amazon EC2 AMI Images ===
+
+FreeBSD/amd64 EC2 AMIs are available in the following regions:
+
+ [XXX AMI IDS GO HERE]
+
+=== Vagrant Images ===
+
+FreeBSD/amd64 images are available on the Hashicorp Atlas site for the
+VMWare Desktop and VirtualBox providers, and can be installed by
+running:
+
+    % vagrant init freebsd/FreeBSD-10.2-STABLE
+    % vagrant up
+
+ [XXX CHECKSUMS GO HERE]
+
+Love FreeBSD?  Support this and future releases with a donation to
+the FreeBSD Foundation!  https://www.freebsdfoundation.org/donate/
+
