@@ -7,7 +7,7 @@ emailgoesto="gjb@FreeBSD.org marius@FreeBSD.org"
 emailsentfrom="root@FreeBSD.org"
 
 _subject="snapshot FTP sync done"
-_body="Sync done."
+_body="Sync done.\n\n"
 
 # 11-CURRENT
 while ! rsync --progress --partial --time-limit=5 -avH rsync://releng2.nyi.freebsd.org/snapshots /snap/stage/snapshots; do :; done
