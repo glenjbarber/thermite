@@ -92,14 +92,6 @@ main() {
 	export __BUILDCONFDIR="$(dirname $(realpath ${0}))"
 	CSCONF=
 
-	if [ -e "builddate" ]; then
-		echo "BUILDDATE=$(cat BUILDDATE)"
-	fi
-	if [ -e "svnrev_src" ]; then
-		echo "SVNREV=$(cat svnrev_src)"
-	fi
-	tail -n50 ../logs/*.ec2* | grep -E '^Created AMI in'
-
 	while getopts "c:" opt; do
 		case ${opt} in
 			c)
@@ -123,6 +115,21 @@ main() {
 	fi
 
 	. "${CSCONF}"
+
+	case ${t} in
+		release)
+			;;
+		*)
+			if [ -e "builddate" ]; then
+				echo "BUILDDATE=$(cat BUILDDATE)"
+			fi
+			if [ -e "svnrev_src" ]; then
+				echo "SVNREV=$(cat svnrev_src)"
+			fi
+			tail -n50 ../logs/*.ec2* | grep -E '^Created AMI in' \
+				|| true
+			;;
+	esac
 
 	echo "== ISO CHECKSUMS =="
 	echo
