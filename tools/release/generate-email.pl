@@ -177,6 +177,10 @@ sub main() {
 	$svnrev = 0;
 	$branch = 0;
 
+	if ($opt_h) {
+		&usage();
+	}
+
 	while(<STDIN>) {
 		chomp($_);
 		push(@lines, $_);
