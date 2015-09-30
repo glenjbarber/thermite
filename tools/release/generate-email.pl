@@ -105,7 +105,6 @@ OPENING
 
 sub print_opening_special() {
 	print <<SPECIAL;
-
 Note regarding arm64/aarch64 virtual machine images: a modified QEMU EFI
 loader file is needed for qemu-system-aarch64 to be able to boot the
 virtual machine images.  The file can be found here, for now, until
