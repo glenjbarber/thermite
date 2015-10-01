@@ -25,7 +25,7 @@ sub usage() {
 sub print_header() {
 	print <<HEADER;
 To: freebsd-snapshots\@FreeBSD.org
-Subject: New FreeBSD snapshots available: $branch ($builddate $svnrev)
+Subject: New FreeBSD snapshots available: $branch ($builddate r$svnrev)
 
 HEADER
 	return(0);
