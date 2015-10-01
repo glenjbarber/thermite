@@ -121,7 +121,7 @@ main() {
 			;;
 		*)
 			if [ -e "builddate" ]; then
-				echo "BUILDDATE=$(cat BUILDDATE)"
+				echo "BUILDDATE=$(cat builddate)"
 			fi
 			if [ -e "svnrev_src" ]; then
 				echo "SVNREV=$(cat svnrev_src)"
