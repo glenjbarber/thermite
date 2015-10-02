@@ -16,6 +16,8 @@ our $opt_h;
 our $builddate;
 our $svnrev;
 our $branch;
+our $headnum = "11.0";
+our $stablenum = "10.2";
 
 sub usage() {
 	print("Usage: ./get-checksums.sh -c ./builds-NN.conf | $prog > outfile\n");
@@ -152,7 +154,7 @@ FreeBSD/amd64 images are available on the Hashicorp Atlas site for the
 VMWare Desktop and VirtualBox providers, and can be installed by
 running:
 
-    % vagrant init freebsd/FreeBSD-11.0-CURRENT
+    % vagrant init freebsd/FreeBSD-$branchnum-$branchname
     % vagrant up
 
 VAGRANT
@@ -205,10 +207,14 @@ sub main() {
 			if ($branch == 0) {
 				if ($_ =~ m/^o \d\d\.\d-CURRENT/) {
 					$branch = "head";
+					$branchnum = "$headnum";
+					$branchname = "CURRENT";
 				} else {
 					$branch = $_;
 					$branch =~ s/^o /stable\//;
 					$branch =~ s/\..*$//;
+					$branchnum = "$stablenum";
+					$branchname = "STABLE";
 				}
 			}
 			if ($endisos == 0) {
