@@ -16,6 +16,8 @@ our $opt_h;
 our $builddate;
 our $svnrev;
 our $branch;
+our $branchnum;
+our $branchname;
 our $headnum = "11.0";
 our $stablenum = "10.2";
 
