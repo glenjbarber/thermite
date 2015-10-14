@@ -133,6 +133,15 @@ mk_fake_imgs() {
 		;;
 	esac
 
+	case ${r} in
+		11)
+			csums="SHA512 SHA256"
+			;;
+		10)
+			csums="SHA256 MD5"
+			;;
+	esac
+
 	case ${arch} in
 	amd64|i386)
 		mkdir -p "${CHROOTDIR}/R/vmimages"
@@ -140,7 +149,7 @@ mk_fake_imgs() {
 			echo 1 > "${CHROOTDIR}/R/vmimages/FreeBSD-11.0-CURRENT-${arch}.${vmimage}"
 			xz -T0 -k "${CHROOTDIR}/R/vmimages/FreeBSD-11.0-CURRENT-${arch}.${vmimage}"
 		done
-		for csum in SHA256 MD5; do
+		for csum in ${csums}; do
 			echo 1 > "${CHROOTDIR}/R/vmimages/CHECKSUM.${csum}"
 		done
 		;;
@@ -150,14 +159,14 @@ mk_fake_imgs() {
 			echo 1 > "${CHROOTDIR}/R/vmimages/FreeBSD-11.0-CURRENT-arm64-${arch}.${vmimage}"
 			xz -T0 -k "${CHROOTDIR}/R/vmimages/FreeBSD-11.0-CURRENT-arm64-${arch}.${vmimage}"
 		done
-		for csum in SHA256 MD5; do
+		for csum in ${csums}; do
 			echo 1 > "${CHROOTDIR}/R/vmimages/CHECKSUM.${csum}"
 		done
 		;;
 	*)
 		;;
 	esac
-	for csum in SHA256 MD5; do
+	for csum in ${csums}; do
 		echo 1 > "${CHROOTDIR}/R/CHECKSUM.${csum}"
 	done
 

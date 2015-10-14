@@ -10,7 +10,14 @@ usage() {
 
 get_vm_checksum() {
 	local _s="${r}-${a}-${k}-${t}"
-	sumfiles="SHA256 MD5"
+	case ${r} in
+		11)
+			sumfiles="SHA512 SHA256"
+			;;
+		10)
+			sumfiles="SHA256 MD5"
+			;;
+	esac
 	if [ -e ${scriptdir}/${_s}.conf ]; then
 		. ${scriptdir}/${_s}.conf
 	else
@@ -48,7 +55,14 @@ get_vm_checksum() {
 
 get_iso_checksum() {
 	local _s="${r}-${a}-${k}-${t}"
-	sumfiles="SHA256 MD5"
+	case ${r} in
+		11)
+			sumfiles="SHA512 SHA256"
+			;;
+		10)
+			sumfiles="SHA256 MD5"
+			;;
+	esac
 	if [ -e ${scriptdir}/${_s}.conf ]; then
 		. ${scriptdir}/${_s}.conf
 	else
