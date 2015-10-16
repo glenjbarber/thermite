@@ -20,6 +20,7 @@ our $branchnum;
 our $branchname;
 our $headnum = "11.0";
 our $stablenum = "10.2";
+our $hasarmv6 = 0;
 
 sub usage() {
 	print("Usage: ./get-checksums.sh -c ./builds-NN.conf | $prog > outfile\n");
@@ -104,6 +105,19 @@ The partition layout is:
     ~ 1GB  - freebsd-swap GPT partition type (swapfs GPT label)
     ~ ~17GB - freebsd-ufs GPT partition type (rootfs GPT label)
 OPENING
+	return(0);
+}
+
+sub print_opening_arminfo() {
+	print <<ARMINFO;
+
+Note regarding arm/armv6 images: For convenience for those without
+console access to the system, a freebsd user with a password of
+freebsd is available by default for ssh(1) access.  Additionally,
+the root user password is set to root, which it is strongly
+recommended to change the password for both users after gaining
+access to the system.
+ARMINFO
 	return(0);
 }
 
@@ -219,6 +233,9 @@ sub main() {
 					$branchname = "STABLE";
 				}
 			}
+			if ($_ =~ m/^o .* armv6 .*/) {
+				$hasarmv6 = 1;
+			}
 			if ($endisos == 0) {
 				push(@builds, $_);
 			} else {
@@ -237,6 +254,10 @@ sub main() {
 
 	foreach my $build (@builds) {
 		print("$build\n");
+	}
+
+	if ($hasarmv6 ne 0) {
+		&print_opening_arminfo();
 	}
 
 	&print_opening2();
