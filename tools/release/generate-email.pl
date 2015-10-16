@@ -27,164 +27,6 @@ sub usage() {
 	exit(0);
 }
 
-sub print_header() {
-	print <<HEADER;
-To: freebsd-snapshots\@FreeBSD.org
-Subject: New FreeBSD snapshots available: $branch ($builddate r$svnrev)
-
-HEADER
-	return(0);
-}
-
-sub print_opening() {
-	print <<OPENING;
-New FreeBSD development branch installation ISOs and virtual machine
-disk images have been uploaded to the FTP mirrors.
-
-As with any development branch, the installation snapshots are not
-intended for use on production systems.  We do, however, encourage
-testing on non-production systems as much as possible.
-
-Please also consider installing the sysutils/panicmail port, which can
-help in providing FreeBSD developers the necessary information regarding
-system crashes.
-
-Checksums for the installation ISOs and the VM disk images follow at
-the end of this email.
-
-=== Installation ISOs ===
-
-Installation images are available for:
-
-OPENING
-
-	return(0);
-}
-
-sub print_opening2() {
-	print <<OPENING;
-
-Snapshots may be downloaded from the corresponding architecture
-directory from:
-
-    ftp://ftp.freebsd.org/pub/FreeBSD/snapshots/ISO-IMAGES/
-
-Please be patient if your local FTP mirror has not yet caught
-up with the changes.
-
-Problems, bug reports, or regression reports should be reported through
-the Bugzilla PR system or the appropriate mailing list such as -current\@
-or -stable\@ .
-
-=== Virtual Machine Disk Images ===
- 
-VM disk images are available for the following architectures:
-
-OPENING
-	return(0);
-}
-
-sub print_opening3() {
-	print <<OPENING;
-
-Disk images may be downloaded from the following URL (or any of the
-FreeBSD FTP mirrors):
-
-    ftp://ftp.freebsd.org/pub/FreeBSD/snapshots/VM-IMAGES/
-
-Images are available in the following disk image formats:
-
-    ~ RAW
-    ~ QCOW2 (qemu)
-    ~ VMDK (qemu, VirtualBox, VMWare)
-    ~ VHD (qemu, xen)
-
-The partition layout is:
-
-    ~ 512k - freebsd-boot GPT partition type (bootfs GPT label)
-    ~ 1GB  - freebsd-swap GPT partition type (swapfs GPT label)
-    ~ ~17GB - freebsd-ufs GPT partition type (rootfs GPT label)
-OPENING
-	return(0);
-}
-
-sub print_opening_arminfo() {
-	print <<ARMINFO;
-
-Note regarding arm/armv6 images: For convenience for those without
-console access to the system, a freebsd user with a password of
-freebsd is available by default for ssh(1) access.  Additionally,
-the root user password is set to root, which it is strongly
-recommended to change the password for both users after gaining
-access to the system.
-ARMINFO
-	return(0);
-}
-
-sub print_opening_special() {
-	print <<SPECIAL;
-
-Note regarding arm64/aarch64 virtual machine images: a modified QEMU EFI
-loader file is needed for qemu-system-aarch64 to be able to boot the
-virtual machine images.  The file can be found here, for now, until
-various patches are available upstream:
-
-    http://people.FreeBSD.org/~gjb/QEMU_EFI.fd
-
-The checksums for this file are:
-
-SHA256 (QEMU_EFI.fd) = a35335a418781fc0963c80ab12d548b6972d2c0b955f45664a4b780f4e5f48a2
-MD5 (QEMU_EFI.fd) = ec03d51a3c4374a515cf32ab0c2721cf
-
-To boot the VM image, run:
-
-    % qemu-system-aarch64 -m 4096M -cpu cortex-a57 -M virt  \
-	-bios QEMU_EFI.fd -serial telnet::4444,server -nographic \
-	-drive if=none,file=VMDISK,id=hd0 \
-	-device virtio-blk-device,drive=hd0 \
-	-device virtio-net-device,netdev=net0 \
-	-netdev user,id=net0
-
-Be sure to replace "VMDISK" with the path to the virtual machine image.
-SPECIAL
-	return(0);
-}
-
-sub print_amis() {
-	print <<AMIS;
-
-=== Amazon EC2 AMI Images ===
-
-FreeBSD/amd64 EC2 AMIs are available in the following regions:
-
-AMIS
-	return(0);
-}
-
-sub print_vagrant() {
-	print <<VAGRANT;
-
-=== Vagrant Images ===
-
-FreeBSD/amd64 images are available on the Hashicorp Atlas site for the
-VMWare Desktop and VirtualBox providers, and can be installed by
-running:
-
-    % vagrant init freebsd/FreeBSD-$branchnum-$branchname
-    % vagrant up
-
-VAGRANT
-	return(0);
-}
-
-sub print_footer() {
-	print <<FOOTER;
-Love FreeBSD?  Support this and future releases with a donation to
-the FreeBSD Foundation!  https://www.freebsdfoundation.org/donate/
-FOOTER
-	return(0);
-}
-
 sub main() {
 	getopts('h');
 	my @lines = ();
@@ -249,40 +91,153 @@ sub main() {
 		}
 	}
 
-	&print_header();
-	&print_opening();
+	print <<HEADER;
+To: freebsd-snapshots\@FreeBSD.org
+Subject: New FreeBSD snapshots available: $branch ($builddate r$svnrev)
+
+HEADER
+	print <<OPENING;
+New FreeBSD development branch installation ISOs and virtual machine
+disk images have been uploaded to the FTP mirrors.
+
+As with any development branch, the installation snapshots are not
+intended for use on production systems.  We do, however, encourage
+testing on non-production systems as much as possible.
+
+Please also consider installing the sysutils/panicmail port, which can
+help in providing FreeBSD developers the necessary information regarding
+system crashes.
+
+Checksums for the installation ISOs and the VM disk images follow at
+the end of this email.
+
+=== Installation ISOs ===
+
+Installation images are available for:
+
+OPENING
 
 	foreach my $build (@builds) {
 		print("$build\n");
 	}
 
 	if ($hasarmv6 ne 0) {
-		&print_opening_arminfo();
+		print <<ARMINFO;
+
+Note regarding arm/armv6 images: For convenience for those without
+console access to the system, a freebsd user with a password of
+freebsd is available by default for ssh(1) access.  Additionally,
+the root user password is set to root, which it is strongly
+recommended to change the password for both users after gaining
+access to the system.
+ARMINFO
 	}
 
-	&print_opening2();
+	print <<OPENING;
+
+Snapshots may be downloaded from the corresponding architecture
+directory from:
+
+    ftp://ftp.freebsd.org/pub/FreeBSD/snapshots/ISO-IMAGES/
+
+Please be patient if your local FTP mirror has not yet caught
+up with the changes.
+
+Problems, bug reports, or regression reports should be reported through
+the Bugzilla PR system or the appropriate mailing list such as -current\@
+or -stable\@ .
+
+=== Virtual Machine Disk Images ===
+ 
+VM disk images are available for the following architectures:
+
+OPENING
 
 	foreach my $vmimage (@vmimages) {
 		print("$vmimage\n");
 	}
 
-	&print_opening3();
+	print <<OPENING;
+
+Disk images may be downloaded from the following URL (or any of the
+FreeBSD FTP mirrors):
+
+    ftp://ftp.freebsd.org/pub/FreeBSD/snapshots/VM-IMAGES/
+
+Images are available in the following disk image formats:
+
+    ~ RAW
+    ~ QCOW2 (qemu)
+    ~ VMDK (qemu, VirtualBox, VMWare)
+    ~ VHD (qemu, xen)
+
+The partition layout is:
+
+    ~ 512k - freebsd-boot GPT partition type (bootfs GPT label)
+    ~ 1GB  - freebsd-swap GPT partition type (swapfs GPT label)
+    ~ ~17GB - freebsd-ufs GPT partition type (rootfs GPT label)
+OPENING
 
 	if ($branch =~ "head") {
-		&print_opening_special();
+		print <<SPECIAL;
+
+Note regarding arm64/aarch64 virtual machine images: a modified QEMU EFI
+loader file is needed for qemu-system-aarch64 to be able to boot the
+virtual machine images.  The file can be found here, for now, until
+various patches are available upstream:
+
+    http://people.FreeBSD.org/~gjb/QEMU_EFI.fd
+
+The checksums for this file are:
+
+SHA256 (QEMU_EFI.fd) = a35335a418781fc0963c80ab12d548b6972d2c0b955f45664a4b780f4e5f48a2
+MD5 (QEMU_EFI.fd) = ec03d51a3c4374a515cf32ab0c2721cf
+
+To boot the VM image, run:
+
+    % qemu-system-aarch64 -m 4096M -cpu cortex-a57 -M virt  \
+	-bios QEMU_EFI.fd -serial telnet::4444,server -nographic \
+	-drive if=none,file=VMDISK,id=hd0 \
+	-device virtio-blk-device,drive=hd0 \
+	-device virtio-net-device,netdev=net0 \
+	-netdev user,id=net0
+
+Be sure to replace "VMDISK" with the path to the virtual machine image.
+SPECIAL
 	}
 
-	&print_amis();
+	print <<AMIS;
+
+=== Amazon EC2 AMI Images ===
+
+FreeBSD/amd64 EC2 AMIs are available in the following regions:
+
+AMIS
 	foreach my $ami (@amis) {
 		print(" $ami\n");
 	}
 
-	&print_vagrant();
+	print <<VAGRANT;
+
+=== Vagrant Images ===
+
+FreeBSD/amd64 images are available on the Hashicorp Atlas site for the
+VMWare Desktop and VirtualBox providers, and can be installed by
+running:
+
+    % vagrant init freebsd/FreeBSD-$branchnum-$branchname
+    % vagrant up
+
+VAGRANT
 	foreach my $line (@lines) {
 		print("$line\n");
 	}
 
-	&print_footer();
+	print <<FOOTER;
+
+Love FreeBSD?  Support this and future releases with a donation to
+the FreeBSD Foundation!  https://www.freebsdfoundation.org/donate/
+FOOTER
 
 	return(0);
 }
