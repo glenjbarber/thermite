@@ -37,11 +37,24 @@ get_vm_checksum() {
 	__REVISION=$(make -C ${CHROOTDIR}/usr/src/release -V REVISION)
 	__BRANCH=$(make -C ${CHROOTDIR}/usr/src/release -V BRANCH)
 	for _f in ${sumfiles}; do
-		case ${_f} in
-			SHA256)
-				echo "o ${__REVISION}-${__BRANCH} ${a}:"
+		case ${r} in
+			11)
+				case ${_f} in
+					SHA512)
+						echo "o ${__REVISION}-${__BRANCH} ${a}:"
+						;;
+					*)
+						;;
+				esac
 				;;
 			*)
+				case ${_f} in
+					SHA256)
+						echo "o ${__REVISION}-${__BRANCH} ${a}:"
+						;;
+					*)
+						;;
+				esac
 				;;
 		esac
 		cat ${CHROOTDIR}/R/ftp-stage/${type}/VM-IMAGES/${__REVISION}-${__BRANCH}/${TARGET_ARCH}/Latest/CHECKSUM.${_f}* | \
