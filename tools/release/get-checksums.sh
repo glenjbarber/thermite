@@ -98,14 +98,26 @@ get_iso_checksum() {
 		TARGET="${EMBEDDED_TARGET}"
 		TARGET_ARCH="${EMBEDDED_TARGET_ARCH}"
 	fi
-	for _f in ${sumfiles}; do
-		case ${_f} in
-			SHA256)
-				echo "o ${__REVISION}-${__BRANCH} ${a} ${k}:"
-				;;
-			*)
-				;;
-		esac
+	case ${r} in
+		11)
+			case ${_f} in
+				SHA512)
+					echo "o ${__REVISION}-${__BRANCH} ${a} ${k}:"
+					;;
+				*)
+					;;
+			esac
+			;;
+		*)
+			case ${_f} in
+				SHA256)
+					echo "o ${__REVISION}-${__BRANCH} ${a} ${k}:"
+					;;
+				*)
+					;;
+			esac
+			;;
+	esac
 		cat ${CHROOTDIR}/R/ftp-stage/${type}/${TARGET}/${TARGET_ARCH}/ISO-IMAGES/${__REVISION}/CHECKSUM.${_f}* | \
 			sed -e 's/^/  /'
 		echo
