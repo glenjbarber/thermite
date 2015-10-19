@@ -68,6 +68,6 @@ if [ -z "${WITH_COMPRESSED_IMAGES}" ]; then
 		/usr/bin/xz -k ${_i}
 	done
 fi
+sha512 FreeBSD* > CHECKSUM.SHA512
 sha256 FreeBSD* > CHECKSUM.SHA256
-md5 FreeBSD* > CHECKSUM.MD5
 exit 0

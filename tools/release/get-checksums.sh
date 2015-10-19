@@ -10,14 +10,7 @@ usage() {
 
 get_vm_checksum() {
 	local _s="${r}-${a}-${k}-${t}"
-	case ${r} in
-		11)
-			sumfiles="SHA512 SHA256"
-			;;
-		10)
-			sumfiles="SHA256 MD5"
-			;;
-	esac
+	sumfiles="SHA512 SHA256"
 	if [ -e ${scriptdir}/${_s}.conf ]; then
 		. ${scriptdir}/${_s}.conf
 	else
@@ -38,7 +31,7 @@ get_vm_checksum() {
 	__BRANCH=$(make -C ${CHROOTDIR}/usr/src/release -V BRANCH)
 	for _f in ${sumfiles}; do
 		case ${_f} in
-			SHA256)
+			SHA512)
 				echo "o ${__REVISION}-${__BRANCH} ${a}:"
 				;;
 			*)
@@ -55,14 +48,7 @@ get_vm_checksum() {
 
 get_iso_checksum() {
 	local _s="${r}-${a}-${k}-${t}"
-	case ${r} in
-		11)
-			sumfiles="SHA512 SHA256"
-			;;
-		10)
-			sumfiles="SHA256 MD5"
-			;;
-	esac
+	sumfiles="SHA512 SHA256"
 	if [ -e ${scriptdir}/${_s}.conf ]; then
 		. ${scriptdir}/${_s}.conf
 	else
@@ -87,7 +73,7 @@ get_iso_checksum() {
 	fi
 	for _f in ${sumfiles}; do
 		case ${_f} in
-			SHA256)
+			SHA512)
 				echo "o ${__REVISION}-${__BRANCH} ${a} ${k}:"
 				;;
 			*)
