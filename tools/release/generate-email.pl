@@ -195,11 +195,11 @@ MD5 (QEMU_EFI.fd) = ec03d51a3c4374a515cf32ab0c2721cf
 
 To boot the VM image, run:
 
-    % qemu-system-aarch64 -m 4096M -cpu cortex-a57 -M virt  \
-	-bios QEMU_EFI.fd -serial telnet::4444,server -nographic \
-	-drive if=none,file=VMDISK,id=hd0 \
-	-device virtio-blk-device,drive=hd0 \
-	-device virtio-net-device,netdev=net0 \
+    % qemu-system-aarch64 -m 4096M -cpu cortex-a57 -M virt  \\
+	-bios QEMU_EFI.fd -serial telnet::4444,server -nographic \\
+	-drive if=none,file=VMDISK,id=hd0 \\
+	-device virtio-blk-device,drive=hd0 \\
+	-device virtio-net-device,netdev=net0 \\
 	-netdev user,id=net0
 
 Be sure to replace "VMDISK" with the path to the virtual machine image.
