@@ -19,7 +19,7 @@ our $branch;
 our $branchnum;
 our $branchname;
 our $headnum = "11.0";
-our $stablenum = "10.2";
+our $stablenum = "10.3";
 our $hasarmv6 = 0;
 
 sub usage() {
@@ -72,7 +72,7 @@ sub main() {
 					$branch =~ s/^o /stable\//;
 					$branch =~ s/\..*$//;
 					$branchnum = "$stablenum";
-					$branchname = "STABLE";
+					$branchname = "PRERELEASE";
 				}
 			}
 			if ($_ =~ m/^o .* armv6 .*/) {
