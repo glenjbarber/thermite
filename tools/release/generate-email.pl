@@ -72,7 +72,7 @@ sub main() {
 					$branch =~ s/^o /stable\//;
 					$branch =~ s/\..*$//;
 					$branchnum = "$stablenum";
-					$branchname = "PRERELEASE";
+					$branchname = "STABLE";
 				}
 			}
 			if ($_ =~ m/^o .* armv6 .*/) {
