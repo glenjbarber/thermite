@@ -545,7 +545,7 @@ main() {
 	runall install_chroots
 	runall build_release
 	runall upload_ec2_ami
-	runall upload_azure_image
+	#runall upload_azure_image
 	runall upload_gce_image
 	runall upload_vagrant_image
 }
