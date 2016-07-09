@@ -18,8 +18,9 @@ our $svnrev;
 our $branch;
 our $branchnum;
 our $branchname;
-our $headnum = "11.0";
-our $stablenum = "10.3";
+our $headnum = "12.0";
+our $stable11num = "11.0";
+our $stable10num = "10.3";
 our $hasarmv6 = 0;
 
 sub usage() {
@@ -69,9 +70,15 @@ sub main() {
 					$branchname = "CURRENT";
 				} else {
 					$branch = $_;
-					$branch =~ s/^o /stable\//;
+					$branch =~ s/^o /stable\/11/;
 					$branch =~ s/\..*$//;
-					$branchnum = "$stablenum";
+					$branchnum = "$stable11num";
+					$branchname = "STABLE";
+				} else {
+					$branch = $_;
+					$branch =~ s/^o /stable\/10/;
+					$branch =~ s/\..*$//;
+					$branchnum = "$stable10num";
 					$branchname = "STABLE";
 				}
 			}
@@ -178,7 +185,7 @@ The partition layout is:
     ~ ~17GB - freebsd-ufs GPT partition type (rootfs GPT label)
 OPENING
 
-	if ($branch =~ "head") {
+	if ($branch =~ "head") || ($branch =~ "stable/11") {
 		print <<SPECIAL;
 
 Note regarding arm64/aarch64 virtual machine images: a modified QEMU EFI
