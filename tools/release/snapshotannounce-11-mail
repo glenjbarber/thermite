@@ -1,6 +1,6 @@
 # $Id$
 To:	freebsd-snapshots@FreeBSD.org
-Subject: New FreeBSD snapshots available: head (YYYYMMDD rNNNNNN)
+Subject: New FreeBSD snapshots available: stable/11 (YYYYMMDD rNNNNNN)
 
 New FreeBSD development branch installation ISOs and virtual machine
 disk images have been uploaded to the FTP mirrors.
