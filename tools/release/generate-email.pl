@@ -183,15 +183,9 @@ OPENING
 
 Note regarding arm64/aarch64 virtual machine images: a modified QEMU EFI
 loader file is needed for qemu-system-aarch64 to be able to boot the
-virtual machine images.  The file can be found here, for now, until
-various patches are available upstream:
+virtual machine images.  See this page for more information:
 
-    http://people.FreeBSD.org/~gjb/QEMU_EFI.fd
-
-The checksums for this file are:
-
-SHA256 (QEMU_EFI.fd) = a35335a418781fc0963c80ab12d548b6972d2c0b955f45664a4b780f4e5f48a2
-MD5 (QEMU_EFI.fd) = ec03d51a3c4374a515cf32ab0c2721cf
+    https://wiki.freebsd.org/arm64/QEMU
 
 To boot the VM image, run:
 
