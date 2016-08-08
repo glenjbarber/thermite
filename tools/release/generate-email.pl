@@ -15,12 +15,16 @@ my $prog = basename($0);
 our $opt_h;
 our $builddate;
 our $svnrev;
-our $branch;
-our $branchnum;
-our $branchname;
-our $headnum = "11.0";
-our $stablenum = "10.3";
+our $junk = "";
+our $arch = "";
+our $kernel = "";
+our $branch = "";
+our $revision = 0;
+our $branchname = "";
+our $version = 0;
 our $hasarmv6 = 0;
+our $hasarm64 = 0;
+our $hasbranch = 0;
 
 sub usage() {
 	print("Usage: ./get-checksums.sh -c ./builds-NN.conf | $prog > outfile\n");
@@ -36,7 +40,14 @@ sub main() {
 	my $endisos = 0;
 	$builddate = 0;
 	$svnrev = 0;
-	$branch = 0;
+	$junk = "";
+	$arch = "";
+	$kernel = "";
+	$branch = "";
+	$branchname = "";
+	$revision = 0;
+	$version = 0;
+	$hasbranch = 0;
 
 	if ($opt_h) {
 		&usage();
@@ -62,21 +73,29 @@ sub main() {
 		}
 		if ($_ =~ m/^o /) {
 			$_ =~ s/:$//;
-			if ($branch == 0) {
-				if ($_ =~ m/^o \d\d\.\d-CURRENT/) {
-					$branch = "head";
-					$branchnum = "$headnum";
-					$branchname = "CURRENT";
-				} else {
-					$branch = $_;
-					$branch =~ s/^o /stable\//;
-					$branch =~ s/\..*$//;
-					$branchnum = "$stablenum";
-					$branchname = "STABLE";
-				}
-			}
 			if ($_ =~ m/^o .* armv6 .*/) {
 				$hasarmv6 = 1;
+			}
+			if ($_ =~ m/^o .* aarch64 .*/) {
+				$hasarm64 = 1;
+			}
+			if ($hasbranch eq 0) {
+				($junk, $branch, $arch, $kernel) = split(" ", $_);
+				$revision = $branch;
+				$revision =~ s/-\w+.*//;
+				$version = $revision;
+				$version =~ s/\.\d.*//;
+				$branchname = $branch;
+				$branchname =~ s/\d+\.\d-//;
+				$branchname =~ s/ .*$//;
+				if ($branchname =~ m/(ALPHA|CURRENT)/) {
+					$branch = "head";
+				} elsif ($branchname =~ m/(BETA|PRERELEASE|RC|STABLE)/) {
+					$branch = "stable/$version";
+				} else {
+					$branch = "unknown";
+				}
+				$hasbranch = 1;
 			}
 			if ($endisos == 0) {
 				push(@builds, $_);
@@ -178,8 +197,8 @@ The partition layout is:
     ~ ~17GB - freebsd-ufs GPT partition type (rootfs GPT label)
 OPENING
 
-	if ($branch =~ "head") {
-		print <<SPECIAL;
+	if ($hasarm64 ne 0) {
+		print <<AARCH64;
 
 Note regarding arm64/aarch64 virtual machine images: a modified QEMU EFI
 loader file is needed for qemu-system-aarch64 to be able to boot the
@@ -197,9 +216,10 @@ To boot the VM image, run:
 	-netdev user,id=net0
 
 Be sure to replace "VMDISK" with the path to the virtual machine image.
-SPECIAL
+AARCH64
 	}
 
+	if ($#amis ne 0) {
 	print <<AMIS;
 
 === Amazon EC2 AMI Images ===
@@ -207,6 +227,7 @@ SPECIAL
 FreeBSD/amd64 EC2 AMIs are available in the following regions:
 
 AMIS
+	}
 	foreach my $ami (@amis) {
 		print(" $ami\n");
 	}
@@ -219,7 +240,7 @@ FreeBSD/amd64 images are available on the Hashicorp Atlas site for the
 VMWare Desktop and VirtualBox providers, and can be installed by
 running:
 
-    % vagrant init freebsd/FreeBSD-$branchnum-$branchname
+    % vagrant init freebsd/FreeBSD-$revision-$branchname
     % vagrant up
 
 VAGRANT
