@@ -105,8 +105,11 @@ sub main() {
 		}
 		if ($_ =~ m/^Created AMI in /) {
 			$_ =~ s/^Created AMI in //;
-			push(@amis, $_);
-			pop(@lines);
+			# Exclude ca-central-1 eu-west-2 for now
+			if ($_ !~ m/(ca-central-1|eu-west-2)/) {
+				push(@amis, $_);
+				pop(@lines);
+			}
 		}
 	}
 
