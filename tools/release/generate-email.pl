@@ -255,6 +255,7 @@ VAGRANT
 
 Love FreeBSD?  Support this and future releases with a donation to
 the FreeBSD Foundation!  https://www.freebsdfoundation.org/donate/
+
 FOOTER
 
 	return(0);
