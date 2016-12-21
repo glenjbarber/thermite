@@ -250,7 +250,7 @@ send_completed_email() {
 	[ -z "${emailsentfrom}" ] && return 0
 	local _body
 	local _subject
-	_subject="Snapshot builds completed"
+	_subject="${rev}.X snapshot builds completed"
 	_body="Weeee!"
 
 	printf "From: ${emailsentfrom}\nTo: ${emailgoesto}\nSubject: ${_subject}\n\n${_body}\n\n" \
