@@ -248,7 +248,9 @@ running:
 
 VAGRANT
 	foreach my $line (@lines) {
-		print("$line\n");
+		if ($line !~ m/^Created AMI in /) {
+			print("$line\n");
+		}
 	}
 
 	print <<FOOTER;
