@@ -103,14 +103,14 @@ sub main() {
 				push(@vmimages, $_);
 			}
 		}
-		#if ($_ =~ m/^Created AMI in /) {
-		#	$_ =~ s/^Created AMI in //;
-		#	# Exclude ca-central-1 eu-west-2 for now
-		#	if ($_ !~ m/(ca-central-1|eu-west-2)/) {
-		#		push(@amis, $_);
-		#		pop(@lines);
-		#	}
-		#}
+		if ($_ =~ m/^Created AMI in /) {
+			$_ =~ s/^Created AMI in //;
+			# Exclude ca-central-1 eu-west-2 for now
+			#if ($_ !~ m/(ca-central-1|eu-west-2)/) {
+				push(@amis, $_);
+				pop(@lines);
+			#}
+		}
 	}
 
 	print <<HEADER;
