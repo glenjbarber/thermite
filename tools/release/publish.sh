@@ -17,9 +17,9 @@ if [ "x${me}" != "xarchive" ]; then
 fi
 
 #cd /archive/tmp/releases
-#pax -r -w -l . /archive/pub/FreeBSD/releases
+#pax -r -w . /archive/pub/FreeBSD/releases
 #/usr/local/bin/rsync -avH /archive/tmp/releases/* /archive/pub/FreeBSD/releasees/
 
 cd /archive/tmp/snapshots
-pax -r -w -l . /archive/pub/FreeBSD/snapshots
-/usr/local/bin/rsync -avH /archive/tmp/snapshots/* /archive/pub/FreeBSD/snapshots/
+pax -r -w . /archive/pub/FreeBSD/snapshots
+#/usr/local/bin/rsync -avH /archive/tmp/snapshots/* /archive/pub/FreeBSD/snapshots/
