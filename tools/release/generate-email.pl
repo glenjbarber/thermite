@@ -120,7 +120,7 @@ Subject: New FreeBSD snapshots available: $branch ($builddate r$svnrev)
 HEADER
 	print <<OPENING;
 New FreeBSD development branch installation ISOs and virtual machine
-disk images have been uploaded to the FTP mirrors.
+disk images have been uploaded to the FreeBSD Project mirrors.
 
 As with any development branch, the installation snapshots are not
 intended for use on production systems.  We do, however, encourage
@@ -162,8 +162,8 @@ directory from:
 
     https://download.freebsd.org/ftp/snapshots/ISO-IMAGES/
 
-Please be patient if your local FTP mirror has not yet caught
-up with the changes.
+Please be patient if your local mirror has not yet caught up with the
+changes.
 
 Problems, bug reports, or regression reports should be reported through
 the Bugzilla PR system or the appropriate mailing list such as -current\@
@@ -182,7 +182,7 @@ OPENING
 	print <<OPENING;
 
 Disk images may be downloaded from the following URL (or any of the
-FreeBSD FTP mirrors):
+FreeBSD Project mirrors):
 
     https://download.freebsd.org/ftp/snapshots/VM-IMAGES/
 
