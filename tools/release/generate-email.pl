@@ -222,7 +222,7 @@ Be sure to replace "VMDISK" with the path to the virtual machine image.
 AARCH64
 	}
 
-	if ($#amis ne 0) {
+	if ($#amis gt 1) {
 	print <<AMIS;
 
 === Amazon EC2 AMI Images ===
