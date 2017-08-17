@@ -170,7 +170,7 @@ the Bugzilla PR system or the appropriate mailing list such as -current\@
 or -stable\@ .
 
 === Virtual Machine Disk Images ===
- 
+
 VM disk images are available for the following architectures:
 
 OPENING
