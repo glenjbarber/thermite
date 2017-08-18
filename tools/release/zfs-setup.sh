@@ -92,6 +92,11 @@ zfs_teardown() {
 			done
 		done
 	done
+
+	if [ ! -z "${delete_only}" ]; then
+		echo "ZFS datasets were destroyed.  They were not re-created"
+		echo "as the '-d' flag was specified."
+	fi
 	return 0
 }
 
