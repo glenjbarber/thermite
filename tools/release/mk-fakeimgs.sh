@@ -57,6 +57,9 @@ ftp_stage() {
 	armv6)
 		MAKE_FLAGS="TARGET=arm TARGET_ARCH=armv6 KERNCONF=${KERNEL} EMBEDDEDBUILD=1"
 		;;
+	armv7)
+		MAKE_FLAGS="TARGET=arm TARGET_ARCH=armv7 KERNCONF=${KERNEL} EMBEDDEDBUILD=1"
+		;;
 	aarch64)
 		MAKE_FLAGS="TARGET=arm64 TARGET_ARCH=aarch64"
 		;;
@@ -105,7 +108,7 @@ mk_fake_imgs() {
 		pfx="${pfx}-${arch}"
 		images="bootonly.iso disc1.iso"
 		;;
-	armv6)
+	armv6|armv7)
 		sufx="${KERNEL}"
 		images="img.xz"
 		pfx="${pfx}-arm-${arch}-${sufx}"
@@ -120,7 +123,7 @@ mk_fake_imgs() {
 	esac
 
 	case ${arch} in
-	armv6)
+	armv6|armv7)
 		for image in ${images}; do
 			echo 1 > "${CHROOTDIR}/R/${pfx}.${image}"
 		done
