@@ -22,7 +22,7 @@ our $branch = "";
 our $revision = 0;
 our $branchname = "";
 our $version = 0;
-our $hasarmv6 = 0;
+our $hasarmv = 0;
 our $hasarm64 = 0;
 our $hasbranch = 0;
 
@@ -73,8 +73,8 @@ sub main() {
 		}
 		if ($_ =~ m/^o /) {
 			$_ =~ s/:$//;
-			if ($_ =~ m/^o .* armv6 .*/) {
-				$hasarmv6 = 1;
+			if ($_ =~ m/^o .* armv[6|7] .*/) {
+				$hasarmv = 1;
 			}
 			if ($_ =~ m/^o .* aarch64 .*/) {
 				$hasarm64 = 1;
@@ -143,10 +143,10 @@ OPENING
 		print("$build\n");
 	}
 
-	if ($hasarmv6 ne 0) {
+	if ($hasarmv ne 0) {
 		print <<ARMINFO;
 
-Note regarding arm/armv6 images: For convenience for those without
+Note regarding arm/armv{6,7} images: For convenience for those without
 console access to the system, a freebsd user with a password of
 freebsd is available by default for ssh(1) access.  Additionally,
 the root user password is set to root, which it is strongly
