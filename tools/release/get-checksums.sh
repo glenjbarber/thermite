@@ -27,8 +27,8 @@ get_vm_checksum() {
 	if [ ! -e "${CHROOTDIR}/R/ftp-stage/${type}/VM-IMAGES" ]; then
 		return 0
 	fi
-	__REVISION=$(make -C ${CHROOTDIR}/usr/src/release -V REVISION)
-	__BRANCH=$(make -C ${CHROOTDIR}/usr/src/release -V BRANCH)
+	__REVISION=$(chroot ${CHROOTDIR} make -C /usr/src/release -V REVISION)
+	__BRANCH=$(chroot ${CHROOTDIR} make -C /usr/src/release -V BRANCH)
 	for _f in ${sumfiles}; do
 		case ${_f} in
 			SHA512)
@@ -65,8 +65,8 @@ get_iso_checksum() {
 			type="snapshots"
 			;;
 	esac
-	__REVISION=$(make -C ${CHROOTDIR}/usr/src/release -V REVISION)
-	__BRANCH=$(make -C ${CHROOTDIR}/usr/src/release -V BRANCH)
+	__REVISION=$(chroot ${CHROOTDIR} make -C /usr/src/release -V REVISION)
+	__BRANCH=$(chroot ${CHROOTDIR} make -C /usr/src/release -V BRANCH)
 	if [ ! -z "${EMBEDDEDBUILD}" ]; then
 		TARGET="${EMBEDDED_TARGET}"
 		TARGET_ARCH="${EMBEDDED_TARGET_ARCH}"
