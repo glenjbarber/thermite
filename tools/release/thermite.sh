@@ -487,7 +487,7 @@ build_chroots() {
 			${_srcdir} \
 			>> ${logdir}/${_build}.log 2>&1
 	fi
-	info "Building ${_srcdir} world"
+	info "Building $(realpath ${_srcdir}) world"
 	env MAKEOBJDIRPREFIX=${_objdir} \
 		make -C ${_srcdir} ${WORLD_FLAGS} \
 		__MAKE_CONF=/dev/null SRCCONF=/dev/null \
