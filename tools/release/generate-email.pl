@@ -223,13 +223,19 @@ AARCH64
 	}
 
 	if ($#amis gt 1) {
-	print <<AMIS;
+		print <<AMIS;
 
 === Amazon EC2 AMI Images ===
 
 FreeBSD/amd64 EC2 AMIs are available in the following regions:
 
 AMIS
+	} else {
+		print <<NOAMIS;
+
+Amazon EC2 AMI images are not available for this snapshot.
+
+NOAMIS
 	}
 	foreach my $ami (@amis) {
 		print(" $ami\n");
