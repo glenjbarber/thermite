@@ -197,7 +197,7 @@ The partition layout is:
 
     ~ 512k - freebsd-boot GPT partition type (bootfs GPT label)
     ~ 1GB  - freebsd-swap GPT partition type (swapfs GPT label)
-    ~ ~17GB - freebsd-ufs GPT partition type (rootfs GPT label)
+    ~ ~24GB - freebsd-ufs GPT partition type (rootfs GPT label)
 OPENING
 
 	if ($hasarm64 ne 0) {
