@@ -364,13 +364,19 @@ upload_ec2_ami() {
 		return 0
 	fi
 	mount -t devfs devfs ${CHROOTDIR}/dev
+	if [ ! -z "${EC2SNSTOPIC}" ]; then
+		_EC2SNSTOPIC="EC2SNSTOPIC=${EC2SNSTOPIC}"
+	else
+		unset _EC2SNSTOPIC
+	fi
 	chroot ${CHROOTDIR} make -C /usr/src/release \
 		AWSREGION=${AWSREGION} \
 		AWSBUCKET=${AWSBUCKET} \
 		AWSKEYFILE=${AWSKEYFILE} \
-		EC2PUBLIC=${EC2PUBLIC} ec2ami \
+		EC2PUBLIC=${EC2PUBLIC} \
+		${_EC2SNSTOPIC} ec2ami \
 		>> ${logdir}/${_build}.ec2.log 2>&1
-	unset _build _conf AWSREGION AWSBUCKET AWSKEYFILE EC2PUBLIC
+	unset _build _conf AWSREGION AWSBUCKET AWSKEYFILE EC2PUBLIC EC2SNSTOPIC _EC2SNSTOPIC
 	umount ${CHROOTDIR}/dev
 	return 0
 } # upload_ec2_ami()
