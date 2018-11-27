@@ -373,7 +373,7 @@ upload_ec2_ami() {
 		EC2SNSTOPIC=${EC2SNSTOPIC} \
 		ec2ami \
 		>> ${logdir}/${_build}.ec2.log 2>&1
-	unset _build _conf AWSREGION AWSBUCKET AWSKEYFILE EC2PUBLIC EC2SNSTOPIC
+	unset _build _conf AWSREGION AWSBUCKET AWSKEYFILE EC2PUBLIC EC2SNSTOPIC EC2PUBLICSNAP
 	umount ${CHROOTDIR}/dev
 	return 0
 } # upload_ec2_ami()
