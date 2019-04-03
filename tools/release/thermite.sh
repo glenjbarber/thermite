@@ -345,8 +345,24 @@ upload_ec2_ami() {
 	_build="${rev}-${arch}-${kernel}-${type}"
 	_conf="${scriptdir}/${_build}.conf"
 	source_config || return 0
-	case ${arch} in
-		amd64)
+	case ${arch}:${kernel} in
+		amd64:GENERIC)
+			_EC2TARGET=amd64
+			_EC2TARGET_ARCH=amd64
+			;;
+		aarch64:GENERIC)
+			# XXX: temporary until an MFC to stable/12 and
+			# stable/11 is done.
+			case ${rev} in
+				13)
+					_EC2TARGET=arm64
+					_EC2TARGET_ARCH=aarch64
+					;;
+				*)
+					return 0
+					;;
+			esac
+			# end XXX
 			;;
 		*)
 			return 0
@@ -371,9 +387,12 @@ upload_ec2_ami() {
 		EC2PUBLIC=${EC2PUBLIC} \
 		EC2PUBLICSNAP=${EC2PUBLICSNAP} \
 		EC2SNSTOPIC=${EC2SNSTOPIC} \
+		TARGET=${_EC2TARGET} \
+		TARGET_ARCH=${_EC2TARGET_ARCH} \
 		ec2ami \
 		>> ${logdir}/${_build}.ec2.log 2>&1
 	unset _build _conf AWSREGION AWSBUCKET AWSKEYFILE EC2PUBLIC EC2SNSTOPIC EC2PUBLICSNAP
+	unset _EC2TARGET _EC2TARGET_ARCH
 	umount ${CHROOTDIR}/dev
 	return 0
 } # upload_ec2_ami()
