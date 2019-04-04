@@ -36,6 +36,7 @@ sub main() {
 	my @lines = ();
 	my @builds = ();
 	my @amis = ();
+	my @amis_aarch64 = ();
 	my @vmimages = ();
 	my $endisos = 0;
 	$builddate = 0;
@@ -103,8 +104,16 @@ sub main() {
 				push(@vmimages, $_);
 			}
 		}
-		if ($_ =~ m/^Created AMI in /) {
-			$_ =~ s/^Created AMI in //;
+		if ($_ =~ m/^Created AMI in .*-aarch64-GENERIC-snap.ec2.log/) {
+			$_ =~ s/^Created AMI in .*.ec2.log//;
+			# Exclude ca-central-1 eu-west-2 for now
+			#if ($_ !~ m/(ca-central-1|eu-west-2)/) {
+				push(@amis_aarch64, $_);
+				pop(@lines);
+			#}
+		}
+		if ($_ =~ m/^Created AMI in .*-amd64-GENERIC-snap.ec2.log/) {
+			$_ =~ s/^Created AMI in .*.ec2.log//;
 			# Exclude ca-central-1 eu-west-2 for now
 			#if ($_ !~ m/(ca-central-1|eu-west-2)/) {
 				push(@amis, $_);
@@ -222,10 +231,13 @@ Be sure to replace "VMDISK" with the path to the virtual machine image.
 AARCH64
 	}
 
-	if ($#amis gt 1) {
-		print <<AMIS;
+	print <<EC2;
 
 === Amazon EC2 AMI Images ===
+EC2
+
+	if ($#amis ge 0) {
+		print <<AMIS;
 
 FreeBSD/amd64 EC2 AMIs are available in the following regions:
 
@@ -233,12 +245,27 @@ AMIS
 	} else {
 		print <<NOAMIS;
 
-Amazon EC2 AMI images are not available for this snapshot.
-
+Amazon EC2 amd64 AMI images are not available for this snapshot.
 NOAMIS
 	}
 	foreach my $ami (@amis) {
 		print(" $ami\n");
+	}
+
+	if ($#amis_aarch64 ge 0) {
+		print <<AMIS_AARCH64;
+
+FreeBSD/aarch64 EC2 AMIs are available in the following regions:
+
+AMIS_AARCH64
+	} else {
+		print <<NOAMIS_AARCH64;
+
+Amazon EC2 aarch64 AMI images are not available for this snapshot.
+NOAMIS_AARCH64
+	}
+	foreach my $ami_aarch64 (@amis_aarch64) {
+		print(" $ami_aarch64\n");
 	}
 
 	print <<VAGRANT;

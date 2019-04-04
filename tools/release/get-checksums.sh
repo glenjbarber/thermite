@@ -126,8 +126,11 @@ main() {
 			if [ -e "svnrev_src" ]; then
 				echo "SVNREV=$(cat svnrev_src)"
 			fi
-			tail -n50 ../logs/*.ec2* | grep -E '^Created AMI in' \
+			for amilog in $(ls ../logs/*.ec2* | sort -r); do
+				tail -n50 ${amilog} | grep -E '^Created AMI in' \
+				| sed -e "s/^Created AMI in/Created AMI in ${amilog##../logs/}/g" \
 				|| true
+			done
 			;;
 	esac
 
