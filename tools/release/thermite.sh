@@ -351,18 +351,8 @@ upload_ec2_ami() {
 			_EC2TARGET_ARCH=amd64
 			;;
 		aarch64:GENERIC)
-			# XXX: temporary until an MFC to stable/12 and
-			# stable/11 is done.
-			case ${rev} in
-				13)
-					_EC2TARGET=arm64
-					_EC2TARGET_ARCH=aarch64
-					;;
-				*)
-					return 0
-					;;
-			esac
-			# end XXX
+			_EC2TARGET=arm64
+			_EC2TARGET_ARCH=aarch64
 			;;
 		*)
 			return 0
