@@ -351,8 +351,17 @@ upload_ec2_ami() {
 			_EC2TARGET_ARCH=amd64
 			;;
 		aarch64:GENERIC)
-			_EC2TARGET=arm64
-			_EC2TARGET_ARCH=aarch64
+			# XXX: temporary until support for stable/11 is added
+			case ${rev} in
+				13|12)
+					_EC2TARGET=arm64
+					_EC2TARGET_ARCH=aarch64
+					;;
+				*)
+					return 0
+					;;
+			esac
+			# end XXX
 			;;
 		*)
 			return 0
