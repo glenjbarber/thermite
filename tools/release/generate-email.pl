@@ -252,21 +252,23 @@ NOAMIS
 		print(" $ami\n");
 	}
 
-	if ($#amis_aarch64 ge 0) {
-		print <<AMIS_AARCH64;
+	if ($version gt 11) {
+		if ($#amis_aarch64 ge 0) {
+			print <<AMIS_AARCH64;
 
 FreeBSD/aarch64 EC2 AMIs are available in the following regions:
 
 AMIS_AARCH64
-	} else {
-		print <<NOAMIS_AARCH64;
+		} else {
+			print <<NOAMIS_AARCH64;
 
 Amazon EC2 aarch64 AMI images are not available for this snapshot.
 NOAMIS_AARCH64
-	}
-	foreach my $ami_aarch64 (@amis_aarch64) {
-		print(" $ami_aarch64\n");
-	}
+		}
+		foreach my $ami_aarch64 (@amis_aarch64) {
+			print(" $ami_aarch64\n");
+		}
+	} # version > 11 evaluation
 
 	print <<VAGRANT;
 
