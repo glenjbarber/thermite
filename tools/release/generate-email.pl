@@ -104,7 +104,7 @@ sub main() {
 				push(@vmimages, $_);
 			}
 		}
-		if ($_ =~ m/^Created AMI in .*-aarch64-GENERIC-snap.ec2.log/) {
+		if ($_ =~ m/^Created AMI in .*-aarch64-GENERIC-(release|snap).ec2.log/) {
 			$_ =~ s/^Created AMI in .*.ec2.log//;
 			# Exclude ca-central-1 eu-west-2 for now
 			#if ($_ !~ m/(ca-central-1|eu-west-2)/) {
@@ -112,7 +112,7 @@ sub main() {
 				pop(@lines);
 			#}
 		}
-		if ($_ =~ m/^Created AMI in .*-amd64-GENERIC-snap.ec2.log/) {
+		if ($_ =~ m/^Created AMI in .*-amd64-GENERIC-(release|snap).ec2.log/) {
 			$_ =~ s/^Created AMI in .*.ec2.log//;
 			# Exclude ca-central-1 eu-west-2 for now
 			#if ($_ !~ m/(ca-central-1|eu-west-2)/) {
