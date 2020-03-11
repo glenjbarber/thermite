@@ -94,7 +94,7 @@ zfs_teardown() {
 	done
 
 	zfs destroy ${zfs_parent}/${r}-amd64-worldseed-snap@clone
-	zfs destroy ${zfs_parent}/${r}-amd64_worldseed-snap
+	zfs destroy ${zfs_parent}/${r}-amd64-worldseed-snap
 	zfs destroy ${zfs_parent}/${r}-i386-worldseed-snap@clone
 	zfs destroy ${zfs_parent}/${r}-i386-worldseed-snap
 
