@@ -499,8 +499,8 @@ install_chroots() {
 	esac
 	[ ! -z $(eval echo \${zfs_${_chrootarch}_seed_${rev}_${type}}) ] \
 		&& return 0
-	_clone="${zfs_parent}/${rev}-${_chrootarch}_worldseed_${type}"
-	_mount="/${zfs_mount}/${rev}-${arch}_worldseed_${type}"
+	_clone="${zfs_parent}/${rev}-${_chrootarch}-worldseed-${type}"
+	_mount="/${zfs_mount}/${rev}-${arch}-worldseed-${type}"
 	_build="${rev}-${arch}-${kernel}-${type}"
 	_dest="${__WRKDIR_PREFIX}/${_build}"
 	_srcdir="${chroots}/${rev}/${_chrootarch}/${type}"
@@ -532,8 +532,8 @@ zfs_clone_chroots() {
 			_chrootarch="amd64"
 			;;
 	esac
-	_clone="${zfs_parent}/${rev}-${_chrootarch}_worldseed_${type}"
-	_mount="/${zfs_mount}/${rev}-${arch}_worldseed_${type}"
+	_clone="${zfs_parent}/${rev}-${_chrootarch}-worldseed-${type}"
+	_mount="/${zfs_mount}/${rev}-${arch}-worldseed-${type}"
 	_build="${rev}-${arch}-${kernel}-${type}"
 	_dest="${__WRKDIR_PREFIX}/${_build}"
 	info "Cloning ${_chrootarch} world to ${zfs_parent}/${_build}"
