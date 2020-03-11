@@ -109,11 +109,9 @@ runall() {
 }
 
 check_use_zfs() {
-	if [ -z ${use_zfs} ]; then
-		return 1
-	fi
 	if [ ! -c /dev/zfs ]; then
-		return 1
+		echo "ZFS is required."
+		exit 1
 	fi
 	return 0
 }
@@ -605,6 +603,8 @@ main() {
 	done
 	shift $(($OPTIND - 1))
 	[ -z ${CONF} ] && usage
+	use_zfs=1
+	check_use_zfs
 	zfs_bootstrap_done=
 	prebuild_setup
 	runall truncate_logs
