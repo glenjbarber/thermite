@@ -1,0 +1,118 @@
+.\"
+.Dd July 4, 2015
+.Dt RELEASEBUILD 7
+.Os
+.Sh NAME
+.Nm releasebuild
+.Nd Reference document for
+.Fx
+release and snapshot build scripts
+.Sh DESCRIPTION
+The
+.Nm
+manual page is the reference document to the design, layout, and configuration
+for the
+.Xr thermite 8
+utility.
+.Sh BACKGROUND
+The
+.Fa generate-release.sh
+script was build script used for the
+.Fx 9.0
+and
+.Fx 9.1
+release cycles, and was written to simplify the release process after a major
+rewrite of the release tools to produce packaged output compatible with the
+new
+.Fx
+installer,
+.Xr bsdinstall 8 .
+.Pp
+Prior to the
+.Fx 9.2
+and
+.Fx 10.0
+release cycles,
+.Fa release.sh
+was introduced, heavily modeled after
+.Fa generate-release.sh ,
+with the key design intent of providing build-specific configurability.
+.Pp
+The
+.Fa release.sh
+has since been the used for weekly snapshot builds and final
+.Fx
+release builds.
+.Pp
+The
+.Xr thermite 8
+utility was written as a result of the configuration capabilities provided by
+.Fa release.sh ,
+intended as a mechanism to iterate through all supported architectures for
+a specific
+.Fx
+branch and produce installation images by executing a single script.
+.Pp
+Since the original rewrite of
+.Fa generate-release.sh
+as
+.Fa release.sh ,
+and design intent and implementation of
+.Xr thermite 8 ,
+continuing development of both have been highly dependent of each other.
+.Sh LAYOUT
+While there should not be any specific filesystem hierarchy dependencies or
+expectations, is recommended to use the utilities at least three directory
+levels from the
+.Fa /
+directory on the system.
+.Pp
+The directory structure used by the
+.Fx
+Release Engineering Team is:
+.Pp
+.Bl -compact
+.It
+For snapshot builds
+.Pq -CURRENT and -STABLE :
+.Bl -offset indent
+.It
+/releng/scripts-snapshot/scripts
+.El
+.Pp
+For release builds:
+.Bl -offset indent
+.It
+/releng/scripts-release/scripts
+.El
+.El
+.Pp
+This hierarchy helps avoid directory name collisions for the
+.Fa src/ ,
+.Fa ports/ ,
+and
+.Fa doc/
+trees, as well as the build
+.Xr chroot 8
+directories.
+.Sh NOTES
+While
+.Xr thermite 8
+and related utilities should be usable on architectures other than
+.Li amd64 ,
+the design has been written specifically for
+.Li amd64
+build machines, and proper functionality on other architectures is not
+guaranteed.
+.Sh SEE ALSO
+.Xr thermite.conf 5 ,
+.Xr build 7 ,
+.Xr release 7 ,
+.Xr setrev.sh 8 ,
+.Xr thermite.sh 8
+.Sh AUTHORS
+This manual page was written by
+.An Glen Barber Aq gjb@FreeBSD.org
+for reference by the
+.Fx
+Release Engineering Team.
