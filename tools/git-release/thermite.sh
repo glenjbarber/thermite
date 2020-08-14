@@ -188,31 +188,32 @@ zfs_create_tree() {
 	[ ! -z $(eval echo \${zfs_${_tree}_seed_${rev}_${type}}) ] && return 0
 	case ${_tree} in
 		src)
-			_svnsrc="${SVNROOT}/${SRCBRANCH}"
+			_gitsrc="${GITROOT}/${GITSRC}"
 			;;
 		doc)
 			[ ! -z ${NODOC} ] && return 0
-			_svnsrc="${SVNROOT}/${DOCBRANCH}"
+			_gitsrc="${GITROOT}/${GITDOC}"
 			;;
 		ports)
 			[ ! -z ${NOPORTS} ] && return 0
-			_svnsrc="${SVNROOT}/${PORTBRANCH}"
+			_gitsrc="${GITROOT}/${GITPORTS}"
 			;;
 		*)
 			info "Unknown source tree type: ${_tree}"
 			return 0
 			;;
 	esac
+	TREE="$(echo ${_tree} | tr '[:lower:]' '[:upper:]')"
 	_clone="${zfs_parent}/${rev}-${_tree}-${type}"
 	_mount="/${zfs_mount}/${rev}-${_tree}-${type}"
 	info "Creating ${_clone}"
 	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
-	info "Source checkout ${_svnsrc} to ${_mount}"
-	svn co -q ${_svnsrc} ${_mount}
+	info "Source checkout ${_gitsrc} to ${_mount}"
+	git clone -q -b ${TREEBRANCH} ${_gitsrc} ${_mount}
 	info "Creating ZFS snapshot ${_clone}@clone"
 	zfs snapshot ${_clone}@clone
 	eval zfs_${_tree}_seed_${rev}_${type}=1
-	unset _clone _mount _tree _svnsrc
+	unset _clone _mount _tree _gitsrc
 }
 
 zfs_bootstrap() {
@@ -232,15 +233,13 @@ zfs_finish_bootstrap() {
 prebuild_setup() {
 	info "Creating ${logdir}"
 	mkdir -p ${logdir}
-	info "Creating ${srcdir}"
-	mkdir -p ${srcdir}
 	info "Creating ${chroots}"
 	mkdir -p ${chroots}
-	info "Checking out src/release to ${srcdir}"
-	svn co -q --force svn://svn.freebsd.org/base/${releasesrc}/release \
-		${srcdir}
-	info "Reverting any changes to ${srcdir}"
-	svn revert -R ${srcdir}
+	info "Creating ${srcdir}"
+	mkdir -p ${srcdir}
+	info "Checking out tree to ${srcdir}"
+	git clone -q -b ${releasesrc} ${_gitsrc} ${srcdir}
+
 }
 
 # Email log output when a stage has completed
@@ -282,12 +281,6 @@ ftp_stage() {
 	info "Staging for ftp: ${_build}"
 	[ ! -z "${EMBEDDEDBUILD}" ] && export EMBEDDEDBUILD
 	[ ! -z "${BOARDNAME}" ] && export BOARDNAME
-	[ ! -z "${BUILDSVNREV}" ] && export SVNREVISION=${BUILDSVNREV}
-	[ ! -z "${BUILDDATE}" ] && export BUILDDATE
-	[ -z "${SVNREVISION}" -a -e "${scriptdir}/svnrev_src" ] && \
-		export SVNREVISION="$(cat ${scriptdir}/svnrev_src)"
-	[ -z "${BUILDDATE}" -a -e "${scriptdir}/builddate" ] && \
-		export BUILDDATE="$(cat ${scriptdir}/builddate)"
 	chroot ${CHROOTDIR} make -C /usr/src/release \
 		-f Makefile.mirrors \
 		TARGET=${TARGET} TARGET_ARCH=${TARGET_ARCH} \
@@ -313,7 +306,7 @@ ftp_stage() {
 	mkdir -p "${ftpdir}/${_type}"
 	rsync -avH ${CHROOTDIR}/R/ftp-stage/${_type}/* \
 		${ftpdir}/${_type}/ >> ${logdir}/${_build}.log 2>&1
-	unset BOARDNAME BUILDDATE EMBEDDEDBUILD SVNREVISION WITH_VMIMAGES
+	unset BOARDNAME EMBEDDEDBUILD WITH_VMIMAGES
 	return 0
 }
 
@@ -321,6 +314,7 @@ ftp_stage() {
 build_release() {
 	_build="${rev}-${arch}-${kernel}-${type}"
 	_conf="${scriptdir}/${_build}.conf"
+	#srcdir="/${zfs_mount}/${rev}-${_tree}-${type}"
 	source_config || return 0
 	info "Building release: ${_build}"
 	set >> ${logdir}/${_build}.log
@@ -338,6 +332,7 @@ build_release() {
 parallelbuild_release() {
 	_build="${rev}-${arch}-${kernel}-${type}"
 	_conf="${scriptdir}/${_build}.conf"
+	#srcdir="/${zfs_mount}/${rev}-${_tree}-${type}"
 	source_config || return 0
 	(
 	info "Building release: ${_build}"
@@ -366,12 +361,12 @@ upload_ec2_ami() {
 		aarch64:GENERIC)
 			# XXX: temporary until support for stable/11 is added
 			case ${rev} in
-				13|12)
-					_EC2TARGET=arm64
-					_EC2TARGET_ARCH=aarch64
+				11)
+					return 0
 					;;
 				*)
-					return 0
+					_EC2TARGET=arm64
+					_EC2TARGET_ARCH=aarch64
 					;;
 			esac
 			# end XXX
@@ -483,10 +478,6 @@ upload_gce_image() {
 # Install amd64/i386 "seed" chroots for all branches being built.
 install_chroots() {
 	source_config || return 0
-	if [ ${rev} -le 8 ]; then
-		info "This script does not support rev=${rev}"
-		return 0
-	fi
 	case ${arch} in
 		i386)
 			_chrootarch="i386"
@@ -544,10 +535,6 @@ zfs_clone_chroots() {
 # Build amd64/i386 "seed" chroots for all branches being built.
 build_chroots() {
 	source_config || return 0
-	if [ ${rev} -le 9 ]; then
-		info "This script does not support rev ${rev}"
-		return 0
-	fi
 	case ${arch} in
 		i386)
 			_chrootarch="i386"
@@ -564,10 +551,9 @@ build_chroots() {
 	# Source the build configuration file to get
 	# the SRCBRANCH to use
 	if [ -z ${zfs_bootstrap_done} ]; then
-		# Skip svn checkout, the trees are there.
-		info "SVN checkout ${SRCBRANCH} for ${_chrootarch} ${type}"
-		svn co -q ${SVNROOT}/${SRCBRANCH} \
-			${_srcdir} \
+		# Skip the checkout, the trees are there.
+		info "Git checkout ${SRCBRANCH} for ${_chrootarch} ${type}"
+		git clone -q -b ${SRCBRANCH} ${GITROOT}/${GITSRC} ${_srcdir} \
 			>> ${logdir}/${_build}.log 2>&1
 	fi
 	info "Building $(realpath ${_srcdir}) world"
@@ -584,7 +570,7 @@ build_chroots() {
 }
 
 main() {
-	releasesrc="head"
+	releasesrc="main"
 	export __BUILDCONFDIR="$(dirname $(realpath ${0}))"
 
 	while getopts "c:d" opt; do

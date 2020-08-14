@@ -168,7 +168,7 @@ mk_fake_imgs() {
 }
 
 main() {
-	releasesrc="head"
+	releasesrc="main"
 	export __BUILDCONFDIR="$(dirname $(realpath ${0}))"
 	[ ! -z "${1}" ] && . "${1}"
 
