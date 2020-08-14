@@ -238,7 +238,7 @@ prebuild_setup() {
 	info "Creating ${srcdir}"
 	mkdir -p ${srcdir}
 	info "Checking out tree to ${srcdir}"
-	git clone -q -b ${releasesrc} ${_gitsrc} ${srcdir}
+	git clone -q -b ${releasesrc} ${GITROOT}/${GITSRC} ${srcdir}
 
 }
 
