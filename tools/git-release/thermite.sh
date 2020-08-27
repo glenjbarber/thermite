@@ -231,12 +231,27 @@ zfs_finish_bootstrap() {
 }
 
 prebuild_setup() {
-	info "Creating ${logdir}"
-	mkdir -p ${logdir}
-	info "Creating ${chroots}"
-	mkdir -p ${chroots}
-	info "Creating ${srcdir}"
-	mkdir -p ${srcdir}
+	[ ! -z $(eval echo \${zfs_${_tree}_prebuild_${rev}_${type}}) ] && return 0
+	_mount="${logdir}"
+	_clone="${zfs_parent}/${rev}-logs-${type}"
+	mkdir -p ${_mount}
+	info "Creating ${_mount}"
+	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
+
+	_mount="${chroots}"
+	_clone="${zfs_parent}/${rev}-chroots-${type}"
+	mkdir -p ${_mount}
+	info "Creating ${_mount}"
+	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
+
+	_mount="${srcdir}"
+	_clone="${zfs_parent}/${rev}-src-${type}"
+	mkdir -p ${_mount}
+	info "Creating ${_mount}"
+	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
+
+	eval zfs_${_chrootarch}_prebuild_${rev}_${type}=1
+
 	info "Checking out tree to ${srcdir}"
 	git clone -q -b ${releasesrc} ${GITROOT}/${GITSRC} ${srcdir}
 
@@ -314,12 +329,11 @@ ftp_stage() {
 build_release() {
 	_build="${rev}-${arch}-${kernel}-${type}"
 	_conf="${scriptdir}/${_build}.conf"
-	#srcdir="/${zfs_mount}/${rev}-${_tree}-${type}"
 	source_config || return 0
 	info "Building release: ${_build}"
 	set >> ${logdir}/${_build}.log
 	env -i __BUILDCONFDIR="${__BUILDCONFDIR}" \
-		/bin/sh ${srcdir}/release.sh -c ${_conf} \
+		/bin/sh ${srcdir}/release/release.sh -c ${_conf} \
 		>> ${logdir}/${_build}.log 2>&1
 
 	ftp_stage
@@ -332,13 +346,12 @@ build_release() {
 parallelbuild_release() {
 	_build="${rev}-${arch}-${kernel}-${type}"
 	_conf="${scriptdir}/${_build}.conf"
-	#srcdir="/${zfs_mount}/${rev}-${_tree}-${type}"
 	source_config || return 0
 	(
 	info "Building release: ${_build}"
 	set >> ${logdir}/${_build}.log
 	env -i __BUILDCONFDIR="${__BUILDCONFDIR}" \
-		/bin/sh ${srcdir}/release.sh -c ${_conf} \
+		/bin/sh ${srcdir}/release/release.sh -c ${_conf} \
 		>> ${logdir}/${_build}.log 2>&1
 
 	ftp_stage
@@ -359,7 +372,7 @@ upload_ec2_ami() {
 			_EC2TARGET_ARCH=amd64
 			;;
 		aarch64:GENERIC)
-			# XXX: temporary until support for stable/11 is added
+			# stable/11 arm64/aarch64 is not supported
 			case ${rev} in
 				11)
 					return 0
@@ -369,7 +382,6 @@ upload_ec2_ami() {
 					_EC2TARGET_ARCH=aarch64
 					;;
 			esac
-			# end XXX
 			;;
 		*)
 			return 0
@@ -504,6 +516,29 @@ install_chroots() {
 		DESTDIR=${_mount} \
 		installworld distribution >> \
 		${logdir}/${_build}.log 2>&1
+
+	## XXX: Temporary hack to install git from pkg(8) instead of
+	##      building from ports.
+	mount -t devfs devfs ${_mount}/dev
+	cp /etc/resolv.conf ${_mount}/etc/resolv.conf
+	env ASSUME_ALWAYS_YES=yes pkg -c ${_mount} install -y devel/git
+	env ASSUME_ALWAYS_YES=yes pkg -c ${_mount} clean -y
+	#mkdir -p ${_mount}/usr/ports
+	#mount -t nullfs /releng/13-ports-snap ${_mount}
+	#GITUNSETOPTS="CONTRIB CURL CVS GITWEB GUI HTMLDOCS"
+	#GITUNSETOPTS="${GITUNSETOPTS} ICONV NLS P4 PERL"
+	#GITUNSETOPTS="${GITUNSETOPTS} SEND_EMAIL SUBTREE SVN"
+	#GITUNSETOPTS="${GITUNSETOPTS} PCRE PCRE2"
+	#eval chroot ${_mount} env OPTIONS_UNSET=\"${GITUNSETOPTS}\" \
+	#make -C /usr/ports/devel/git FORCE_PKG_REGISTER=1 \
+	#	WRKDIRPREFIX=/tmp/ports \
+	#	DISTDIR=/tmp/distfiles \
+	#	install clean distclean
+	#rm -f ${_mount}/etc/resolv.conf
+	#umount ${_mount}/usr/ports
+	umount ${_mount}/dev
+	# End XXX
+
 	zfs snapshot ${_clone}@clone
 	eval zfs_${_chrootarch}_seed_${rev}_${type}=1
 	unset _build _dest _objdir _srcdir _clone _mount
@@ -548,14 +583,8 @@ build_chroots() {
 	_srcdir="${chroots}/${rev}/${_chrootarch}/${type}"
 	_objdir="${chroots}/${rev}-obj/${_chrootarch}/${type}"
 	mkdir -p "${_srcdir}"
-	# Source the build configuration file to get
-	# the SRCBRANCH to use
-	if [ -z ${zfs_bootstrap_done} ]; then
-		# Skip the checkout, the trees are there.
-		info "Git checkout ${SRCBRANCH} for ${_chrootarch} ${type}"
-		git clone -q -b ${SRCBRANCH} ${GITROOT}/${GITSRC} ${_srcdir} \
-			>> ${logdir}/${_build}.log 2>&1
-	fi
+	mkdir -p "${_objdir}"
+	zfs clone -p -o mountpoint=$(realpath ${_srcdir}) ${zfs_parent}/${rev}-src-${type}@clone ${zfs_parent}$(realpath ${_srcdir}) || exit 1
 	info "Building $(realpath ${_srcdir}) world"
 	env MAKEOBJDIRPREFIX=${_objdir} \
 		make -C ${_srcdir} ${WORLD_FLAGS} \
@@ -592,7 +621,7 @@ main() {
 	use_zfs=1
 	check_use_zfs
 	zfs_bootstrap_done=
-	prebuild_setup
+	runall prebuild_setup
 	runall truncate_logs
 	zfs_bootstrap
 	runall zfs_mount_src
