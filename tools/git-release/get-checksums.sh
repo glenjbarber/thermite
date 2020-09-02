@@ -120,12 +120,8 @@ main() {
 		release)
 			;;
 		*)
-			if [ -e "builddate" ]; then
-				echo "BUILDDATE=$(cat builddate)"
-			fi
-			if [ -e "svnrev_src" ]; then
-				echo "SVNREV=$(cat svnrev_src)"
-			fi
+			echo "BUILDDATE=$(date +%Y%m%d)"
+			echo "SVNREV=$(git -C /releng/13-src-snap rev-parse --verify --short HEAD)"
 			for amilog in $(ls ../logs/*.ec2* | sort -r); do
 				tail -n50 ${amilog} | grep -E '^Created AMI in' \
 				| sed -e "s/^Created AMI in/Created AMI in ${amilog##../logs/}/g" \
