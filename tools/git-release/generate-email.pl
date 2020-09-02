@@ -90,7 +90,7 @@ sub main() {
 				$branchname =~ s/\d+\.\d-//;
 				$branchname =~ s/ .*$//;
 				if ($branchname =~ m/(ALPHA|CURRENT)/) {
-					$branch = "head";
+					$branch = "main";
 				} elsif ($branchname =~ m/(BETA|PRERELEASE|RC|STABLE)/) {
 					$branch = "stable/$version";
 				} else {
