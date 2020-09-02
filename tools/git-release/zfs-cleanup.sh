@@ -94,14 +94,14 @@ zfs_teardown() {
 	done
 
 	# XXX
-	zfs destroy ${zfs_parent}/releng/scripts-${t}shot-git/chroots
-	zfs destroy ${zfs_parent}/releng/scripts-${t}shot-git
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot
 	zfs destroy ${zfs_parent}/releng
 	zfs destroy ${zfs_parent}/${r}-ports-${t}@clone
 	zfs destroy ${zfs_parent}/${r}-src-${t}@clone
-	zfs destroy ${zfs_parent}/releng/scripts-${t}shot-git/chroots/${r}/amd64/snap
-	zfs destroy ${zfs_parent}/releng/scripts-${t}shot-git/chroots/${r}/amd64
-	zfs destroy ${zfs_parent}/releng/scripts-${t}shot-git/chroots/${r}
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/amd64/snap
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/amd64
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}
 	zfs destroy ${zfs_parent}/${r}-chroots-${t}
 	zfs destroy ${zfs_parent}/${r}-logs-${t}
 	zfs destroy ${zfs_parent}/${r}-ports-${t}
