@@ -124,7 +124,7 @@ sub main() {
 
 	print <<HEADER;
 To: freebsd-snapshots\@FreeBSD.org
-Subject: New FreeBSD snapshots available: $branch ($builddate r$svnrev)
+Subject: New FreeBSD snapshots available: $branch ($builddate $svnrev)
 
 HEADER
 	print <<OPENING;
