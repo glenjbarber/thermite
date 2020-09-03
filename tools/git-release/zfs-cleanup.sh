@@ -100,7 +100,9 @@ zfs_teardown() {
 	zfs destroy ${zfs_parent}/${r}-ports-${t}@clone
 	zfs destroy ${zfs_parent}/${r}-src-${t}@clone
 	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/amd64/snap
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/i386/snap
 	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/amd64
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/i386
 	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}
 	zfs destroy ${zfs_parent}/${r}-chroots-${t}
 	zfs destroy ${zfs_parent}/${r}-logs-${t}
