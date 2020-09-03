@@ -210,7 +210,7 @@ zfs_create_tree() {
 	info "Creating ${_clone}"
 	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
 	info "Source checkout ${_gitsrc} to ${_mount}"
-	git clone -q -b ${TREEBRANCH} ${_gitsrc} ${_mount}
+	git -C ${_mount} clone -q -b ${TREEBRANCH} ${_gitsrc}
 	info "Creating ZFS snapshot ${_clone}@clone"
 	zfs snapshot ${_clone}@clone
 	eval zfs_${_tree}_seed_${rev}_${type}=1
