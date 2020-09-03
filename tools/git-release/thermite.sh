@@ -253,7 +253,7 @@ prebuild_setup() {
 
 	eval zfs_${_chrootarch}_prebuild_${rev}_${type}=1
 
-	info "Checking out ${_tree} to ${srcdir}"
+	info "Checking out ${GITROOT}/${GITSRC} to ${srcdir}"
 	git clone -q -b ${releasesrc} ${GITROOT}/${GITSRC} ${srcdir}
 
 }
