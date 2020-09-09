@@ -155,6 +155,7 @@ zfs_mount_tree() {
 	_clone="${zfs_parent}/${rev}-${_tree}-${type}"
 	_mount="/${zfs_mount}/${rev}-${arch}-${kernel}-${type}"
 	_target="${zfs_parent}/${rev}-${arch}-${kernel}-${type}-${_tree}"
+	zfs snapshot ${_clone}@clone
 	info "Cloning ${_clone}@clone to ${_target}"
 	zfs clone -p -o atime=off -o mountpoint=${_mount}/usr/${_tree} \
 		${_clone}@clone ${_target}
@@ -197,6 +198,7 @@ zfs_create_tree() {
 			;;
 		ports)
 			[ ! -z ${NOPORTS} ] && return 0
+			_tree="port"
 			_gitsrc="${GITROOT}/${GITPORTS}"
 			;;
 		*)
@@ -207,10 +209,14 @@ zfs_create_tree() {
 	TREE="$(echo ${_tree} | tr '[:lower:]' '[:upper:]')"
 	_clone="${zfs_parent}/${rev}-${_tree}-${type}"
 	_mount="/${zfs_mount}/${rev}-${_tree}-${type}"
+	echo DEBUG zfs_create_tree $LINENO
 	info "Creating ${_clone}"
 	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
 	info "Source checkout ${_gitsrc} to ${_mount}"
-	git clone -q -b ${TREEBRANCH} ${_gitsrc} ${_mount}
+	# /releng/scripts-snapshot/ports
+	# XXX: FIX ME
+	#git clone -b ${TREEBRANCH} ${_gitsrc} ${_mount}
+	git clone -b main ${_gitsrc} ${_mount}
 	info "Creating ZFS snapshot ${_clone}@clone"
 	zfs snapshot ${_clone}@clone
 	eval zfs_${_tree}_seed_${rev}_${type}=1
@@ -218,10 +224,11 @@ zfs_create_tree() {
 }
 
 zfs_bootstrap() {
+	# XXX: Now a no-op
 	[ -z ${use_zfs} ] && return 0
-	runall zfs_create_tree src
-	runall zfs_create_tree ports
-	runall zfs_create_tree doc
+	#runall zfs_create_tree src
+	#runall zfs_create_tree ports
+	#runall zfs_create_tree doc
 	zfs_bootstrap_done=1
 }
 
@@ -232,7 +239,7 @@ zfs_finish_bootstrap() {
 }
 
 prebuild_setup() {
-	[ ! -z $(eval echo \${zfs_${_tree}_prebuild_${rev}_${type}}) ] && return 0
+	[ ! -z $(eval echo \${zfs_prebuild_${rev}_${type}}) ] && return 0
 	_mount="${logdir}"
 	_clone="${zfs_parent}/${rev}-logs-${type}"
 	mkdir -p ${_mount}
@@ -251,10 +258,40 @@ prebuild_setup() {
 	info "Creating ${_mount}"
 	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
 
-	eval zfs_${_chrootarch}_prebuild_${rev}_${type}=1
+	_mount="${portsdir}"
+	_clone="${zfs_parent}/${rev}-ports-${type}"
+	mkdir -p ${_mount}
+	info "Creating ${_mount}"
+	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
+
+	_mount="${docdir}"
+	_clone="${zfs_parent}/${rev}-doc-${type}"
+	mkdir -p ${_mount}
+	info "Creating ${_mount}"
+	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
+
+	eval zfs_prebuild_${rev}_${type}=1
 
 	info "Checking out ${GITROOT}/${GITSRC} to ${srcdir}"
 	git clone -q -b ${releasesrc} ${GITROOT}/${GITSRC} ${srcdir}
+
+	_clone="${zfs_parent}/${rev}-src-${type}"
+	info "Creating ZFS snapshot ${_clone}@clone"
+	zfs snapshot ${_clone}@clone
+
+	info "Checking out ${GITROOT}/${GITPORTS} to ${portsdir}"
+	git clone -q -b ${releasesrc} ${GITROOT}/${GITPORTS} ${portsdir}
+
+	_clone="${zfs_parent}/${rev}-ports-${type}"
+	info "Creating ZFS snapshot ${_clone}@clone"
+	zfs snapshot ${_clone}@clone
+
+	info "Checking out ${GITROOT}/${GITDOC} to ${docdir}"
+	git clone -q -b ${releasesrc} ${GITROOT}/${GITDOC} ${docdir}
+
+	_clone="${zfs_parent}/${rev}-doc-${type}"
+	info "Creating ZFS snapshot ${_clone}@clone"
+	zfs snapshot ${_clone}@clone
 
 }
 
