@@ -69,12 +69,26 @@ mk_dataset() {
 		echo "Creating fake ZFS dataset clone \"${_clone}\""
 	echo zfs create -o mountpoint="${_mount}" "${_clone}"
 	echo zfs snapshot ${_clone}@clone
+	eval zfs_${_chrootarch}_seed_${rev}_${type}=1
+
+	return 0
+}
+
+clone_dataset() {
+	source_config || return 0
+	[ ! -z $(eval echo \${zfs_${rev}_${arch}_${kernel}_${type}}) ] \
+		&& return 0
+	_clone="${zfs_parent}/${rev}-${_chrootarch}-worldseed-${type}"
+	_mount="/${zfs_mount}/${rev}-${arch}-worldseed-${type}"
+	_build="${rev}-${arch}-${kernel}-${type}"
+	_dest="${__WRKDIR_PREFIX}/${_build}"
 
 	[ "${debug}" ] && \
 		echo "Cloning ${_chrootarch} world to ${zfs_parent}/${_build}"
 	echo zfs clone -p -o atime=off -o mountpoint=${_dest} \
 		${_clone}@clone ${zfs_parent}/${_build}
 	unset _clone _mount _build _dest
+	eval zfs_${rev}_${arch}_${kernel}_${type}=1
 	
 	return 0
 }
@@ -109,6 +123,7 @@ main() {
 		git clone -b main ${GITROOT}/${GITSRC} ${srcdir}
 
 	runall mk_dataset
+	runall clone_dataset
 
 	return 0
 }
