@@ -105,6 +105,9 @@ main() {
 	done
 	[ -z "${CONF}" ] && usage
 
+	[ ! -d "${srcdir}/release" ] && \
+		git clone -b main ${GITROOT}/${GITSRC} ${srcdir}
+
 	runall mk_dataset
 
 	return 0
