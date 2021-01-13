@@ -14,7 +14,7 @@ my $prog = basename($0);
 
 our $opt_h;
 our $builddate;
-our $svnrev;
+our $gitrev;
 our $junk = "";
 our $arch = "";
 our $kernel = "";
@@ -40,7 +40,7 @@ sub main() {
 	my @vmimages = ();
 	my $endisos = 0;
 	$builddate = 0;
-	$svnrev = 0;
+	$gitrev = 0;
 	$junk = "";
 	$arch = "";
 	$kernel = "";
@@ -66,9 +66,9 @@ sub main() {
 			pop(@lines);
 			next;
 		}
-		if ($_ =~ m/^SVNREV/) {
-			$svnrev = $_;
-			$svnrev =~ s/^SVNREV=//;
+		if ($_ =~ m/^GITREV/) {
+			$gitrev = $_;
+			$gitrev =~ s/^GITREV=//;
 			pop(@lines);
 			next;
 		}
@@ -124,7 +124,7 @@ sub main() {
 
 	print <<HEADER;
 To: freebsd-snapshots\@FreeBSD.org
-Subject: New FreeBSD snapshots available: $branch ($builddate $svnrev)
+Subject: New FreeBSD snapshots available: $branch ($builddate $gitrev)
 
 HEADER
 	print <<OPENING;
