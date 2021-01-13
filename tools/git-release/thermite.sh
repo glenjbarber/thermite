@@ -283,14 +283,14 @@ prebuild_setup() {
 	#info "Checking out ${GITROOT}/${GITPORTS} to ${portsdir}"
 	info "Checking out https://cgit-beta.freebsd.org/${GITPORTS} to ${portsdir}"
 	#git clone -q -b ${releasesrc} ${GITROOT}/${GITPORTS} ${portsdir}
-	git clone -q -b ${releasesrc} https://cgit-beta.freebsd.org/${GITPORTS} ${portsdir}
+	git clone -q -b ${PORTSBRANCH} https://cgit-beta.freebsd.org/${GITPORTS} ${portsdir}
 
 	_clone="${zfs_parent}/${rev}-ports-${type}"
 	info "Creating ZFS snapshot ${_clone}@clone"
 	zfs snapshot ${_clone}@clone
 
 	info "Checking out ${GITROOT}/${GITDOC} to ${docdir}"
-	git clone -q -b ${releasesrc} ${GITROOT}/${GITDOC} ${docdir}
+	git clone -q -b ${DOCBRANCH} ${GITROOT}/${GITDOC} ${docdir}
 
 	_clone="${zfs_parent}/${rev}-doc-${type}"
 	info "Creating ZFS snapshot ${_clone}@clone"
