@@ -200,7 +200,8 @@ zfs_create_tree() {
 			[ ! -z ${NOPORTS} ] && return 0
 			_tree="port"
 			#_gitsrc="${GITROOT}/${GITPORTS}"
-			_gitsrc="https://cgit-beta.freebsd.org/${GITPORTS}"
+			# XXX: hack to work around timeline of git conversion.
+			_gitsrc="svn://svn.freebsd.org/ports"
 			;;
 		*)
 			info "Unknown source tree type: ${_tree}"
@@ -280,10 +281,12 @@ prebuild_setup() {
 	info "Creating ZFS snapshot ${_clone}@clone"
 	zfs snapshot ${_clone}@clone
 
+	# XXX: hack to work around timeline of git conversion.
 	#info "Checking out ${GITROOT}/${GITPORTS} to ${portsdir}"
-	info "Checking out https://cgit-beta.freebsd.org/${GITPORTS} to ${portsdir}"
 	#git clone -q -b ${PORTSBRANCH} ${GITROOT}/${GITPORTS} ${portsdir}
-	git clone -q -b ${PORTSBRANCH} https://cgit-beta.freebsd.org/${GITPORTS} ${portsdir}
+	#git clone -q -b ${PORTSBRANCH} https://cgit-beta.freebsd.org/${GITPORTS} ${portsdir}
+	info "Checking out svn://svn.freebsd.org/ports/${PORTSBRANCH} to ${portsdir}"
+	svn co svn://svn.freebsd.org/ports/${PORTSBRANCH} ${portsdir}
 
 	_clone="${zfs_parent}/${rev}-ports-${type}"
 	info "Creating ZFS snapshot ${_clone}@clone"
