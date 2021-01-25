@@ -89,9 +89,9 @@ sub main() {
 				$branchname = $branch;
 				$branchname =~ s/\d+\.\d-//;
 				$branchname =~ s/ .*$//;
-				if ($branchname =~ m/(ALPHA|CURRENT)/) {
+				if ($branchname =~ m/CURRENT/) {
 					$branch = "main";
-				} elsif ($branchname =~ m/(BETA|PRERELEASE|RC|STABLE)/) {
+				} elsif ($branchname =~ m/(ALPHA|BETA|PRERELEASE|RC|STABLE)/) {
 					$branch = "stable/$version";
 				} else {
 					$branch = "unknown";
