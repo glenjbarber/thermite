@@ -275,7 +275,7 @@ prebuild_setup() {
 	eval zfs_prebuild_${rev}_${type}=1
 
 	info "Checking out ${GITROOT}/${GITSRC} to ${srcdir}"
-	git clone -q -b ${releasesrc} ${GITROOT}/${GITSRC} ${srcdir}
+	git clone -q -b ${srcbranch} ${GITROOT}/${GITSRC} ${srcdir}
 
 	_clone="${zfs_parent}/${rev}-src-${type}"
 	info "Creating ZFS snapshot ${_clone}@clone"
@@ -283,9 +283,9 @@ prebuild_setup() {
 
 	# XXX: hack to work around timeline of git conversion.
 	#info "Checking out ${GITROOT}/${GITPORTS} to ${portsdir}"
-	#git clone -q -b ${PORTSBRANCH} ${GITROOT}/${GITPORTS} ${portsdir}
-	#git clone -q -b ${PORTSBRANCH} https://cgit-beta.freebsd.org/${GITPORTS} ${portsdir}
-	info "Checking out svn://svn.freebsd.org/ports/${PORTSBRANCH} to ${portsdir}"
+	#git clone -q -b ${portsbranch} ${GITROOT}/${GITPORTS} ${portsdir}
+	#git clone -q -b ${portsbranch} https://cgit-beta.freebsd.org/${GITPORTS} ${portsdir}
+	info "Checking out svn://svn.freebsd.org/ports/${portsbranch} to ${portsdir}"
 	# XXX: fix me
 	svn co -q svn://svn.freebsd.org/ports/head ${portsdir}
 
@@ -294,7 +294,7 @@ prebuild_setup() {
 	zfs snapshot ${_clone}@clone
 
 	info "Checking out ${GITROOT}/${GITDOC} to ${docdir}"
-	git clone -q -b ${DOCBRANCH} ${GITROOT}/${GITDOC} ${docdir}
+	git clone -q -b ${docbranch} ${GITROOT}/${GITDOC} ${docdir}
 
 	_clone="${zfs_parent}/${rev}-doc-${type}"
 	info "Creating ZFS snapshot ${_clone}@clone"
