@@ -287,7 +287,7 @@ prebuild_setup() {
 	#git clone -q -b ${portsbranch} https://cgit-beta.freebsd.org/${GITPORTS} ${portsdir}
 	info "Checking out svn://svn.freebsd.org/ports/${portsbranch} to ${portsdir}"
 	# XXX: fix me
-	svn co -q svn://svn.freebsd.org/ports/head ${portsdir}
+	svn co -q svn://svn.freebsd.org/ports/${portsbranch} ${portsdir}
 
 	_clone="${zfs_parent}/${rev}-ports-${type}"
 	info "Creating ZFS snapshot ${_clone}@clone"
