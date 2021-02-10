@@ -274,7 +274,7 @@ prebuild_setup() {
 
 	eval zfs_prebuild_${rev}_${type}=1
 
-	info "Checking out ${GITROOT}/${GITSRC} to ${srcdir}"
+	info "Checking out ${GITROOT}/${GITSRC} (${srcbranch}) to ${srcdir}"
 	git clone -q -b ${srcbranch} ${GITROOT}/${GITSRC} ${srcdir}
 
 	_clone="${zfs_parent}/${rev}-src-${type}"
@@ -293,7 +293,7 @@ prebuild_setup() {
 	info "Creating ZFS snapshot ${_clone}@clone"
 	zfs snapshot ${_clone}@clone
 
-	info "Checking out ${GITROOT}/${GITDOC} to ${docdir}"
+	info "Checking out ${GITROOT}/${GITDOC} (${docbranch}) to ${docdir}"
 	git clone -q -b ${docbranch} ${GITROOT}/${GITDOC} ${docdir}
 
 	_clone="${zfs_parent}/${rev}-doc-${type}"
