@@ -647,7 +647,7 @@ build_chroots() {
 }
 
 main() {
-	releasesrc="stable/13"
+	releasesrc="main"
 	export __BUILDCONFDIR="$(dirname $(realpath ${0}))"
 
 	while getopts "c:d" opt; do
