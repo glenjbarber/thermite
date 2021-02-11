@@ -116,13 +116,19 @@ main() {
 
 	. "${CSCONF}"
 
+	for r in ${revs}; do
+		r=${r}
+		if [ ! -z "${r}" ]; then
+			break
+		fi
+	done
+
 	case ${t} in
 		release)
 			;;
 		*)
-			# XXX: FIX ME
 			echo "BUILDDATE=$(date +%Y%m%d)"
-			echo "GITREV=$(git -C /releng/13-amd64-GENERIC-snap/usr/src rev-parse --verify --short HEAD)"
+			echo "GITREV=$(git -C /releng/${r}-amd64-GENERIC-snap/usr/src rev-parse --verify --short HEAD)"
 			for amilog in $(ls ../logs/*.ec2* | sort -r); do
 				tail -n50 ${amilog} | grep -E '^Created AMI in' \
 				| sed -e "s/^Created AMI in/Created AMI in ${amilog##../logs/}/g" \
