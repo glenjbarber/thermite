@@ -281,13 +281,8 @@ prebuild_setup() {
 	info "Creating ZFS snapshot ${_clone}@clone"
 	zfs snapshot ${_clone}@clone
 
-	# XXX: hack to work around timeline of git conversion.
-	#info "Checking out ${GITROOT}/${GITPORTS} to ${portsdir}"
-	#git clone -q -b ${portsbranch} ${GITROOT}/${GITPORTS} ${portsdir}
-	#git clone -q -b ${portsbranch} https://cgit-beta.freebsd.org/${GITPORTS} ${portsdir}
-	info "Checking out svn://svn.freebsd.org/ports/${portsbranch} to ${portsdir}"
-	# XXX: fix me
-	svn co -q svn://svn.freebsd.org/ports/${portsbranch} ${portsdir}
+	info "Checking out ${GITROOT}/${GITPORTS} (${portsbranch}) to ${portsdir}"
+	git clone -q -b ${portsbranch} ${GITROOT}/${GITPORTS} ${portsdir}
 
 	_clone="${zfs_parent}/${rev}-ports-${type}"
 	info "Creating ZFS snapshot ${_clone}@clone"
