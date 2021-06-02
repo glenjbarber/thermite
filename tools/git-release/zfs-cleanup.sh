@@ -110,10 +110,20 @@ zfs_teardown() {
 	zfs destroy ${zfs_parent}/${r}-src-${t}
 	# XXX
 
-	zfs destroy ${zfs_parent}/${r}-amd64-worldseed-${t}@clone
-	zfs destroy ${zfs_parent}/${r}-amd64-worldseed-${t}
-	zfs destroy ${zfs_parent}/${r}-i386-worldseed-${t}@clone
-	zfs destroy ${zfs_parent}/${r}-i386-worldseed-${t}
+	case ${r} in
+		13)
+			zfs destroy ${zfs_parent}-13/${r}-amd64-worldseed-${t}@clone
+			zfs destroy ${zfs_parent}-13/${r}-amd64-worldseed-${t}
+			zfs destroy ${zfs_parent}-13/${r}-i386-worldseed-${t}@clone
+			zfs destroy ${zfs_parent}-13/${r}-i386-worldseed-${t}
+			;;
+		*)
+			zfs destroy ${zfs_parent}/${r}-amd64-worldseed-${t}@clone
+			zfs destroy ${zfs_parent}/${r}-amd64-worldseed-${t}
+			zfs destroy ${zfs_parent}/${r}-i386-worldseed-${t}@clone
+			zfs destroy ${zfs_parent}/${r}-i386-worldseed-${t}
+			;;
+	esac
 
 	echo -n "ZFS datasets were destroyed.  They will be created"
 	echo " automatically via thermite.sh."
