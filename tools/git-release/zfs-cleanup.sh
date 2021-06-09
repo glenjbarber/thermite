@@ -93,54 +93,37 @@ zfs_teardown() {
 		done
 	done
 
+	# XXX
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot
+	zfs destroy ${zfs_parent}/releng
+	zfs destroy ${zfs_parent}/${r}-ports-${t}@clone
+	zfs destroy ${zfs_parent}/${r}-src-${t}@clone
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/amd64/snap
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/i386/snap
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/amd64
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/i386
+	zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}
+	zfs destroy ${zfs_parent}/${r}-chroots-${t}
+	zfs destroy ${zfs_parent}/${r}-logs-${t}
+	zfs destroy ${zfs_parent}/${r}-ports-${t}
+	zfs destroy ${zfs_parent}/${r}-src-${t}
+	# XXX
+
 	case ${r} in
 		13)
-			# XXX
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot-13/chroots
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot-13
-			zfs destroy ${zfs_parent}/releng
-			zfs destroy ${zfs_parent}/${r}-ports-${t}@clone
-			zfs destroy ${zfs_parent}/${r}-src-${t}@clone
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot-13/chroots/${r}/amd64/snap
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot-13/chroots/${r}/i386/snap
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot-13/chroots/${r}/amd64
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot-13/chroots/${r}/i386
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot-13/chroots/${r}
-			zfs destroy ${zfs_parent}/${r}-chroots-${t}
-			zfs destroy ${zfs_parent}/${r}-logs-${t}
-			zfs destroy ${zfs_parent}/${r}-ports-${t}
-			zfs destroy ${zfs_parent}/${r}-src-${t}
-			# XXX
+			zfs destroy ${zfs_parent}-13/${r}-amd64-worldseed-${t}@clone
+			zfs destroy ${zfs_parent}-13/${r}-amd64-worldseed-${t}
+			zfs destroy ${zfs_parent}-13/${r}-i386-worldseed-${t}@clone
+			zfs destroy ${zfs_parent}-13/${r}-i386-worldseed-${t}
 			;;
 		*)
-			# XXX
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot
-			zfs destroy ${zfs_parent}/releng
-			zfs destroy ${zfs_parent}/${r}-ports-${t}@clone
-			zfs destroy ${zfs_parent}/${r}-src-${t}@clone
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/amd64/snap
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/i386/snap
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/amd64
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}/i386
-			zfs destroy ${zfs_parent}/releng/scripts-${t}shot/chroots/${r}
-			zfs destroy ${zfs_parent}/${r}-chroots-${t}
-			zfs destroy ${zfs_parent}/${r}-logs-${t}
-			zfs destroy ${zfs_parent}/${r}-ports-${t}
-			zfs destroy ${zfs_parent}/${r}-src-${t}
-			# XXX
+			zfs destroy ${zfs_parent}/${r}-amd64-worldseed-${t}@clone
+			zfs destroy ${zfs_parent}/${r}-amd64-worldseed-${t}
+			zfs destroy ${zfs_parent}/${r}-i386-worldseed-${t}@clone
+			zfs destroy ${zfs_parent}/${r}-i386-worldseed-${t}
 			;;
 	esac
-
-	zfs destroy ${zfs_parent}/${r}-amd64-worldseed-${t}@clone
-	zfs destroy ${zfs_parent}/${r}-amd64-worldseed-${t}
-	zfs destroy ${zfs_parent}/${r}-i386-worldseed-${t}@clone
-	zfs destroy ${zfs_parent}/${r}-i386-worldseed-${t}
-
-	zfs destroy ${zfs_parent}/${r}-amd64-worldseed-${t}@clone
-	zfs destroy ${zfs_parent}/${r}-amd64-worldseed-${t}
-	zfs destroy ${zfs_parent}/${r}-i386-worldseed-${t}@clone
-	zfs destroy ${zfs_parent}/${r}-i386-worldseed-${t}
 
 	echo -n "ZFS datasets were destroyed.  They will be created"
 	echo " automatically via thermite.sh."
