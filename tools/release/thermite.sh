@@ -183,57 +183,6 @@ zfs_mount_src() {
 	unset _clone _mount _target _tree _seedmount _seedtarget
 }
 
-zfs_create_tree() {
-	source_config || return 0
-	_tree=${1}
-	[ -z ${_tree} ] && return 0
-	[ ! -z $(eval echo \${zfs_${_tree}_seed_${rev}_${type}}) ] && return 0
-	case ${_tree} in
-		src)
-			return 0
-			;;
-		doc)
-			[ ! -z ${NODOC} ] && return 0
-			_gitsrc="${GITROOT}/${GITDOC}"
-			;;
-		ports)
-			[ ! -z ${NOPORTS} ] && return 0
-			_tree="port"
-			#_gitsrc="${GITROOT}/${GITPORTS}"
-			# XXX: hack to work around timeline of git conversion.
-			_gitsrc="svn://svn.freebsd.org/ports"
-			;;
-		*)
-			info "Unknown source tree type: ${_tree}"
-			return 0
-			;;
-	esac
-	TREE="$(echo ${_tree} | tr '[:lower:]' '[:upper:]')"
-	_clone="${zfs_parent}/${rev}-${_tree}-${type}"
-	_mount="/${zfs_mount}/${rev}-${_tree}-${type}"
-	echo DEBUG zfs_create_tree $LINENO
-	info "Creating ${_clone}"
-	zfs create -o atime=off -o mountpoint=${_mount} ${_clone}
-	info "Source checkout ${_gitsrc} to ${_mount}"
-	# /releng/scripts-snapshot/ports
-	# XXX: FIX ME
-	#git clone -b ${TREEBRANCH} ${_gitsrc} ${_mount}
-	git clone -b main ${_gitsrc} ${_mount}
-	info "Creating ZFS snapshot ${_clone}@clone"
-	zfs snapshot ${_clone}@clone
-	eval zfs_${_tree}_seed_${rev}_${type}=1
-	unset _clone _mount _tree _gitsrc
-}
-
-zfs_bootstrap() {
-	# XXX: Now a no-op
-	[ -z ${use_zfs} ] && return 0
-	#runall zfs_create_tree src
-	#runall zfs_create_tree ports
-	#runall zfs_create_tree doc
-	zfs_bootstrap_done=1
-}
-
 zfs_finish_bootstrap() {
 	runall zfs_mount_tree src
 	runall zfs_mount_tree ports
@@ -671,10 +620,8 @@ main() {
 	[ -z ${CONF} ] && usage
 	use_zfs=1
 	check_use_zfs
-	zfs_bootstrap_done=
 	runall prebuild_setup
 	runall truncate_logs
-	zfs_bootstrap
 	runall zfs_mount_src
 	runall build_chroots
 	runall install_chroots
