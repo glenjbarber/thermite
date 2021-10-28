@@ -251,6 +251,10 @@ NOAMIS
 	foreach my $ami (@amis) {
 		print(" $ami\n");
 	}
+	
+	print("\nThese AMI IDs can be retrieved from the Systems Manager Parameter Store\n");
+	print("in each region using the keys:\n\n");
+	print("\t/aws/service/freebsd/amd64/base/ufs/$revision/$branchname\n");
 
 	if ($version gt 11) {
 		if ($#amis_aarch64 ge 0) {
@@ -268,6 +272,11 @@ NOAMIS_AARCH64
 		foreach my $ami_aarch64 (@amis_aarch64) {
 			print(" $ami_aarch64\n");
 		}
+
+		print("\nThese AMI IDs can be retrieved from the Systems Manager Parameter Store\n");
+		print("in each region using the keys:\n\n");
+		print("\t/aws/service/freebsd/arm64/base/ufs/$revision/$branchname\n");
+
 	} # version > 11 evaluation
 
 	print <<VAGRANT;
