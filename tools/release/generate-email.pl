@@ -169,7 +169,7 @@ ARMINFO
 Snapshots may be downloaded from the corresponding architecture
 directory from:
 
-    https://download.freebsd.org/ftp/snapshots/ISO-IMAGES/
+    https://download.freebsd.org/snapshots/ISO-IMAGES/
 
 Please be patient if your local mirror has not yet caught up with the
 changes.
@@ -193,7 +193,7 @@ OPENING
 Disk images may be downloaded from the following URL (or any of the
 FreeBSD Project mirrors):
 
-    https://download.freebsd.org/ftp/snapshots/VM-IMAGES/
+    https://download.freebsd.org/snapshots/VM-IMAGES/
 
 Images are available in the following disk image formats:
 
