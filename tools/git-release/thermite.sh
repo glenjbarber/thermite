@@ -155,7 +155,9 @@ zfs_mount_tree() {
 	_clone="${zfs_parent}/${rev}-${_tree}-${type}"
 	_mount="/${zfs_mount}/${rev}-${arch}-${kernel}-${type}"
 	_target="${zfs_parent}/${rev}-${arch}-${kernel}-${type}-${_tree}"
-	zfs snapshot ${_clone}@clone
+	zfs list -t snapshot |
+	    grep -q "${_clone}@clone" ||
+		zfs snapshot ${_clone}@clone
 	info "Cloning ${_clone}@clone to ${_target}"
 	zfs clone -p -o atime=off -o mountpoint=${_mount}/usr/${_tree} \
 		${_clone}@clone ${_target}
