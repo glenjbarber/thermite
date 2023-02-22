@@ -178,8 +178,7 @@ zfs_mount_src() {
 	esac
 	_seedmount=${chroots}/${rev}/${arch}/${type}
 	_seedtarget="${zfs_parent}/${rev}-${arch}-${type}-chroot"
-	info "Creating ${_seedtarget} from ${_clone}"
-	zfs snapshot ${_clone}@clone
+	info "Creating ${_seedtarget} from ${_clone}@clone"
 	zfs clone -p -o atime=off -o mountpoint=${_seedmount} \
 		${_clone}@clone ${_seedtarget}
 	unset _clone _mount _target _tree _seedmount _seedtarget
