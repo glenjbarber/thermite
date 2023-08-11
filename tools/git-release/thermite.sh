@@ -413,16 +413,8 @@ upload_ec2_ami() {
 			_EC2TARGET_ARCH=amd64
 			;;
 		aarch64:GENERIC)
-			# stable/11 arm64/aarch64 is not supported
-			case ${rev} in
-				11)
-					return 0
-					;;
-				*)
-					_EC2TARGET=arm64
-					_EC2TARGET_ARCH=aarch64
-					;;
-			esac
+			_EC2TARGET=arm64
+			_EC2TARGET_ARCH=aarch64
 			;;
 		*)
 			return 0
