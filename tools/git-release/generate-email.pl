@@ -74,7 +74,7 @@ sub main() {
 		}
 		if ($_ =~ m/^o /) {
 			$_ =~ s/:$//;
-			if ($_ =~ m/^o .* armv[6|7] .*/) {
+			if ($_ =~ m/^o .* armv7 .*/) {
 				$hasarmv = 1;
 			}
 			if ($_ =~ m/^o .* aarch64 .*/) {
@@ -155,7 +155,7 @@ OPENING
 	if ($hasarmv ne 0) {
 		print <<ARMINFO;
 
-Note regarding arm/armv{6,7} images: For convenience for those without
+Note regarding arm and arm64 images: For convenience for those without
 console access to the system, a freebsd user with a password of
 freebsd is available by default for ssh(1) access.  Additionally,
 the root user password is set to root, which it is strongly
