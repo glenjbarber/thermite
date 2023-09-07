@@ -432,6 +432,14 @@ upload_ec2_ami() {
 		return 0
 	fi
 	mount -t devfs devfs ${CHROOTDIR}/dev
+	case ${rev} in
+		13)
+			_ec2ami=ec2ami
+			;;
+		*)
+			_ec2ami=ec2amis
+			;;
+	esac
 	chroot ${CHROOTDIR} make -C /usr/src/release \
 		AWSREGION=${AWSREGION} \
 		AWSBUCKET=${AWSBUCKET} \
@@ -442,7 +450,8 @@ upload_ec2_ami() {
 		SSMPREFIX=${SSMPREFIX} \
 		TARGET=${_EC2TARGET} \
 		TARGET_ARCH=${_EC2TARGET_ARCH} \
-		ec2ami \
+		WITH_CLOUDWARE=YES \
+		${_ec2ami} \
 		>> ${logdir}/${_build}.ec2.log 2>&1
 	unset _build _conf AWSREGION AWSBUCKET AWSKEYFILE EC2PUBLIC EC2SNSTOPIC EC2PUBLICSNAP
 	unset _EC2TARGET _EC2TARGET_ARCH SSMPREFIX
