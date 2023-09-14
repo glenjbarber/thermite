@@ -236,7 +236,7 @@ AARCH64
 EC2
 
 	if ($#amis ge 0) {
-		print ("FreeBSD/amd64 EC2 AMI IDs can be retrieved from the Systems Manager");
+		print ("\nFreeBSD/amd64 EC2 AMI IDs can be retrieved from the Systems Manager\n");
 		print ("Parameter Store in each region using the keys:\n\n");
 		print("\t/aws/service/freebsd/amd64/base/ufs/$revision/$branchname\n");
 		print("\t/aws/service/freebsd/amd64/base/zfs/$revision/$branchname\n");
@@ -248,7 +248,7 @@ Amazon EC2 amd64 AMI images are not available for this snapshot.
 NOAMIS
 	}
 	if ($#amis_aarch64 ge 0) {
-		print ("FreeBSD/aarch64 EC2 AMI IDs can be retrieved from the Systems Manager");
+		print ("\nFreeBSD/aarch64 EC2 AMI IDs can be retrieved from the Systems Manager\n");
 		print ("Parameter Store in each region using the keys:\n\n");
 		print("\t/aws/service/freebsd/aarch64/base/ufs/$revision/$branchname\n");
 		print("\t/aws/service/freebsd/aarch64/base/zfs/$revision/$branchname\n");
