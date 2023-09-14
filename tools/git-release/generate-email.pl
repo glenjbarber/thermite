@@ -236,47 +236,28 @@ AARCH64
 EC2
 
 	if ($#amis ge 0) {
-		print <<AMIS;
+		print ("FreeBSD/amd64 EC2 AMI IDs can be retrieved from the Systems Manager");
+		print ("Parameter Store in each region using the keys:\n\n");
+		print("\t/aws/service/freebsd/amd64/base/ufs/$revision/$branchname\n");
+		print("\t/aws/service/freebsd/amd64/base/zfs/$revision/$branchname\n");
 
-FreeBSD/amd64 EC2 AMIs are available in the following regions:
-
-AMIS
 	} else {
 		print <<NOAMIS;
 
 Amazon EC2 amd64 AMI images are not available for this snapshot.
 NOAMIS
-	}
-	foreach my $ami (@amis) {
-		print(" $ami\n");
-	}
-	
-	print("\nThese AMI IDs can be retrieved from the Systems Manager Parameter Store\n");
-	print("in each region using the keys:\n\n");
-	print("\t/aws/service/freebsd/amd64/base/ufs/$revision/$branchname\n");
+	if ($#amis_aarch64 ge 0) {
+		print ("FreeBSD/aarch64 EC2 AMI IDs can be retrieved from the Systems Manager");
+		print ("Parameter Store in each region using the keys:\n\n");
+		print("\t/aws/service/freebsd/aarch64/base/ufs/$revision/$branchname\n");
+		print("\t/aws/service/freebsd/aarch64/base/zfs/$revision/$branchname\n");
 
-	if ($version gt 11) {
-		if ($#amis_aarch64 ge 0) {
-			print <<AMIS_AARCH64;
-
-FreeBSD/aarch64 EC2 AMIs are available in the following regions:
-
-AMIS_AARCH64
 		} else {
 			print <<NOAMIS_AARCH64;
 
 Amazon EC2 aarch64 AMI images are not available for this snapshot.
 NOAMIS_AARCH64
 		}
-		foreach my $ami_aarch64 (@amis_aarch64) {
-			print(" $ami_aarch64\n");
-		}
-
-		print("\nThese AMI IDs can be retrieved from the Systems Manager Parameter Store\n");
-		print("in each region using the keys:\n\n");
-		print("\t/aws/service/freebsd/arm64/base/ufs/$revision/$branchname\n");
-
-	} # version > 11 evaluation
 
 	print <<VAGRANT;
 
